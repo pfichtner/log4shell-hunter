@@ -5,6 +5,7 @@ import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.nullSafety;
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
 import static org.objectweb.asm.ClassReader.SKIP_CODE;
 
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.objectweb.asm.tree.AnnotationNode;
@@ -16,13 +17,13 @@ import com.github.pfichtner.log4shell.scanner.io.Visitor;
 public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 
 	@Override
-	public void visit(Detections detections, String filename, byte[] bytes) {
-		if (isClass(filename) && hasPluginAnnotation(filename, bytes)) {
+	public void visit(Detections detections, Path filename, byte[] bytes) {
+		if (isClass(filename) && hasPluginAnnotation(bytes)) {
 			detections.add("@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename);
 		}
 	}
 
-	private static boolean hasPluginAnnotation(String filename, byte[] bytes) {
+	private static boolean hasPluginAnnotation(byte[] bytes) {
 		return hasPluginAnnotation(readClass(bytes, SKIP_CODE));
 	}
 

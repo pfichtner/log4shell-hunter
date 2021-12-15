@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner.visitor;
 
 import static java.util.stream.Collectors.joining;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -21,8 +22,8 @@ public final class AsmUtil {
 		super();
 	}
 
-	public static boolean isClass(String filename) {
-		return filename.toLowerCase().endsWith(".class");
+	public static boolean isClass(Path filename) {
+		return filename.getFileSystem().getPathMatcher("glob:**.class").matches(filename);
 	}
 
 	public static ClassNode readClass(byte[] bytes, int options) {

@@ -6,6 +6,7 @@ import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.nullSafety;
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -47,9 +48,9 @@ public class CheckForJndiManagerWithContextLookups implements Visitor<Detections
 	}
 
 	@Override
-	public void visit(Detections detections, String filename, byte[] bytes) {
+	public void visit(Detections detections, Path filename, byte[] bytes) {
 		// TODO do not depend on filename (classname)
-		if (isClass(filename) && filename.contains("JndiManager")) {
+		if (isClass(filename) && filename.toString().endsWith("JndiManager.class")) {
 			searchContextLookups(bytes).stream().filter(Optional::isPresent).map(Optional::get)
 					.map(s -> s.concat(" found in class " + filename)).forEach(detections::add);
 		}

@@ -1,14 +1,18 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.pfichtner.log4shell.scanner.io.JarScanner;
+import com.github.pfichtner.log4shell.scanner.io.JarReader;
 import com.github.pfichtner.log4shell.scanner.io.Visitor;
+import com.github.pfichtner.log4shell.scanner.io.JarReader.JarReaderVisitor;
 
 public class CVEDetector {
+
+	private List<Visitor<Detections>> visitors;
 
 	public static class Detections {
 
@@ -29,15 +33,13 @@ public class CVEDetector {
 
 	}
 
-	private final JarScanner<Detections> jarScanner;
-
 	@SafeVarargs
 	public CVEDetector(Visitor<Detections>... visitors) {
 		this(Arrays.asList(visitors));
 	}
 
 	public CVEDetector(List<Visitor<Detections>> visitors) {
-		this.jarScanner = new JarScanner<Detections>(visitors);
+		this.visitors = visitors;
 	}
 
 	public void check(String jar) throws IOException {
@@ -47,8 +49,16 @@ public class CVEDetector {
 	}
 
 	public Detections analyze(String jar) throws IOException {
+		JarReader jarReader = new JarReader(jar);
 		Detections detections = new Detections();
-		this.jarScanner.visitArchive(jar, detections);
+		for (Visitor<Detections> visitor : visitors) {
+			jarReader.accept(new JarReaderVisitor() {
+				@Override
+				public void visitFile(Path file, byte[] bytes) {
+					visitor.visit(detections, file, bytes);
+				}
+			});
+		}
 		return detections;
 	}
 

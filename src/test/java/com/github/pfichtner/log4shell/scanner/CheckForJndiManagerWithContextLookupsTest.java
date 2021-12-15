@@ -65,7 +65,7 @@ class CheckForJndiManagerWithContextLookupsTest {
 	}
 
 	private static String refTo(String ref) {
-		return String.format("Reference to %s found in class org/apache/logging/log4j/core/net/JndiManager.class", ref);
+		return String.format("Reference to %s found in class /org/apache/logging/log4j/core/net/JndiManager.class", ref);
 	}
 
 }
