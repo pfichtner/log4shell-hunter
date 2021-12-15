@@ -46,6 +46,10 @@ public final class Log4jJars implements Iterable<File> {
 				.orElseThrow(() -> new NoSuchElementException(filename));
 	}
 
+	public List<File> versions(String... versions) {
+		return Arrays.stream(versions).map(this::version).collect(toList());
+	}
+
 	private static Predicate<File> hasFilename(String filename) {
 		return f -> f.getName().equals(filename);
 	}
