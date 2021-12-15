@@ -61,7 +61,7 @@ public final class Log4jJars implements Iterable<File> {
 	}
 
 	public File[] getLog4jJarsWithout(List<File> ignore) {
-		return Util.ignore(log4jJars, ignore).toArray(File[]::new);
+		return Util.ignore(log4jJars, ignore).toArray(new File[0]);
 	}
 
 }
