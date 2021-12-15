@@ -65,9 +65,10 @@ class CheckForJndiManagerLookupCallsTest {
 
 	);
 
+	CheckForJndiManagerLookupCalls sut = new CheckForJndiManagerLookupCalls();
+
 	@Test
 	void canDetectLookupCalls() throws Exception {
-		CheckForJndiManagerLookupCalls sut = new CheckForJndiManagerLookupCalls();
 		assertThat(withDetections(analyse(log4jJars, sut)))
 				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups));
 	}

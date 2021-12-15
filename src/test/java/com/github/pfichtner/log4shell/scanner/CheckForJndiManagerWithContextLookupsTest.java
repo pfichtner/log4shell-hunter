@@ -40,9 +40,10 @@ class CheckForJndiManagerWithContextLookupsTest {
 
 	);
 
+	CheckForJndiManagerWithContextLookups sut = new CheckForJndiManagerWithContextLookups();
+	
 	@Test
 	void log4j14HasJndiManagerWithContextLookups() throws Exception {
-		CheckForJndiManagerWithContextLookups sut = new CheckForJndiManagerWithContextLookups();
 		CVEDetector detector = new CVEDetector(sut);
 		Detections detections = detector.analyze(log4jJars.version("2.14.1").getAbsolutePath());
 		assertThat(detections.getDetections()).containsExactly(refTo("javax.naming.Context#lookup(java.lang.String)"));
@@ -50,7 +51,6 @@ class CheckForJndiManagerWithContextLookupsTest {
 
 	@Test
 	void log4j16HasJndiManagerWithDirContextLookups() throws Exception {
-		CheckForJndiManagerWithContextLookups sut = new CheckForJndiManagerWithContextLookups();
 		CVEDetector detector = new CVEDetector(sut);
 		Detections detections = detector.analyze(log4jJars.version("2.16.0").getAbsolutePath());
 		assertThat(detections.getDetections())
@@ -59,7 +59,6 @@ class CheckForJndiManagerWithContextLookupsTest {
 
 	@Test
 	void canDetectLookupMethods() throws Exception {
-		CheckForJndiManagerWithContextLookups sut = new CheckForJndiManagerWithContextLookups();
 		assertThat(withDetections(analyse(log4jJars, sut)))
 				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups));
 	}

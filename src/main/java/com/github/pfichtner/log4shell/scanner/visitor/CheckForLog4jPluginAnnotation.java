@@ -3,10 +3,16 @@ package com.github.pfichtner.log4shell.scanner.visitor;
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.isClass;
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.nullSafety;
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
+import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.hasJndiManagerLookupImpl;
+import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.initialContext;
+import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.nameIsLookup;
 import static org.objectweb.asm.ClassReader.SKIP_CODE;
+import static org.objectweb.asm.ClassReader.SKIP_DEBUG;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -18,13 +24,12 @@ public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 
 	@Override
 	public void visit(Detections detections, Path filename, byte[] bytes) {
-		if (isClass(filename) && hasPluginAnnotation(bytes)) {
-			detections.add("@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename);
+		if (isClass(filename)) {
+			if (hasPluginAnnotation(readClass(bytes, SKIP_CODE))) {
+				detections.add("@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename);
+				refsToContext(readClass(bytes, SKIP_DEBUG), detections, filename).forEach(detections::add);
+			}
 		}
-	}
-
-	private static boolean hasPluginAnnotation(byte[] bytes) {
-		return hasPluginAnnotation(readClass(bytes, SKIP_CODE));
 	}
 
 	private static boolean hasPluginAnnotation(ClassNode classNode) {
@@ -41,6 +46,11 @@ public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 			}
 		}
 		return false;
+	}
+
+	private Stream<String> refsToContext(ClassNode classNode, Detections detections, Path filename) {
+		return hasJndiManagerLookupImpl(classNode, nameIsLookup, initialContext).stream()
+				.filter(Optional::isPresent).map(Optional::get).map(s -> s.concat(" found in class " + filename));
 	}
 
 }

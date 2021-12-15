@@ -4,11 +4,14 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerLookupCalls;
+import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithContextLookups;
 import com.github.pfichtner.log4shell.scanner.visitor.CheckForLog4jPluginAnnotation;
 
 class CVEDetectorTest {
@@ -26,6 +29,8 @@ class CVEDetectorTest {
 	// return PropertiesUtil.getProperties().getBooleanProperty("log4j2.enableJndi",
 	// false);
 	// }
+
+	Log4jJars log4jJars = Log4jJars.getInstance();
 
 	@Test
 	@Disabled
@@ -62,8 +67,20 @@ class CVEDetectorTest {
 				() -> assertThat(runCheck(sut, "2.14.1")).isEqualTo(expected));
 	}
 
+	@Test
+	@Disabled("Could be converted to approval (but we have to sort by versions)")
+	void all() throws Exception {
+		CVEDetector sut = new CVEDetector(new CheckForJndiManagerLookupCalls(),
+				new CheckForJndiManagerWithContextLookups(), new CheckForLog4jPluginAnnotation());
+		for (File log4jJar : log4jJars) {
+			System.out.println(log4jJar.getAbsoluteFile().getName());
+			sut.analyze(log4jJar.getAbsolutePath()).getDetections().forEach(System.out::println);
+			System.out.println();
+		}
+	}
+
 	private String runCheck(CVEDetector sut, String version) throws Exception {
-		return tapSystemOut(() -> sut.check(Log4jJars.getInstance().version(version).getAbsolutePath()));
+		return tapSystemOut(() -> sut.check(log4jJars.version(version).getAbsolutePath()));
 	}
 
 }
