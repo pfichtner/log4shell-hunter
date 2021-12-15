@@ -8,8 +8,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<junit.jupiter.version>5.8.2</junit.jupiter.version>
-		<junit.jupiter.version>5.8.2</junit.jupiter.version>
-		<asm.version>9.2</asm.version>
+		<org.ow2.asm.version>9.2</org.ow2.asm.version>
 		<maven.surefire.version>2.22.2</maven.surefire.version>
 	</properties>
 
@@ -29,12 +28,12 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
-			<version>${asm.version}</version>
+			<version>${org.ow2.asm.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-tree</artifactId>
-			<version>${asm.version}</version>
+			<version>${org.ow2.asm.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
