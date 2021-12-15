@@ -1,7 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -10,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public final class Log4jJars implements Iterable<File> {
 
@@ -24,7 +24,7 @@ public final class Log4jJars implements Iterable<File> {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException();
 		}
-		this.log4jJars = Arrays.stream(dir.list()).map(f -> new File(dir, f)).collect(toUnmodifiableList());
+		this.log4jJars = Arrays.stream(dir.list()).map(f -> new File(dir, f)).collect(Collectors.toUnmodifiableList());
 	}
 
 	public static Log4jJars getInstance() {
