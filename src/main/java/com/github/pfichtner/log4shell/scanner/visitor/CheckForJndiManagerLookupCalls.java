@@ -1,6 +1,7 @@
 package com.github.pfichtner.log4shell.scanner.visitor;
 
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.isClass;
+import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -15,20 +16,21 @@ public class CheckForJndiManagerLookupCalls implements Visitor<Detections> {
 
 	@Override
 	public void visit(Detections detections, String filename, byte[] bytes) {
-		if (isClass(filename) && hasJndiManagerLookupCall(detections, filename, bytes)) {
+		// TODO do not depend on filename (classname)
+		if (isClass(filename) && filename.contains("JndiLookup") && hasJndiManagerLookupCall(bytes)) {
 			detections.add(
-					"Reference to " + "org/apache/logging/log4j/core/net/JndiManager" + " found in class " + filename);
+					"Reference to " + "org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)" + " found in class " + filename);
 		}
 	}
 
-	private boolean hasJndiManagerLookupCall(Detections detections, String filename, byte[] bytes) {
-		return hasJndiManagerLookupCall(filename, AsmUtil.readClass(bytes, 0));
+	private boolean hasJndiManagerLookupCall(byte[] bytes) {
+		return hasJndiManagerLookupCall(readClass(bytes, 0));
 	}
 
-	private boolean hasJndiManagerLookupCall(String filename, ClassNode classNode) {
+	private boolean hasJndiManagerLookupCall(ClassNode classNode) {
 		for (MethodNode methodNode : classNode.methods) {
 			for (AbstractInsnNode insnNode : methodNode.instructions) {
-				if (filename.contains("JndiLookup") && methodNode.name.equals("lookup"))
+				if (methodNode.name.equals("lookup"))
 					if (insnNode instanceof MethodInsnNode) {
 						MethodInsnNode methodInsnNode = (MethodInsnNode) insnNode;
 

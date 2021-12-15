@@ -56,7 +56,7 @@ class CVEDetectorTest {
 	@Test
 	void detectsAndPrintsViaCheckForCalls() throws Exception {
 		CVEDetector sut = new CVEDetector(new CheckForJndiManagerLookupCalls());
-		String expected = "Reference to org/apache/logging/log4j/core/net/JndiManager found in class org/apache/logging/log4j/core/lookup/JndiLookup.class\n";
+		String expected = "Reference to org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String) found in class org/apache/logging/log4j/core/lookup/JndiLookup.class\n";
 		assertAll( //
 				() -> assertThat(runCheck(sut, "2.10.0")).isEqualTo(expected), //
 				() -> assertThat(runCheck(sut, "2.14.1")).isEqualTo(expected));
