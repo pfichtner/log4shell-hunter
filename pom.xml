@@ -57,13 +57,15 @@
 
 	<build>
 		<plugins>
+<!--
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<release>9</release>
+					<release>11</release>
 				</configuration>
 			</plugin>
+-->
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven.surefire.version}</version>
