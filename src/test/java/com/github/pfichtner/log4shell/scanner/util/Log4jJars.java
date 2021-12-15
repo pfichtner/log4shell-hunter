@@ -9,11 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public final class Log4jJars implements Iterable<File> {
 
-	private String[] log4jJars;
+	private List<File> log4jJars;
 	private File dir;
 
 	private static final Log4jJars instance = new Log4jJars();
@@ -21,7 +21,8 @@ public final class Log4jJars implements Iterable<File> {
 	private Log4jJars() {
 		try {
 			this.dir = new File(getClass().getClassLoader().getResource("log4jars").toURI());
-			this.log4jJars = dir.list();
+			this.log4jJars = Arrays.stream(dir.list()).map(f -> new File(dir, f))
+					.collect(Collectors.toUnmodifiableList());
 		} catch (URISyntaxException e) {
 			throw new RuntimeException();
 		}
@@ -36,13 +37,14 @@ public final class Log4jJars implements Iterable<File> {
 		return dir;
 	}
 
-	public String[] getLog4jJars() {
-		return log4jJars.clone();
+	public List<File> getLog4jJars() {
+		return log4jJars;
 	}
 
 	public File version(String version) {
-		return stream().filter(hasFilename("log4j-core-" + version + ".jar")).findFirst()
-				.orElseThrow(() -> new NoSuchElementException());
+		String filename = "log4j-core-" + version + ".jar";
+		return log4jJars.stream().filter(hasFilename(filename)).findFirst()
+				.orElseThrow(() -> new NoSuchElementException(filename));
 	}
 
 	private static Predicate<File> hasFilename(String filename) {
@@ -52,15 +54,11 @@ public final class Log4jJars implements Iterable<File> {
 	@Override
 	public Iterator<File> iterator() {
 		// TODO use Spliterator
-		return stream().collect(toList()).iterator();
+		return log4jJars.stream().collect(toList()).iterator();
 	}
 
-	private Stream<File> stream() {
-		return Arrays.asList(log4jJars).stream().map(f -> new File(dir, f));
-	}
-
-	public String[] getLog4jJarsWithout(List<String> ignore) {
-		return Util.ignore(log4jJars, ignore);
+	public File[] getLog4jJarsWithout(List<File> ignore) {
+		return Util.ignore(log4jJars, ignore).toArray(File[]::new);
 	}
 
 }
