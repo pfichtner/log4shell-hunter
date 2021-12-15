@@ -49,16 +49,15 @@ public class CVEDetector {
 	}
 
 	public Detections analyze(String jar) throws IOException {
-		JarReader jarReader = new JarReader(jar);
 		Detections detections = new Detections();
-		for (Visitor<Detections> visitor : visitors) {
-			jarReader.accept(new JarReaderVisitor() {
-				@Override
-				public void visitFile(Path file, byte[] bytes) {
+		new JarReader(jar).accept(new JarReaderVisitor() {
+			@Override
+			public void visitFile(Path file, byte[] bytes) {
+				for (Visitor<Detections> visitor : visitors) {
 					visitor.visit(detections, file, bytes);
 				}
-			});
-		}
+			}
+		});
 		return detections;
 	}
 
