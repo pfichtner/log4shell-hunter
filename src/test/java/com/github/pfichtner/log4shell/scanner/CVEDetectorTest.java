@@ -79,7 +79,7 @@ class CVEDetectorTest {
 
 	@Test
 	void approveAll() {
-		List<Detector<Detections>> vistors = Arrays.asList( //
+		List<Detector<Detections>> detectors = Arrays.asList( //
 				new CheckForJndiManagerLookupCalls(), //
 				new CheckForJndiManagerWithNamingContextLookups(), //
 				new CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException(), //
@@ -88,7 +88,7 @@ class CVEDetectorTest {
 				new CheckForRefsToInitialContextLookups() //
 		);
 
-		CVEDetector detector = new CVEDetector(vistors);
+		CVEDetector detector = new CVEDetector(detectors);
 
 		String header = header(detector);
 		System.out.println(header);
@@ -108,22 +108,24 @@ class CVEDetectorTest {
 	private String header(CVEDetector detector) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\t");
-		for (Detector<Detections> visitor : detector.getVisitors()) {
+		for (Detector<Detections> visitor : detector.getDetectors()) {
 			sb.append(visitor.getName()).append("\t");
 		}
 		return sb.toString();
 	}
 
-	private String content(CVEDetector detector, File log4jJar) throws IOException {
-		List<Detection> detections = detector.analyze(log4jJar.getAbsolutePath()).getDetections();
+	private String content(CVEDetector cveDetector, File log4jJar) throws IOException {
+		List<Detection> detections = cveDetector.analyze(log4jJar.getAbsolutePath()).getDetections();
 		StringBuilder sb = new StringBuilder();
 		sb.append(log4jJar.getAbsoluteFile().getName()).append("\t");
-		for (Detector<Detections> visitor : detector.getVisitors()) {
-			sb.append(detections.stream().filter(d -> d.getDetector().equals(visitor)).findAny().map(_i -> "X")
-					.orElse("")).append("\t");
-
+		for (Detector<Detections> detector : cveDetector.getDetectors()) {
+			sb.append(contains(detections, detector) ? "X" : "").append("\t");
 		}
 		return sb.toString();
+	}
+
+	private boolean contains(List<Detection> detections, Detector<Detections> detector) {
+		return detections.stream().map(Detection::getDetector).anyMatch(detector::equals);
 	}
 
 	private String runCheck(CVEDetector sut, String version) throws Exception {

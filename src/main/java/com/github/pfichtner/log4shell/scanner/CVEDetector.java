@@ -18,7 +18,7 @@ import com.github.pfichtner.log4shell.scanner.io.JarReader.JarReaderVisitor;
 
 public class CVEDetector {
 
-	private List<Detector<Detections>> visitors;
+	private List<Detector<Detections>> detectors;
 
 	public static class Detections {
 
@@ -69,16 +69,16 @@ public class CVEDetector {
 	}
 
 	@SafeVarargs
-	public CVEDetector(Detector<Detections>... visitors) {
-		this(Arrays.asList(visitors));
+	public CVEDetector(Detector<Detections>... detectors) {
+		this(Arrays.asList(detectors));
 	}
 
-	public CVEDetector(List<Detector<Detections>> visitors) {
-		this.visitors = unmodifiableList(new ArrayList<>(visitors));
+	public CVEDetector(List<Detector<Detections>> detectors) {
+		this.detectors = unmodifiableList(new ArrayList<>(detectors));
 	}
 
-	public List<Detector<Detections>> getVisitors() {
-		return visitors;
+	public List<Detector<Detections>> getDetectors() {
+		return detectors;
 	}
 
 	public void check(String jar) throws IOException {
@@ -92,11 +92,11 @@ public class CVEDetector {
 		new JarReader(jar).accept(new JarReaderVisitor() {
 			@Override
 			public void visitFile(Path file, byte[] bytes) {
-				for (Detector<Detections> visitor : visitors) {
+				for (Detector<Detections> detector : detectors) {
 					if (isClass(file)) {
-						visitor.visitClass(detections, file, readClass(bytes, 0));
+						detector.visitClass(detections, file, readClass(bytes, 0));
 					} else {
-						visitor.visitFile(detections, file, bytes);
+						detector.visitFile(detections, file, bytes);
 					}
 				}
 			}
