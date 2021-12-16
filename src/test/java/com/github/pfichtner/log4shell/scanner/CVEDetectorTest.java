@@ -101,7 +101,8 @@ class CVEDetectorTest {
 	}
 
 	private Options options() {
-		return new FileOptions(new HashMap<>()).withExtension(".csv").withScrubber(newLineScrubber());
+		return new FileOptions(new HashMap<>()).withExtension(".csv");
+//				.withScrubber(newLineScrubber());
 	}
 
 	private static RegExScrubber newLineScrubber() {
@@ -110,11 +111,9 @@ class CVEDetectorTest {
 
 	private String toBeApproved(CVEDetector detector) throws IOException {
 		StringBuilder sb = new StringBuilder();
-		String lineSeparator = System.getProperty("line.separator");
-		sb.append(header(detector)).append(lineSeparator);
-		List<File> log4jJars2 = log4jJars.getLog4jJars();
-		for (File file : log4jJars2) {
-			sb.append(content(detector, file)).append(lineSeparator);
+		sb.append(header(detector)).append("\n");
+		for (File file : log4jJars) {
+			sb.append(content(detector, file)).append("\n");
 		}
 		return sb.toString();
 	}
