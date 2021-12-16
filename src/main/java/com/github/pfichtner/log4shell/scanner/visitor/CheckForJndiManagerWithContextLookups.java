@@ -1,7 +1,5 @@
 package com.github.pfichtner.log4shell.scanner.visitor;
 
-import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.isClass;
-import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
 import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.dirContext;
 import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.hasJndiManagerLookupImpl;
 import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.nameIsLookup;
@@ -11,6 +9,7 @@ import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.throwsNami
 import java.nio.file.Path;
 import java.util.Optional;
 
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
@@ -33,12 +32,11 @@ public class CheckForJndiManagerWithContextLookups implements Visitor<Detections
 	}
 
 	@Override
-	public void visit(Detections detections, Path filename, byte[] bytes) {
-		// TODO do not depend on filename (classname)
-		if (isClass(filename) && filename.toString().endsWith("JndiManager.class")) {
-			hasJndiManagerLookupImpl(readClass(bytes, 0), nameIsLookup.and(throwsNamingException), nodeComparators)
-					.stream().filter(Optional::isPresent).map(Optional::get)
-					.map(s -> s.concat(" found in class " + filename)).forEach(detections::add);
+	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
+		if (filename.toString().endsWith("JndiManager.class")) {
+			hasJndiManagerLookupImpl(classNode, nameIsLookup.and(throwsNamingException), nodeComparators).stream()
+					.filter(Optional::isPresent).map(Optional::get).map(s -> s.concat(" found in class " + filename))
+					.forEach(detections::add);
 		}
 	}
 

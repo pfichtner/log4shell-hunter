@@ -1,7 +1,5 @@
 package com.github.pfichtner.log4shell.scanner.visitor;
 
-import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.isClass;
-import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 
 import java.nio.file.Path;
@@ -17,16 +15,11 @@ import com.github.pfichtner.log4shell.scanner.io.Visitor;
 public class CheckForJndiManagerLookupCalls implements Visitor<Detections> {
 
 	@Override
-	public void visit(Detections detections, Path filename, byte[] bytes) {
-		// TODO do not depend on filename (classname)
-		if (isClass(filename) && filename.toString().endsWith("JndiLookup.class") && hasJndiManagerLookupCall(bytes)) {
+	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
+		if (filename.toString().endsWith("JndiLookup.class") && hasJndiManagerLookupCall(classNode)) {
 			detections.add("Reference to " + "org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)"
 					+ " found in class " + filename);
 		}
-	}
-
-	private boolean hasJndiManagerLookupCall(byte[] bytes) {
-		return hasJndiManagerLookupCall(readClass(bytes, 0));
 	}
 
 	private boolean hasJndiManagerLookupCall(ClassNode classNode) {

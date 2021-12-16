@@ -1,5 +1,8 @@
 package com.github.pfichtner.log4shell.scanner;
 
+import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.isClass;
+import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -54,7 +57,11 @@ public class CVEDetector {
 			@Override
 			public void visitFile(Path file, byte[] bytes) {
 				for (Visitor<Detections> visitor : visitors) {
-					visitor.visit(detections, file, bytes);
+					if (isClass(file)) {
+						visitor.visitClass(detections, file, readClass(bytes, 0));
+					} else {
+						visitor.visitFile(detections, file, bytes);
+					}
 				}
 			}
 		});
