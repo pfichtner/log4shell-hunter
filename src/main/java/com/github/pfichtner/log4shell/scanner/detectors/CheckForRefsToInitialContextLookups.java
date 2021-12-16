@@ -1,12 +1,11 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
+import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodInsnNodes;
 import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodName;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.hasJndiManagerLookupImpl;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.initialContext;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.nameIsLookup;
+import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.initialContextLookup;
+import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.hasNameLookup;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -19,8 +18,9 @@ public class CheckForRefsToInitialContextLookups implements Detector<Detections>
 
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
-		hasJndiManagerLookupImpl(classNode, nameIsLookup, initialContext).stream().filter(Optional::isPresent)
-				.map(Optional::get).forEach(n -> detections.add(this, filename, n));
+		// TODO should be distinctBy target
+		methodInsnNodes(classNode, hasNameLookup).filter(initialContextLookup).distinct()
+				.forEach(n -> detections.add(this, filename, n));
 	}
 
 	@Override
