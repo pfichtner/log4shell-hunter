@@ -1,14 +1,9 @@
 package com.github.pfichtner.log4shell.scanner.visitor;
 
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.nullSafety;
-import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.hasJndiManagerLookupImpl;
-import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.initialContext;
-import static com.github.pfichtner.log4shell.scanner.visitor.JndiUtil.nameIsLookup;
 
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -21,8 +16,8 @@ public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
 		if (hasPluginAnnotation(classNode)) {
-			detections.add(this, filename, "@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename);
-			refsToContext(classNode, detections, filename).forEach(d -> detections.add(this, filename, d));
+			detections.add(this, filename,
+					"@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename);
 		}
 	}
 
@@ -40,11 +35,6 @@ public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 			}
 		}
 		return false;
-	}
-
-	private Stream<String> refsToContext(ClassNode classNode, Detections detections, Path filename) {
-		return hasJndiManagerLookupImpl(classNode, nameIsLookup, initialContext).stream().filter(Optional::isPresent)
-				.map(Optional::get).map(s -> s.concat(" found in class " + filename));
 	}
 
 }

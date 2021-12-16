@@ -11,32 +11,24 @@ import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForLog4jPluginAnnotation;
+import com.github.pfichtner.log4shell.scanner.visitor.CheckForRefsToInitialContextLookups;
 
-public class CheckForLog4jPluginAnnotationTest {
+public class CheckForRefsToInitialContextLookupsTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
-	List<File> versionsWithoutPluginAnnotation = log4jJars.versions( //
-			"2.0-alpha1", //
-			"2.0-alpha2", //
+	List<File> versionsWithInitialContextLookups = log4jJars.versions( //
+			"2.0-beta9", //
+			"2.0-rc1" //
 
-			"2.0-beta1", //
-			"2.0-beta2", //
-			"2.0-beta3", //
-			"2.0-beta4", //
-			"2.0-beta5", //
-			"2.0-beta6", //
-			"2.0-beta7", //
-			"2.0-beta8" //
 	);
 
-	CheckForLog4jPluginAnnotation sut = new CheckForLog4jPluginAnnotation();
+	CheckForRefsToInitialContextLookups sut = new CheckForRefsToInitialContextLookups();
 
 	@Test
 	void canDetectPluginClass() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutPluginAnnotation));
+				.containsOnlyKeys(versionsWithInitialContextLookups.toArray(File[]::new));
 	}
 
 	@Test
@@ -44,7 +36,7 @@ public class CheckForLog4jPluginAnnotationTest {
 		CVEDetector detector = new CVEDetector(sut);
 		Detections detections = detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath());
 		assertThat(detections.getDetections()).containsExactly(
-				"@Plugin(name = \"jndi\", category = \"Lookup\") found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class");
+				"Reference to javax.naming.Context#lookup(java.lang.String) found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class");
 	}
 
 }
