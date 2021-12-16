@@ -9,6 +9,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Visitor;
 
 public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
@@ -37,8 +38,8 @@ public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 	}
 
 	@Override
-	public String format(Path filename, Object data) {
-		return "@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename;
+	public String format(Detection detection) {
+		return "@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + detection.getFilename();
 	}
 
 }

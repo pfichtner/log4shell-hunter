@@ -34,7 +34,15 @@ public class CVEDetector {
 			}
 
 			public String format() {
-				return detector.format(filename, object);
+				return detector.format(this);
+			}
+			
+			public Path getFilename() {
+				return filename;
+			}
+			
+			public Object getObject() {
+				return object;
 			}
 
 		}

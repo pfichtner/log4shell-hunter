@@ -10,6 +10,7 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Visitor;
 
 /**
@@ -53,9 +54,9 @@ public class CheckForJndiManagerLookupCalls implements Visitor<Detections> {
 	}
 
 	@Override
-	public String format(Path filename, Object data) {
+	public String format(Detection detection) {
 		return "Reference to " + "org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)"
-				+ " found in class " + filename;
+				+ " found in class " + detection.getFilename();
 	}
 
 }

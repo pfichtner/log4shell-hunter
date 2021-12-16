@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 
 public interface Visitor<T> {
 
@@ -14,6 +15,6 @@ public interface Visitor<T> {
 	default void visitFile(Detections detections, Path file, byte[] bytes) {
 	}
 
-	String format(Path filename, Object data);
+	String format(Detection detection);
 
 }

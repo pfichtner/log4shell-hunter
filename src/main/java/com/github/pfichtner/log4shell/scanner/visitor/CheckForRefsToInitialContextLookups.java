@@ -12,6 +12,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Visitor;
 
 public class CheckForRefsToInitialContextLookups implements Visitor<Detections> {
@@ -23,8 +24,9 @@ public class CheckForRefsToInitialContextLookups implements Visitor<Detections> 
 	}
 
 	@Override
-	public String format(Path filename, Object data) {
-		return "Reference to " + methodName((MethodInsnNode) data) + " found in class " + filename;
+	public String format(Detection detection) {
+		return "Reference to " + methodName((MethodInsnNode) detection.getObject()) + " found in class "
+				+ detection.getFilename();
 	}
 
 }
