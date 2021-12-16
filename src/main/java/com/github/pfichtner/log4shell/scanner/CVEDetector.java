@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.isClass;
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
+import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class CVEDetector {
 			public String format() {
 				return detector.format(this) + " found in class " + filename;
 			}
-			
+
 			public Visitor<?> getDetector() {
 				return detector;
 			}
@@ -73,7 +74,11 @@ public class CVEDetector {
 	}
 
 	public CVEDetector(List<Visitor<Detections>> visitors) {
-		this.visitors = visitors;
+		this.visitors = unmodifiableList(new ArrayList<>(visitors));
+	}
+
+	public List<Visitor<Detections>> getVisitors() {
+		return visitors;
 	}
 
 	public void check(String jar) throws IOException {
