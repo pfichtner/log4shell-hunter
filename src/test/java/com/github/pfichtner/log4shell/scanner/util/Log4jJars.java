@@ -1,6 +1,7 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
@@ -62,7 +63,7 @@ public final class Log4jJars implements Iterable<File> {
 
 	private List<File> sortedList(Stream<File> stream) {
 		// TODO should compare versions, e.g. 2.1.0, 2.12.1, 2.0-rc1
-		return stream.sorted().collect(toList());
+		return stream.sorted(comparing(File::getName)).collect(toList());
 	}
 
 	public File[] getLog4jJarsWithout(List<File> ignore) {
