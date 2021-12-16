@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.objectweb.asm.tree.ClassNode;
+
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.io.JarReader;
@@ -92,10 +94,13 @@ public class CVEDetector {
 		new JarReader(jar).accept(new JarReaderVisitor() {
 			@Override
 			public void visitFile(Path file, byte[] bytes) {
-				for (Detector<Detections> detector : detectors) {
-					if (isClass(file)) {
-						detector.visitClass(detections, file, readClass(bytes, 0));
-					} else {
+				if (isClass(file)) {
+					ClassNode classNode = readClass(bytes, 0);
+					for (Detector<Detections> detector : detectors) {
+						detector.visitClass(detections, file, classNode);
+					}
+				} else {
+					for (Detector<Detections> detector : detectors) {
 						detector.visitFile(detections, file, bytes);
 					}
 				}
