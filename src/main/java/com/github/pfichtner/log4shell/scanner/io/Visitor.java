@@ -9,6 +9,10 @@ import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 
 public interface Visitor<T> {
 
+	default String getName() {
+		return getClass().getSimpleName();
+	}
+
 	default void visitClass(T detections, Path filename, ClassNode classNode) {
 	}
 

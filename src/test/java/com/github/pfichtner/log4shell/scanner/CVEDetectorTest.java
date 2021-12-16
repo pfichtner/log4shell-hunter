@@ -5,14 +5,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
+import com.github.pfichtner.log4shell.scanner.io.Visitor;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerLookupCalls;
 import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithContextLookups;
+import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithDirContextLookups;
 import com.github.pfichtner.log4shell.scanner.visitor.CheckForLog4jPluginAnnotation;
+import com.github.pfichtner.log4shell.scanner.visitor.CheckForRefsToInitialContextLookups;
 
 class CVEDetectorTest {
 
@@ -68,13 +75,35 @@ class CVEDetectorTest {
 	}
 
 	@Test
-	@Disabled("Could be converted to approval (but we have to sort by versions)")
+	// @Disabled("Could be converted to approval (but we have to sort by versions)")
 	void all() throws Exception {
-		CVEDetector sut = new CVEDetector(new CheckForJndiManagerLookupCalls(),
-				new CheckForJndiManagerWithContextLookups(), new CheckForLog4jPluginAnnotation());
+		List<Visitor<Detections>> vistors = Arrays.asList( //
+				new CheckForJndiManagerLookupCalls(), //
+				new CheckForJndiManagerWithContextLookups(), //
+				new CheckForJndiManagerWithDirContextLookups(), //
+				new CheckForLog4jPluginAnnotation(), //
+				new CheckForRefsToInitialContextLookups() //
+		);
+
+		String separator = "\t";
+		System.out.print(separator);
+		for (Visitor<Detections> visitor : vistors) {
+			System.out.print(visitor.getName());
+			System.out.print(separator);
+		}
+		System.out.println();
+
+		CVEDetector sut = new CVEDetector(vistors);
 		for (File log4jJar : log4jJars) {
-			System.out.println(log4jJar.getAbsoluteFile().getName());
-			sut.analyze(log4jJar.getAbsolutePath()).getDetections().forEach(System.out::println);
+			List<Detection> detections = sut.analyze(log4jJar.getAbsolutePath()).getDetections();
+			System.out.print(log4jJar.getAbsoluteFile().getName());
+			System.out.print(separator);
+			for (Visitor<Detections> visitor : vistors) {
+				System.out.print(detections.stream().filter(d -> d.getDetector().equals(visitor)).findAny()
+						.map(_i -> "X").orElse(""));
+				System.out.print(separator);
+
+			}
 			System.out.println();
 		}
 	}

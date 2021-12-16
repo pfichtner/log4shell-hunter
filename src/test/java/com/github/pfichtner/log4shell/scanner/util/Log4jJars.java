@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public final class Log4jJars implements Iterable<File> {
 
@@ -47,7 +48,7 @@ public final class Log4jJars implements Iterable<File> {
 	}
 
 	public List<File> versions(String... versions) {
-		return Arrays.stream(versions).map(this::version).collect(toList());
+		return sortedList(Arrays.stream(versions).map(this::version));
 	}
 
 	private static Predicate<File> hasFilename(String filename) {
@@ -56,8 +57,12 @@ public final class Log4jJars implements Iterable<File> {
 
 	@Override
 	public Iterator<File> iterator() {
-		// TODO use Spliterator
-		return log4jJars.stream().collect(toList()).iterator();
+		return sortedList(log4jJars.stream()).iterator();
+	}
+
+	private List<File> sortedList(Stream<File> stream) {
+		// TODO should compare versions, e.g. 2.1.0, 2.12.1, 2.0-rc1
+		return stream.sorted().collect(toList());
 	}
 
 	public File[] getLog4jJarsWithout(List<File> ignore) {

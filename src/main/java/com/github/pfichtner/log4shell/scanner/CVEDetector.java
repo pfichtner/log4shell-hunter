@@ -36,6 +36,10 @@ public class CVEDetector {
 			public String format() {
 				return detector.format(this) + " found in class " + filename;
 			}
+			
+			public Visitor<?> getDetector() {
+				return detector;
+			}
 
 			public Object getObject() {
 				return object;
