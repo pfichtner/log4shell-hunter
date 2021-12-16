@@ -1,7 +1,7 @@
 package com.github.pfichtner.log4shell.scanner;
 
-import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.isClass;
-import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
+import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.isClass;
+import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.readClass;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
@@ -12,23 +12,23 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
+import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.io.JarReader;
 import com.github.pfichtner.log4shell.scanner.io.JarReader.JarReaderVisitor;
-import com.github.pfichtner.log4shell.scanner.io.Visitor;
 
 public class CVEDetector {
 
-	private List<Visitor<Detections>> visitors;
+	private List<Detector<Detections>> visitors;
 
 	public static class Detections {
 
 		public static class Detection {
 
-			private final Visitor<?> detector;
+			private final Detector<?> detector;
 			private final Path filename;
 			private final Object object;
 
-			public Detection(Visitor<?> detector, Path filename, Object object) {
+			public Detection(Detector<?> detector, Path filename, Object object) {
 				this.detector = detector;
 				this.filename = filename;
 				this.object = object;
@@ -38,7 +38,7 @@ public class CVEDetector {
 				return detector.format(this) + " found in class " + filename;
 			}
 
-			public Visitor<?> getDetector() {
+			public Detector<?> getDetector() {
 				return detector;
 			}
 
@@ -50,11 +50,11 @@ public class CVEDetector {
 
 		private final List<Detection> detections = new ArrayList<>();
 
-		public void add(Visitor<?> detector, Path filename) {
+		public void add(Detector<?> detector, Path filename) {
 			add(detector, filename, null);
 		}
 
-		public void add(Visitor<?> detector, Path filename, Object object) {
+		public void add(Detector<?> detector, Path filename, Object object) {
 			this.detections.add(new Detection(detector, filename, object));
 		}
 
@@ -69,15 +69,15 @@ public class CVEDetector {
 	}
 
 	@SafeVarargs
-	public CVEDetector(Visitor<Detections>... visitors) {
+	public CVEDetector(Detector<Detections>... visitors) {
 		this(Arrays.asList(visitors));
 	}
 
-	public CVEDetector(List<Visitor<Detections>> visitors) {
+	public CVEDetector(List<Detector<Detections>> visitors) {
 		this.visitors = unmodifiableList(new ArrayList<>(visitors));
 	}
 
-	public List<Visitor<Detections>> getVisitors() {
+	public List<Detector<Detections>> getVisitors() {
 		return visitors;
 	}
 
@@ -92,7 +92,7 @@ public class CVEDetector {
 		new JarReader(jar).accept(new JarReaderVisitor() {
 			@Override
 			public void visitFile(Path file, byte[] bytes) {
-				for (Visitor<Detections> visitor : visitors) {
+				for (Detector<Detections> visitor : visitors) {
 					if (isClass(file)) {
 						visitor.visitClass(detections, file, readClass(bytes, 0));
 					} else {

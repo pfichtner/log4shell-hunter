@@ -1,6 +1,6 @@
-package com.github.pfichtner.log4shell.scanner.visitor;
+package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.nullSafety;
+import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.nullSafety;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -10,9 +10,9 @@ import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
-import com.github.pfichtner.log4shell.scanner.io.Visitor;
+import com.github.pfichtner.log4shell.scanner.io.Detector;
 
-public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
+public class CheckForLog4jPluginAnnotation implements Detector<Detections> {
 
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {

@@ -1,4 +1,4 @@
-package com.github.pfichtner.log4shell.scanner.visitor;
+package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 
@@ -11,13 +11,13 @@ import org.objectweb.asm.tree.MethodNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
-import com.github.pfichtner.log4shell.scanner.io.Visitor;
+import com.github.pfichtner.log4shell.scanner.io.Detector;
 
 /**
  * Detects calls in classes that are named <code>JndiLookup</code> to
  * org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)
  */
-public class CheckForJndiManagerLookupCalls implements Visitor<Detections> {
+public class CheckForJndiManagerLookupCalls implements Detector<Detections> {
 
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {

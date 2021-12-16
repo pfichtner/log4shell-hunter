@@ -1,6 +1,6 @@
-package com.github.pfichtner.log4shell.scanner.visitor;
+package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.nullSafety;
+import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.nullSafety;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 

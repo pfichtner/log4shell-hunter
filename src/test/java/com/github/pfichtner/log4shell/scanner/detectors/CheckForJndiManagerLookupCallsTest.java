@@ -1,4 +1,4 @@
-package com.github.pfichtner.log4shell.scanner;
+package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerLookupCalls;
 
 class CheckForJndiManagerLookupCallsTest {
 

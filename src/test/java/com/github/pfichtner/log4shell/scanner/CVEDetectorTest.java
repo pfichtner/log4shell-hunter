@@ -1,7 +1,6 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
-import static org.approvaltests.Approvals.verify;
 import static org.approvaltests.Approvals.verifyAll;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -16,14 +15,14 @@ import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
-import com.github.pfichtner.log4shell.scanner.io.Visitor;
+import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException;
+import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiManagerLookupCalls;
+import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiManagerWithDirContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiManagerWithNamingContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.CheckForLog4jPluginAnnotation;
+import com.github.pfichtner.log4shell.scanner.detectors.CheckForRefsToInitialContextLookups;
+import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerLookupCalls;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithDirContextLookups;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithNamingContextLookups;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForLog4jPluginAnnotation;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForRefsToInitialContextLookups;
 
 class CVEDetectorTest {
 
@@ -80,7 +79,7 @@ class CVEDetectorTest {
 
 	@Test
 	void approveAll() {
-		List<Visitor<Detections>> vistors = Arrays.asList( //
+		List<Detector<Detections>> vistors = Arrays.asList( //
 				new CheckForJndiManagerLookupCalls(), //
 				new CheckForJndiManagerWithNamingContextLookups(), //
 				new CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException(), //
@@ -109,7 +108,7 @@ class CVEDetectorTest {
 	private String header(CVEDetector detector) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\t");
-		for (Visitor<Detections> visitor : detector.getVisitors()) {
+		for (Detector<Detections> visitor : detector.getVisitors()) {
 			sb.append(visitor.getName()).append("\t");
 		}
 		return sb.toString();
@@ -119,7 +118,7 @@ class CVEDetectorTest {
 		List<Detection> detections = detector.analyze(log4jJar.getAbsolutePath()).getDetections();
 		StringBuilder sb = new StringBuilder();
 		sb.append(log4jJar.getAbsoluteFile().getName()).append("\t");
-		for (Visitor<Detections> visitor : detector.getVisitors()) {
+		for (Detector<Detections> visitor : detector.getVisitors()) {
 			sb.append(detections.stream().filter(d -> d.getDetector().equals(visitor)).findAny().map(_i -> "X")
 					.orElse("")).append("\t");
 

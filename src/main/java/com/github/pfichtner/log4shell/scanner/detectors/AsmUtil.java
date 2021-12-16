@@ -1,4 +1,4 @@
-package com.github.pfichtner.log4shell.scanner.visitor;
+package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static java.util.stream.Collectors.joining;
 
