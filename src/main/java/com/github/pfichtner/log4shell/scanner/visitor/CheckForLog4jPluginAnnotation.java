@@ -39,7 +39,7 @@ public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 
 	@Override
 	public String format(Detection detection) {
-		return "@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + detection.getFilename();
+		return "@Plugin(name = \"jndi\", category = \"Lookup\")";
 	}
 
 }

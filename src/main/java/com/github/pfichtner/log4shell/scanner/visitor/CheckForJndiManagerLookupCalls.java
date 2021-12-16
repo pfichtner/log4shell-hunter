@@ -55,8 +55,7 @@ public class CheckForJndiManagerLookupCalls implements Visitor<Detections> {
 
 	@Override
 	public String format(Detection detection) {
-		return "Reference to " + "org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)"
-				+ " found in class " + detection.getFilename();
+		return "Reference to " + "org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)";
 	}
 
 }

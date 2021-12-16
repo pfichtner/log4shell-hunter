@@ -25,8 +25,7 @@ public class CheckForRefsToInitialContextLookups implements Visitor<Detections> 
 
 	@Override
 	public String format(Detection detection) {
-		return "Reference to " + methodName((MethodInsnNode) detection.getObject()) + " found in class "
-				+ detection.getFilename();
+		return "Reference to " + methodName((MethodInsnNode) detection.getObject());
 	}
 
 }
