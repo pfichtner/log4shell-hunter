@@ -2,7 +2,7 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodInsnNodes;
 import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodName;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.hasNameLookup;
+import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.methodNameIsLookup;
 import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.namingContextLookup;
 
 import java.nio.file.Path;
@@ -20,7 +20,7 @@ public class CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException 
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
 		if (filename.toString().endsWith("JndiLookup.class")) {
 			// TODO should be distinctBy target
-			methodInsnNodes(classNode, hasNameLookup).filter(namingContextLookup).distinct()
+			methodInsnNodes(classNode, methodNameIsLookup).filter(namingContextLookup).distinct()
 					.forEach(n -> detections.add(this, filename, n));
 		}
 	}

@@ -3,7 +3,7 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodInsnNodes;
 import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodName;
 import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.dirContextLookup;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.hasNameLookup;
+import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.methodNameIsLookup;
 import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.throwsNamingException;
 
 import java.nio.file.Path;
@@ -21,7 +21,7 @@ public class CheckForJndiManagerWithDirContextLookups implements Detector<Detect
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
 		if (filename.toString().endsWith("JndiManager.class")) {
 			// TODO should be distinctBy target
-			methodInsnNodes(classNode, hasNameLookup.and(throwsNamingException)).filter(dirContextLookup).distinct()
+			methodInsnNodes(classNode, methodNameIsLookup.and(throwsNamingException)).filter(dirContextLookup).distinct()
 					.forEach(n -> detections.add(this, filename, n));
 		}
 	}

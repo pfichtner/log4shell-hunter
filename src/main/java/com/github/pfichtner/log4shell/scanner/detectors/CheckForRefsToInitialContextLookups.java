@@ -3,7 +3,7 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodInsnNodes;
 import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodName;
 import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.initialContextLookup;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.hasNameLookup;
+import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.methodNameIsLookup;
 
 import java.nio.file.Path;
 
@@ -19,7 +19,7 @@ public class CheckForRefsToInitialContextLookups implements Detector<Detections>
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
 		// TODO should be distinctBy target
-		methodInsnNodes(classNode, hasNameLookup).filter(initialContextLookup).distinct()
+		methodInsnNodes(classNode, methodNameIsLookup).filter(initialContextLookup).distinct()
 				.forEach(n -> detections.add(this, filename, n));
 	}
 

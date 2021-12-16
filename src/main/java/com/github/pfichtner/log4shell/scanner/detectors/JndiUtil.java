@@ -22,7 +22,11 @@ public final class JndiUtil {
 	}
 
 	// TODO do not depend on method name
-	public static final Predicate<MethodNode> hasNameLookup = methodNode -> methodNode.name.equals("lookup");
+	public static final Predicate<MethodNode> methodNameIsLookup = methodNameIs("lookup");
+
+	public static Predicate<MethodNode> methodNameIs(String name) {
+		return methodNode -> methodNode.name.equals(name);
+	}
 
 	public static final Predicate<MethodNode> throwsNamingException = methodNode -> doesThrow(methodNode.exceptions,
 			"javax/naming/NamingException");
