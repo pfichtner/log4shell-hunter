@@ -92,11 +92,7 @@ class CVEDetectorTest {
 				new CheckForLog4jPluginAnnotation(), //
 				new CheckForRefsToInitialContextLookups() //
 		);
-
-		CVEDetector detector = new CVEDetector(detectors);
-		String toBeApproved = toBeApproved(detector);
-		System.out.println(toBeApproved);
-		verify(toBeApproved, options());
+		verify(toBeApproved(new CVEDetector(detectors)), options());
 	}
 
 	private Options options() {
@@ -114,7 +110,7 @@ class CVEDetectorTest {
 
 	private String header(CVEDetector detector) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(SEPARATOR);
+		sb.append("File").append(SEPARATOR);
 		for (Detector<Detections> visitor : detector.getDetectors()) {
 			sb.append(visitor.getName()).append(SEPARATOR);
 		}
