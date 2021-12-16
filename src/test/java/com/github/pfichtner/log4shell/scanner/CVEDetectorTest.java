@@ -42,6 +42,8 @@ class CVEDetectorTest {
 	// false);
 	// }
 
+	private static final String SEPARATOR = ",";
+
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
 	@Test
@@ -109,9 +111,9 @@ class CVEDetectorTest {
 
 	private String header(CVEDetector detector) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("\t");
+		sb.append(SEPARATOR);
 		for (Detector<Detections> visitor : detector.getDetectors()) {
-			sb.append(visitor.getName()).append("\t");
+			sb.append(visitor.getName()).append(SEPARATOR);
 		}
 		return sb.toString();
 	}
@@ -119,9 +121,9 @@ class CVEDetectorTest {
 	private String content(CVEDetector cveDetector, File log4jJar) throws IOException {
 		List<Detection> detections = cveDetector.analyze(log4jJar.getAbsolutePath()).getDetections();
 		StringBuilder sb = new StringBuilder();
-		sb.append(log4jJar.getAbsoluteFile().getName()).append("\t");
+		sb.append(log4jJar.getAbsoluteFile().getName()).append(SEPARATOR);
 		for (Detector<Detections> detector : cveDetector.getDetectors()) {
-			sb.append(contains(detections, detector) ? "X" : "").append("\t");
+			sb.append(contains(detections, detector) ? "X" : "").append(SEPARATOR);
 		}
 		return sb.toString();
 	}
