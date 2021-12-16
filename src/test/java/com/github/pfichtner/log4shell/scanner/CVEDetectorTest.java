@@ -8,8 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
+import org.approvaltests.core.Options.FileOptions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -91,18 +93,18 @@ class CVEDetectorTest {
 		CVEDetector detector = new CVEDetector(detectors);
 		String toBeApproved = toBeApproved(detector);
 		System.out.println(toBeApproved);
-		verify(toBeApproved);
+		verify(toBeApproved, new FileOptions(new HashMap<>()).withExtension(".csv"));
 	}
 
 	private String toBeApproved(CVEDetector detector) throws IOException {
 		StringBuilder sb = new StringBuilder();
-		sb.append(header(detector)).append("\n");
+		String lineSeparator = System.getProperty("line.separator");
+		sb.append(header(detector)).append(lineSeparator);
 		List<File> log4jJars2 = log4jJars.getLog4jJars();
 		for (File file : log4jJars2) {
-			sb.append(content(detector, file)).append("\n");
+			sb.append(content(detector, file)).append(lineSeparator);
 		}
-		String string = sb.toString();
-		return string;
+		return sb.toString();
 	}
 
 	private String header(CVEDetector detector) {
