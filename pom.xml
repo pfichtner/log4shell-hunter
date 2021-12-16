@@ -47,6 +47,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.approvaltests</groupId>
+			<artifactId>approvaltests</artifactId>
+			<version>12.4.1</version>
+		</dependency>
+		<dependency>
 			<groupId>com.github.stefanbirkner</groupId>
 			<artifactId>system-lambda</artifactId>
 			<version>1.2.0</version>
