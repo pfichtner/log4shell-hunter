@@ -17,12 +17,14 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithContextLookups.MethodInsnNodeComparator;
-
 public final class JndiUtil {
 
 	private JndiUtil() {
 		super();
+	}
+
+	public interface MethodInsnNodeComparator {
+		String handle(MethodInsnNode node);
 	}
 
 	// TODO do not depend on method name

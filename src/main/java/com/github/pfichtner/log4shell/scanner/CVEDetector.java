@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.pfichtner.log4shell.scanner.io.JarReader;
-import com.github.pfichtner.log4shell.scanner.io.Visitor;
 import com.github.pfichtner.log4shell.scanner.io.JarReader.JarReaderVisitor;
+import com.github.pfichtner.log4shell.scanner.io.Visitor;
 
 public class CVEDetector {
 
@@ -21,7 +21,7 @@ public class CVEDetector {
 
 		private final List<String> detections = new ArrayList<>();
 
-		public void add(String detection) {
+		public void add(Visitor<?> detector, Path filename, String detection) {
 			this.detections.add(detection);
 		}
 

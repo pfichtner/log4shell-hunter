@@ -12,13 +12,18 @@ import org.objectweb.asm.tree.MethodNode;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.io.Visitor;
 
+/**
+ * Detects calls in classes that are named <code>JndiLookup</code> to
+ * org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)
+ */
 public class CheckForJndiManagerLookupCalls implements Visitor<Detections> {
 
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
 		if (filename.toString().endsWith("JndiLookup.class") && hasJndiManagerLookupCall(classNode)) {
-			detections.add("Reference to " + "org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)"
-					+ " found in class " + filename);
+			detections.add(this, filename,
+					"Reference to " + "org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)"
+							+ " found in class " + filename);
 		}
 	}
 

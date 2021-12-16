@@ -21,8 +21,8 @@ public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
 		if (hasPluginAnnotation(classNode)) {
-			detections.add("@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename);
-			refsToContext(classNode, detections, filename).forEach(detections::add);
+			detections.add(this, filename, "@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename);
+			refsToContext(classNode, detections, filename).forEach(d -> detections.add(this, filename, d));
 		}
 	}
 

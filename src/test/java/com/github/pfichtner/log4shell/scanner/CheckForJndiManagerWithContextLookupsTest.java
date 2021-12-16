@@ -36,25 +36,23 @@ class CheckForJndiManagerWithContextLookupsTest {
 
 			"2.0", //
 			"2.0.1", //
-			"2.0.2" //
+			"2.0.2", //
+
+			/**
+			 * Starting with 2.15. DirContext lookups are made
+			 */
+			"2.15.0", //
+			"2.16.0" //
 
 	);
 
 	CheckForJndiManagerWithContextLookups sut = new CheckForJndiManagerWithContextLookups();
-	
+
 	@Test
 	void log4j14HasJndiManagerWithContextLookups() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
 		Detections detections = detector.analyze(log4jJars.version("2.14.1").getAbsolutePath());
 		assertThat(detections.getDetections()).containsExactly(refTo("javax.naming.Context#lookup(java.lang.String)"));
-	}
-
-	@Test
-	void log4j16HasJndiManagerWithDirContextLookups() throws Exception {
-		CVEDetector detector = new CVEDetector(sut);
-		Detections detections = detector.analyze(log4jJars.version("2.16.0").getAbsolutePath());
-		assertThat(detections.getDetections())
-				.containsExactly(refTo("javax.naming.directory.DirContext#lookup(java.lang.String)"));
 	}
 
 	@Test
@@ -64,7 +62,8 @@ class CheckForJndiManagerWithContextLookupsTest {
 	}
 
 	private static String refTo(String ref) {
-		return String.format("Reference to %s found in class /org/apache/logging/log4j/core/net/JndiManager.class", ref);
+		return String.format("Reference to %s found in class /org/apache/logging/log4j/core/net/JndiManager.class",
+				ref);
 	}
 
 }
