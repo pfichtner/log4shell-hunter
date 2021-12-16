@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.approvaltests.core.Options;
 import org.approvaltests.core.Options.FileOptions;
-import org.approvaltests.scrubbers.RegExScrubber;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -102,11 +101,6 @@ class CVEDetectorTest {
 
 	private Options options() {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
-//				.withScrubber(newLineScrubber());
-	}
-
-	private static RegExScrubber newLineScrubber() {
-		return new RegExScrubber("(\\r\\n|\\r|\\n)", "\n");
 	}
 
 	private String toBeApproved(CVEDetector detector) throws IOException {
