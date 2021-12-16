@@ -14,4 +14,6 @@ public interface Visitor<T> {
 	default void visitFile(Detections detections, Path file, byte[] bytes) {
 	}
 
+	String format(Path filename, Object data);
+
 }

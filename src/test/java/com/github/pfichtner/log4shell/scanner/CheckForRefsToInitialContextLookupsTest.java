@@ -35,8 +35,8 @@ public class CheckForRefsToInitialContextLookupsTest {
 	void log4j20beta9HasPluginWithDirectContextAccess() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
 		Detections detections = detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath());
-		assertThat(detections.getDetections()).containsExactly(
-				"Reference to javax.naming.Context#lookup(java.lang.String) found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class");
+		assertThat(detections.getFormatted()).containsExactly(
+				"Reference to javax.naming.InitialContext#lookup(java.lang.String) found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class");
 	}
 
 }

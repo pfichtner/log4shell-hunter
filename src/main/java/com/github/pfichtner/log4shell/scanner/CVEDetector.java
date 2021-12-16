@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.isClass;
 import static com.github.pfichtner.log4shell.scanner.visitor.AsmUtil.readClass;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.JarReader;
 import com.github.pfichtner.log4shell.scanner.io.JarReader.JarReaderVisitor;
 import com.github.pfichtner.log4shell.scanner.io.Visitor;
@@ -19,19 +21,40 @@ public class CVEDetector {
 
 	public static class Detections {
 
-		private final List<String> detections = new ArrayList<>();
+		public static class Detection {
 
-		public void add(Visitor<?> detector, Path filename, String detection) {
-			this.detections.add(detection);
+			private final Visitor<?> detector;
+			private final Path filename;
+			private final Object object;
+
+			public Detection(Visitor<?> detector, Path filename, Object object) {
+				this.detector = detector;
+				this.filename = filename;
+				this.object = object;
+			}
+
+			public String format() {
+				return detector.format(filename, object);
+			}
+
 		}
 
-		public List<String> getDetections() {
+		private final List<Detection> detections = new ArrayList<>();
+
+		public void add(Visitor<?> detector, Path filename) {
+			add(detector, filename, null);
+		}
+
+		public void add(Visitor<?> detector, Path filename, Object object) {
+			this.detections.add(new Detection(detector, filename, object));
+		}
+
+		public List<Detection> getDetections() {
 			return detections;
 		}
 
-		@Override
-		public String toString() {
-			return "Detections [detections=" + detections + "]";
+		public List<String> getFormatted() {
+			return detections.stream().map(Detection::format).collect(toList());
 		}
 
 	}
@@ -46,8 +69,8 @@ public class CVEDetector {
 	}
 
 	public void check(String jar) throws IOException {
-		for (String string : analyze(jar).getDetections()) {
-			System.out.println(string);
+		for (Detection detection : analyze(jar).getDetections()) {
+			System.out.println(detection.format());
 		}
 	}
 

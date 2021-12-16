@@ -43,7 +43,7 @@ public class CheckForLog4jPluginAnnotationTest {
 	void log4j20beta9HasPluginWithDirectContextAccess() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
 		Detections detections = detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath());
-		assertThat(detections.getDetections()).containsExactly(
+		assertThat(detections.getFormatted()).containsExactly(
 				"@Plugin(name = \"jndi\", category = \"Lookup\") found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class");
 	}
 

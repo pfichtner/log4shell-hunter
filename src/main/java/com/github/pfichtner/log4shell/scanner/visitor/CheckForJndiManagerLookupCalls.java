@@ -21,9 +21,7 @@ public class CheckForJndiManagerLookupCalls implements Visitor<Detections> {
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
 		if (filename.toString().endsWith("JndiLookup.class") && hasJndiManagerLookupCall(classNode)) {
-			detections.add(this, filename,
-					"Reference to " + "org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)"
-							+ " found in class " + filename);
+			detections.add(this, filename);
 		}
 	}
 
@@ -52,6 +50,12 @@ public class CheckForJndiManagerLookupCalls implements Visitor<Detections> {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public String format(Path filename, Object data) {
+		return "Reference to " + "org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)"
+				+ " found in class " + filename;
 	}
 
 }

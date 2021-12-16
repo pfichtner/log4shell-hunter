@@ -16,8 +16,7 @@ public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
 		if (hasPluginAnnotation(classNode)) {
-			detections.add(this, filename,
-					"@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename);
+			detections.add(this, filename);
 		}
 	}
 
@@ -35,6 +34,11 @@ public class CheckForLog4jPluginAnnotation implements Visitor<Detections> {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public String format(Path filename, Object data) {
+		return "@Plugin(name = \"jndi\", category = \"Lookup\") found in class " + filename;
 	}
 
 }

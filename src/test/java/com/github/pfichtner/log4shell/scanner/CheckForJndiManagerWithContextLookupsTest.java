@@ -52,18 +52,18 @@ class CheckForJndiManagerWithContextLookupsTest {
 	void log4j14HasJndiManagerWithContextLookups() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
 		Detections detections = detector.analyze(log4jJars.version("2.14.1").getAbsolutePath());
-		assertThat(detections.getDetections()).containsExactly(refTo("javax.naming.Context#lookup(java.lang.String)"));
+		assertThat(detections.getFormatted()).containsExactly(refTo("javax.naming.Context#lookup(java.lang.String)"));
+	}
+
+	private static String refTo(String ref) {
+		return String.format("Reference to %s found in class /org/apache/logging/log4j/core/net/JndiManager.class",
+				ref);
 	}
 
 	@Test
 	void canDetectLookupMethods() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
 				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups));
-	}
-
-	private static String refTo(String ref) {
-		return String.format("Reference to %s found in class /org/apache/logging/log4j/core/net/JndiManager.class",
-				ref);
 	}
 
 }
