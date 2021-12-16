@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
+import com.github.pfichtner.log4shell.scanner.detectors.CheckForIsJndiEnabledPropertyAccess;
 import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException;
 import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiManagerLookupCalls;
 import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiManagerWithDirContextLookups;
@@ -90,7 +91,8 @@ class CVEDetectorTest {
 				new CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException(), //
 				new CheckForJndiManagerWithDirContextLookups(), //
 				new CheckForLog4jPluginAnnotation(), //
-				new CheckForRefsToInitialContextLookups() //
+				new CheckForRefsToInitialContextLookups(), //
+				new CheckForIsJndiEnabledPropertyAccess() //
 		);
 		verify(toBeApproved(new CVEDetector(detectors)), options());
 	}

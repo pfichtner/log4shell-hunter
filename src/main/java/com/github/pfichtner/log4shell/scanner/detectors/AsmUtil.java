@@ -60,7 +60,7 @@ public final class AsmUtil {
 				.map(InsnList::iterator).map(Streams::itToStream).flatMap(identity()));
 	}
 
-	private static Stream<MethodInsnNode> methodInsnNode(Stream<AbstractInsnNode> instructions) {
+	public static Stream<MethodInsnNode> methodInsnNode(Stream<AbstractInsnNode> instructions) {
 		return filter(instructions, MethodInsnNode.class);
 	}
 
