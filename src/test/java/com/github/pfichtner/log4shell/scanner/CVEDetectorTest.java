@@ -1,7 +1,7 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
-import static org.approvaltests.Approvals.verifyAll;
+import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -78,7 +78,7 @@ class CVEDetectorTest {
 	}
 
 	@Test
-	void approveAll() {
+	void approveAll() throws IOException {
 		List<Detector<Detections>> detectors = Arrays.asList( //
 				new CheckForJndiManagerLookupCalls(), //
 				new CheckForJndiManagerWithNamingContextLookups(), //
@@ -89,20 +89,20 @@ class CVEDetectorTest {
 		);
 
 		CVEDetector detector = new CVEDetector(detectors);
+		String toBeApproved = toBeApproved(detector);
+		System.out.println(toBeApproved);
+		verify(toBeApproved);
+	}
 
-		String header = header(detector);
-		System.out.println(header);
-
-		verifyAll(log4jJars.getLog4jJars().toArray(new File[0]), jar -> {
-			try {
-				String content = content(detector, jar);
-				System.out.println(content);
-				return content;
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		});
-
+	private String toBeApproved(CVEDetector detector) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		sb.append(header(detector)).append("\n");
+		List<File> log4jJars2 = log4jJars.getLog4jJars();
+		for (File file : log4jJars2) {
+			sb.append(content(detector, file)).append("\n");
+		}
+		String string = sb.toString();
+		return string;
 	}
 
 	private String header(CVEDetector detector) {
