@@ -16,7 +16,8 @@ import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Visitor;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerLookupCalls;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithContextLookups;
+import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithNamingContextLookups;
+import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException;
 import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithDirContextLookups;
 import com.github.pfichtner.log4shell.scanner.visitor.CheckForLog4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.visitor.CheckForRefsToInitialContextLookups;
@@ -79,7 +80,8 @@ class CVEDetectorTest {
 	void all() throws Exception {
 		List<Visitor<Detections>> vistors = Arrays.asList( //
 				new CheckForJndiManagerLookupCalls(), //
-				new CheckForJndiManagerWithContextLookups(), //
+				new CheckForJndiManagerWithNamingContextLookups(), //
+				new CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException(), //
 				new CheckForJndiManagerWithDirContextLookups(), //
 				new CheckForLog4jPluginAnnotation(), //
 				new CheckForRefsToInitialContextLookups() //

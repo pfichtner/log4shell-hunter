@@ -9,11 +9,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
-import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithContextLookups;
+import com.github.pfichtner.log4shell.scanner.visitor.CheckForJndiManagerWithNamingContextLookups;
 
-class CheckForJndiManagerWithContextLookupsTest {
+class CheckForJndiManagerWithNamingContextLookupsTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
@@ -46,13 +45,13 @@ class CheckForJndiManagerWithContextLookupsTest {
 
 	);
 
-	CheckForJndiManagerWithContextLookups sut = new CheckForJndiManagerWithContextLookups();
+	CheckForJndiManagerWithNamingContextLookups sut = new CheckForJndiManagerWithNamingContextLookups();
 
 	@Test
 	void log4j14HasJndiManagerWithContextLookups() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
-		Detections detections = detector.analyze(log4jJars.version("2.14.1").getAbsolutePath());
-		assertThat(detections.getFormatted()).containsExactly(refTo("javax.naming.Context#lookup(java.lang.String)"));
+		assertThat(detector.analyze(log4jJars.version("2.14.1").getAbsolutePath()).getFormatted())
+				.containsExactly(refTo("javax.naming.Context#lookup(java.lang.String)"));
 	}
 
 	private static String refTo(String ref) {
