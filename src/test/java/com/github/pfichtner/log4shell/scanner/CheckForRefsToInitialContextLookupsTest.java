@@ -28,7 +28,7 @@ public class CheckForRefsToInitialContextLookupsTest {
 	@Test
 	void canDetectPluginClass() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(versionsWithInitialContextLookups.toArray(File[]::new));
+				.containsOnlyKeys(versionsWithInitialContextLookups.toArray(new File[0]));
 	}
 
 	@Test

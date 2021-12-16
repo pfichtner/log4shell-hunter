@@ -40,7 +40,7 @@ class CheckForJndiManagerWithDirContextLookupsTest {
 	@Test
 	void canDetectLookupMethods() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(versionsWithDirContextLookups.toArray(File[]::new));
+				.containsOnlyKeys(versionsWithDirContextLookups.toArray(new File[0]));
 	}
 
 }
