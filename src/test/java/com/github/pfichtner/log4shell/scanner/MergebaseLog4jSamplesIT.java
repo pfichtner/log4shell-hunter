@@ -28,7 +28,6 @@ public class MergebaseLog4jSamplesIT {
 		assumeFalse(filenames.isEmpty(), "git submodule empty, please clone recursivly");
 		for (String filename : filenames) {
 			if (isArchive(filename)) {
-				System.out.println(filename);
 				sut.check(filename);
 				System.out.println();
 			} else {

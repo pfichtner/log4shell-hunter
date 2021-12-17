@@ -93,7 +93,7 @@ public class CVEDetector {
 
 	public void check(File file) throws IOException {
 		for (Detection detection : analyze(file).getDetections()) {
-			System.out.println(detection.format());
+			System.out.println(file + ": " + detection.format());
 		}
 	}
 
@@ -119,10 +119,15 @@ public class CVEDetector {
 			@Override
 			public void visitFile(Path file, byte[] bytes) {
 				if (isClass(file)) {
-					ClassNode classNode = readClass(bytes, 0);
-					for (Detector<Detections> detector : detectors) {
-						detector.visitClass(detections, file, classNode);
+					try {
+						ClassNode classNode = readClass(bytes, 0);
+						for (Detector<Detections> detector : detectors) {
+							detector.visitClass(detections, file, classNode);
+						}
+					} catch (Exception e) {
+						System.err.println("Error while reading class " + file + ": " + e.getMessage());
 					}
+
 				} else {
 					for (Detector<Detections> detector : detectors) {
 						detector.visitFile(detections, file, bytes);

@@ -45,7 +45,7 @@ public class JarReader {
 	public JarReader(Path path) throws IOException {
 		this.fileSystem = newFileSystem(path, null);
 	}
-	
+
 	public FileSystem getFileSystem() {
 		return fileSystem;
 	}

@@ -63,8 +63,8 @@ class CVEDetectorTest {
 		CVEDetector sut = new CVEDetector(new Log4jPluginAnnotation());
 		String expected = "@Plugin(name = \"jndi\", category = \"Lookup\") found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class\n";
 		assertAll( //
-				() -> assertThat(runCheck(sut, "2.10.0")).isEqualTo(expected), //
-				() -> assertThat(runCheck(sut, "2.14.1")).isEqualTo(expected) //
+				() -> assertThat(runCheck(sut, "2.10.0")).endsWith("/log4j-core-2.10.0.jar: " + expected), //
+				() -> assertThat(runCheck(sut, "2.14.1")).endsWith("/log4j-core-2.14.1.jar: " + expected) //
 		);
 
 	}
@@ -74,8 +74,8 @@ class CVEDetectorTest {
 		CVEDetector sut = new CVEDetector(new JndiManagerLookupCalls());
 		String expected = "Reference to org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String) found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class\n";
 		assertAll( //
-				() -> assertThat(runCheck(sut, "2.10.0")).isEqualTo(expected), //
-				() -> assertThat(runCheck(sut, "2.14.1")).isEqualTo(expected));
+				() -> assertThat(runCheck(sut, "2.10.0")).endsWith("/log4j-core-2.10.0.jar: " + expected), //
+				() -> assertThat(runCheck(sut, "2.14.1")).endsWith("/log4j-core-2.14.1.jar: " + expected));
 	}
 
 	@Test
