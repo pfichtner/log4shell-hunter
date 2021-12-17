@@ -19,24 +19,28 @@ public class MergebaseLog4jSamplesIT {
 
 	@Test
 	void checkSamples() throws IOException {
-		// TODO check if one of
+		// TODO assert if right cetgeory (one of:)
 		// List<String> asList = Arrays.asList("false-hits", "old-hits", "true-hits");
 
 		CVEDetector sut = new CVEDetector(allDetectors());
-		try (Stream<Path> fileStream = walk(Paths.get("log4j-samples"))) {
-			List<String> files = fileStream.filter(Files::isRegularFile).map(Path::toString).collect(toList());
-			assumeFalse(files.isEmpty(), "git submodule empty, please clone recursivly");
 
-			for (String file : files) {
-				if (isArchive(file)) {
-					System.out.println(file);
-					sut.check(file);
-					System.out.println();
-				} else {
+		List<String> filenames = filenames();
+		assumeFalse(filenames.isEmpty(), "git submodule empty, please clone recursivly");
+		for (String filename : filenames) {
+			if (isArchive(filename)) {
+				System.out.println(filename);
+				sut.check(filename);
+				System.out.println();
+			} else {
 //					System.err.println("Ignoring " + file);
-				}
 			}
+		}
 
+	}
+
+	private List<String> filenames() throws IOException {
+		try (Stream<Path> fileStream = walk(Paths.get("log4j-samples"))) {
+			return fileStream.filter(Files::isRegularFile).map(Path::toString).collect(toList());
 		}
 	}
 
