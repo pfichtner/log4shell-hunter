@@ -55,8 +55,8 @@ public final class AsmUtil {
 	}
 
 	public static Stream<MethodInsnNode> methodInsnNodes(ClassNode classNode, Predicate<MethodNode> methodFilter) {
-		return methodInsnNode(classNode.methods.stream().filter(methodFilter).map(n -> n.instructions)
-				.map(InsnList::iterator).map(Streams::itToStream).flatMap(identity()));
+		return methodInsnNode(
+				classNode.methods.stream().filter(methodFilter).map(AsmUtil::instructionsStream).flatMap(identity()));
 	}
 
 	public static Stream<MethodInsnNode> methodInsnNode(Stream<AbstractInsnNode> instructions) {
