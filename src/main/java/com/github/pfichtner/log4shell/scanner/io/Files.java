@@ -3,6 +3,7 @@ package com.github.pfichtner.log4shell.scanner.io;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 public final class Files {
@@ -19,6 +20,16 @@ public final class Files {
 
 	public static boolean isArchive(String file) {
 		return archiveSuffixs.stream().anyMatch(s -> file.endsWith(s));
+	}
+
+	public static boolean isClass(Path filename) {
+		// TODO globs can have excludes ([!XXX])
+		return filename.getFileSystem().getPathMatcher("glob:**.class").matches(filename)
+				&& !isModuleInfoClass(filename);
+	}
+
+	public static boolean isModuleInfoClass(Path filename) {
+		return filename.getFileSystem().getPathMatcher("glob:/module-info.class").matches(filename);
 	}
 
 }

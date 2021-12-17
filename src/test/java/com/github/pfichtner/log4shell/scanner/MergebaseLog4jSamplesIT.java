@@ -19,7 +19,7 @@ public class MergebaseLog4jSamplesIT {
 
 	@Test
 	void checkSamples() throws IOException {
-		// TODO assert if right cetgeory (one of:)
+		// TODO assert if right category (one of following)
 		// List<String> asList = Arrays.asList("false-hits", "old-hits", "true-hits");
 
 		CVEDetector sut = new CVEDetector(allDetectors());
@@ -31,7 +31,7 @@ public class MergebaseLog4jSamplesIT {
 				sut.check(filename);
 				System.out.println();
 			} else {
-//					System.err.println("Ignoring " + file);
+				// System.err.println("Ignoring " + file);
 			}
 		}
 

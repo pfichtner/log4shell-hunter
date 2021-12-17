@@ -1,7 +1,7 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
-import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.isClass;
+import static com.github.pfichtner.log4shell.scanner.io.Files.isClass;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.readClass;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
