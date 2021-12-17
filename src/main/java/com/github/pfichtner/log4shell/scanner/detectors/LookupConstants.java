@@ -1,9 +1,10 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.nullSafety;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.nullSafety;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -11,18 +12,24 @@ import java.util.function.Predicate;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-public final class JndiUtil {
+public final class LookupConstants {
 
-	private JndiUtil() {
+	private LookupConstants() {
 		super();
-	}
-
-	public interface MethodInsnNodeComparator {
-		Object handle(MethodInsnNode node);
 	}
 
 	// TODO do not depend on method name
 	public static final Predicate<MethodNode> methodNameIsLookup = methodNameIs("lookup");
+
+	// TODO do not depend on class name
+	public static boolean classIsJndiLookup(Path filename) {
+		return filename.toString().endsWith("JndiLookup.class");
+	}
+
+	// TODO do not depend on class name
+	public static boolean classIsJndiManager(Path filename) {
+		return filename.toString().endsWith("JndiManager.class");
+	}
 
 	public static Predicate<MethodNode> methodNameIs(String name) {
 		return methodNode -> methodNode.name.equals(name);

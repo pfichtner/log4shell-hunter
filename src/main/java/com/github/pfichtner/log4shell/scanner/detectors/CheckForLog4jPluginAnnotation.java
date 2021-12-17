@@ -1,6 +1,7 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.nullSafety;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.nullSafety;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.toMap;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -13,6 +14,9 @@ import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 
 public class CheckForLog4jPluginAnnotation implements Detector<Detections> {
+
+	private static final String NAME = "jndi";
+	private static final String CATEGORY = "Lookup";
 
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
@@ -27,9 +31,9 @@ public class CheckForLog4jPluginAnnotation implements Detector<Detections> {
 			// org.apache.logging.log4j.plugins.Plugin (TODO define which log4j version
 			// Plugins included what attributes)
 			if ("Lorg/apache/logging/log4j/core/config/plugins/Plugin;".equals(annotationNode.desc)) {
-				Map<Object, Object> values = AsmUtil.toMap(annotationNode, annotationNode.values);
+				Map<Object, Object> values = toMap(annotationNode, annotationNode.values);
 				// @Plugin(name = "jndi", category = "Lookup")
-				if ("jndi".equals(values.get("name")) && "Lookup".equals(values.get("category"))) {
+				if (NAME.equals(values.get("name")) && CATEGORY.equals(values.get("category"))) {
 					return true;
 				}
 			}
@@ -39,7 +43,7 @@ public class CheckForLog4jPluginAnnotation implements Detector<Detections> {
 
 	@Override
 	public String format(Detection detection) {
-		return "@Plugin(name = \"jndi\", category = \"Lookup\")";
+		return "@Plugin(name = \"" + NAME + "\", category = \"" + CATEGORY + "\")";
 	}
 
 }

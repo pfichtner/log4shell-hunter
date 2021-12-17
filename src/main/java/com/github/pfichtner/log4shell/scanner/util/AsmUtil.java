@@ -1,4 +1,4 @@
-package com.github.pfichtner.log4shell.scanner.detectors;
+package com.github.pfichtner.log4shell.scanner.util;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;

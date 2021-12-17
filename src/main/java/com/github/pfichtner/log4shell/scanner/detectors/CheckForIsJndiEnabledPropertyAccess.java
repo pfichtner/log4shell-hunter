@@ -1,7 +1,7 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.instructionsStream;
-import static com.github.pfichtner.log4shell.scanner.detectors.Streams.filter;
+import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
+import static java.util.function.Function.identity;
 import static org.objectweb.asm.Opcodes.ICONST_0;
 
 import java.nio.file.Path;
@@ -11,11 +11,11 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
-import org.objectweb.asm.tree.MethodNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
+import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
 
 /**
  * Searches for methods that loads {@value #LOG4J2_ENABLE_JNDI} from the
@@ -40,19 +40,17 @@ public class CheckForIsJndiEnabledPropertyAccess implements Detector<Detections>
 
 	private static final Predicate<LdcInsnNode> constantPoolLoad = n -> LOG4J2_ENABLE_JNDI.equals(n.cst);
 
-	private static final Predicate<LdcInsnNode> couldBeAccessToGetBooleanProperty = constantPoolLoad.and(n -> {
+	private static final Predicate<LdcInsnNode> possiblyAccessToGetBooleanProperty = constantPoolLoad.and(n -> {
 		AbstractInsnNode next = n.getNext();
 		return next instanceof InsnNode && next.getOpcode() == ICONST_0;
 	});
 
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
-		for (MethodNode methodNode : classNode.methods) {
-			// LdcInsn("log4j2.enableJndi");
-			// Insn(ICONST_0);
-			filter(instructionsStream(methodNode), LdcInsnNode.class).filter(couldBeAccessToGetBooleanProperty)
-					.forEach(_i -> detections.add(this, filename));
-		}
+		// LdcInsn("log4j2.enableJndi");
+		// Insn(ICONST_0);
+		filter(classNode.methods.stream().map(AsmUtil::instructionsStream).flatMap(identity()), LdcInsnNode.class)
+				.filter(possiblyAccessToGetBooleanProperty).forEach(_i -> detections.add(this, filename));
 	}
 
 	@Override

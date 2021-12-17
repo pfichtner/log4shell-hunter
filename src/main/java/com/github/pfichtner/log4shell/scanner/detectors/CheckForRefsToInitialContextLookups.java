@@ -1,9 +1,9 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodInsnNodes;
-import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodName;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.initialContextLookup;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.methodNameIsLookup;
+import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.initialContextLookup;
+import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.methodNameIsLookup;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodInsnNodes;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodName;
 
 import java.nio.file.Path;
 

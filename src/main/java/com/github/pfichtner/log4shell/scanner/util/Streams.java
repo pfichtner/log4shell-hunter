@@ -1,4 +1,4 @@
-package com.github.pfichtner.log4shell.scanner.detectors;
+package com.github.pfichtner.log4shell.scanner.util;
 
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;

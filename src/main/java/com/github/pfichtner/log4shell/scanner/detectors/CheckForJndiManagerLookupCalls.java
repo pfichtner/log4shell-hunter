@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
+import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.classIsJndiLookup;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 
 import java.nio.file.Path;
@@ -21,7 +22,7 @@ public class CheckForJndiManagerLookupCalls implements Detector<Detections> {
 
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
-		if (filename.toString().endsWith("JndiLookup.class") && hasJndiManagerLookupCall(classNode)) {
+		if (classIsJndiLookup(filename) && hasJndiManagerLookupCall(classNode)) {
 			detections.add(this, filename);
 		}
 	}

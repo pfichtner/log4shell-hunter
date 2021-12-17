@@ -1,10 +1,11 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodInsnNodes;
-import static com.github.pfichtner.log4shell.scanner.detectors.AsmUtil.methodName;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.methodNameIsLookup;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.namingContextLookup;
-import static com.github.pfichtner.log4shell.scanner.detectors.JndiUtil.throwsNamingException;
+import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.classIsJndiManager;
+import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.methodNameIsLookup;
+import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.namingContextLookup;
+import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.throwsNamingException;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodInsnNodes;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodName;
 
 import java.nio.file.Path;
 
@@ -19,10 +20,10 @@ public class CheckForJndiManagerWithNamingContextLookups implements Detector<Det
 
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
-		if (filename.toString().endsWith("JndiManager.class")) {
+		if (classIsJndiManager(filename)) {
 			// TODO should be distinctBy target
-			methodInsnNodes(classNode, methodNameIsLookup.and(throwsNamingException)).filter(namingContextLookup).distinct()
-					.forEach(n -> detections.add(this, filename, n));
+			methodInsnNodes(classNode, methodNameIsLookup.and(throwsNamingException)).filter(namingContextLookup)
+					.distinct().forEach(n -> detections.add(this, filename, n));
 		}
 	}
 
