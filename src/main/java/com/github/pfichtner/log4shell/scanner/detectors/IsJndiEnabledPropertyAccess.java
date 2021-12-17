@@ -34,7 +34,7 @@ import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
  * (<code>false</code>) directly after {@value #LOG4J2_ENABLE_JNDI} load on the
  * stack.
  */
-public class CheckForIsJndiEnabledPropertyAccess implements Detector<Detections> {
+public class IsJndiEnabledPropertyAccess implements Detector<Detections> {
 
 	private static final String LOG4J2_ENABLE_JNDI = "log4j2.enableJndi";
 

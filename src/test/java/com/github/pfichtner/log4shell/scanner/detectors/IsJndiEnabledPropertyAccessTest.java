@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import com.github.pfichtner.log4shell.scanner.CVEDetector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-public class CheckForIsJndiEnabledPropertyAccessTest {
+public class IsJndiEnabledPropertyAccessTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
-	CheckForIsJndiEnabledPropertyAccess sut = new CheckForIsJndiEnabledPropertyAccess();
+	IsJndiEnabledPropertyAccess sut = new IsJndiEnabledPropertyAccess();
 
 	@Test
 	void propertyAccessWasIntroducedLog4J216() throws Exception {

@@ -13,7 +13,7 @@ import com.github.pfichtner.log4shell.scanner.CVEDetector;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-class CheckForJndiManagerWithDirContextLookupsTest {
+class JndiManagerWithDirContextLookupsTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
@@ -22,7 +22,7 @@ class CheckForJndiManagerWithDirContextLookupsTest {
 			"2.16.0" //
 	);
 
-	CheckForJndiManagerWithDirContextLookups sut = new CheckForJndiManagerWithDirContextLookups();
+	JndiManagerWithDirContextLookups sut = new JndiManagerWithDirContextLookups();
 
 	@Test
 	void log4j16HasJndiManagerWithDirContextLookups() throws Exception {

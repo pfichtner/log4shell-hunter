@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import com.github.pfichtner.log4shell.scanner.CVEDetector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-public class CheckForLog4jPluginAnnotationTest {
+public class Log4jPluginAnnotationTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
@@ -31,7 +31,7 @@ public class CheckForLog4jPluginAnnotationTest {
 			"2.0-beta8" //
 	);
 
-	CheckForLog4jPluginAnnotation sut = new CheckForLog4jPluginAnnotation();
+	Log4jPluginAnnotation sut = new Log4jPluginAnnotation();
 
 	@Test
 	void canDetectPluginClass() throws Exception {

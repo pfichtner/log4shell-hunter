@@ -9,10 +9,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-class CheckForJndiManagerWithNamingContextLookupsTest {
+class JndiManagerLookupCallsTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
@@ -33,34 +32,42 @@ class CheckForJndiManagerWithNamingContextLookupsTest {
 			"2.0-rc1", //
 			"2.0-rc2", //
 
+			// 2.0, 2.0.1, 2.0.2 (JndiManager#lookup(String) calls introduces with version
+			// 2.1)
+			// @Override
+			// public String lookup(LogEvent event, String key) {
+			// if (key == null) {
+			// return null;
+			// }
+			//
+			// Context ctx = null;
+			// try {
+			// ctx = new InitialContext();
+			// return (String) ctx.lookup(convertJndiName(key));
+			// } catch (NamingException e) {
+			// return null;
+			// } finally {
+			// Closer.closeSilently(ctx);
+			// }
+			// }
 			"2.0", //
 			"2.0.1", //
 			"2.0.2", //
 
-			/**
-			 * Starting with 2.15. DirContext lookups are made
-			 */
-			"2.15.0", //
-			"2.16.0" //
+			// 2.12.2
+			// @Override
+			// public String lookup(LogEvent event, String key) {
+			// LOGGER.warn("Attempt to use JNDI Lookup");
+			// return RESULT;
+			// }
+			"2.12.2" //
 
 	);
 
-	CheckForJndiManagerWithNamingContextLookups sut = new CheckForJndiManagerWithNamingContextLookups();
+	JndiManagerLookupCalls sut = new JndiManagerLookupCalls();
 
 	@Test
-	void log4j14HasJndiManagerWithContextLookups() throws Exception {
-		CVEDetector detector = new CVEDetector(sut);
-		assertThat(detector.analyze(log4jJars.version("2.14.1").getAbsolutePath()).getFormatted())
-				.containsExactly(refTo("javax.naming.Context#lookup(java.lang.String)"));
-	}
-
-	private static String refTo(String ref) {
-		return String.format("Reference to %s found in class /org/apache/logging/log4j/core/net/JndiManager.class",
-				ref);
-	}
-
-	@Test
-	void canDetectLookupMethods() throws Exception {
+	void canDetectLookupCalls() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
 				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups));
 	}

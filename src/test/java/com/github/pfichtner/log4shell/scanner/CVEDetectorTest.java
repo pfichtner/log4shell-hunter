@@ -18,13 +18,13 @@ import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
-import com.github.pfichtner.log4shell.scanner.detectors.CheckForIsJndiEnabledPropertyAccess;
-import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException;
-import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiManagerLookupCalls;
-import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiManagerWithDirContextLookups;
-import com.github.pfichtner.log4shell.scanner.detectors.CheckForJndiManagerWithNamingContextLookups;
-import com.github.pfichtner.log4shell.scanner.detectors.CheckForLog4jPluginAnnotation;
-import com.github.pfichtner.log4shell.scanner.detectors.CheckForRefsToInitialContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupWithNamingContextLookupsWithoutThrowingException;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCalls;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerWithDirContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerWithNamingContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
+import com.github.pfichtner.log4shell.scanner.detectors.RefsToInitialContextLookups;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
@@ -65,7 +65,7 @@ class CVEDetectorTest {
 
 	@Test
 	void detectsAndPrintsViaPluginDetection() {
-		CVEDetector sut = new CVEDetector(new CheckForLog4jPluginAnnotation());
+		CVEDetector sut = new CVEDetector(new Log4jPluginAnnotation());
 		String expected = "@Plugin(name = \"jndi\", category = \"Lookup\") found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class\n";
 		assertAll( //
 				() -> assertThat(runCheck(sut, "2.10.0")).isEqualTo(expected), //
@@ -76,7 +76,7 @@ class CVEDetectorTest {
 
 	@Test
 	void detectsAndPrintsViaCheckForCalls() {
-		CVEDetector sut = new CVEDetector(new CheckForJndiManagerLookupCalls());
+		CVEDetector sut = new CVEDetector(new JndiManagerLookupCalls());
 		String expected = "Reference to org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String) found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class\n";
 		assertAll( //
 				() -> assertThat(runCheck(sut, "2.10.0")).isEqualTo(expected), //
@@ -86,13 +86,13 @@ class CVEDetectorTest {
 	@Test
 	void approveAll() throws IOException {
 		List<Detector<Detections>> detectors = Arrays.asList( //
-				new CheckForJndiManagerLookupCalls(), //
-				new CheckForJndiManagerWithNamingContextLookups(), //
-				new CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException(), //
-				new CheckForJndiManagerWithDirContextLookups(), //
-				new CheckForLog4jPluginAnnotation(), //
-				new CheckForRefsToInitialContextLookups(), //
-				new CheckForIsJndiEnabledPropertyAccess() //
+				new JndiManagerLookupCalls(), //
+				new JndiManagerWithNamingContextLookups(), //
+				new JndiLookupWithNamingContextLookupsWithoutThrowingException(), //
+				new JndiManagerWithDirContextLookups(), //
+				new Log4jPluginAnnotation(), //
+				new RefsToInitialContextLookups(), //
+				new IsJndiEnabledPropertyAccess() //
 		);
 		verify(toBeApproved(new CVEDetector(detectors)), options());
 	}

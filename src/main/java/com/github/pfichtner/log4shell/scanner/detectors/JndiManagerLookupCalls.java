@@ -18,7 +18,7 @@ import com.github.pfichtner.log4shell.scanner.io.Detector;
  * Detects calls in classes that are named <code>JndiLookup</code> to
  * org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)
  */
-public class CheckForJndiManagerLookupCalls implements Detector<Detections> {
+public class JndiManagerLookupCalls implements Detector<Detections> {
 
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {

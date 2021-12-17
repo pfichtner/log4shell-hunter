@@ -13,7 +13,7 @@ import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 
-public class CheckForLog4jPluginAnnotation implements Detector<Detections> {
+public class Log4jPluginAnnotation implements Detector<Detections> {
 
 	private static final String NAME = "jndi";
 	private static final String CATEGORY = "Lookup";

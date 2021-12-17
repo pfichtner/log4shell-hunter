@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.github.pfichtner.log4shell.scanner.CVEDetector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-class CheckForJndiLookupWithNamingContextLookupsWithoutThrowingExceptionTest {
+class JndiLookupWithNamingContextLookupsWithoutThrowingExceptionTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
@@ -23,7 +23,7 @@ class CheckForJndiLookupWithNamingContextLookupsWithoutThrowingExceptionTest {
 			"2.0.2" //
 	);
 
-	CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException sut = new CheckForJndiLookupWithNamingContextLookupsWithoutThrowingException();
+	JndiLookupWithNamingContextLookupsWithoutThrowingException sut = new JndiLookupWithNamingContextLookupsWithoutThrowingException();
 
 	@Test
 	void log4j202HasJndiManagerWithContextLookups() throws Exception {
