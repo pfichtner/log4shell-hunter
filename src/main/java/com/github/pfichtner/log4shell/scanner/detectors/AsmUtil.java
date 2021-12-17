@@ -1,6 +1,5 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.detectors.Streams.filter;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 
@@ -61,7 +60,15 @@ public final class AsmUtil {
 	}
 
 	public static Stream<MethodInsnNode> methodInsnNode(Stream<AbstractInsnNode> instructions) {
-		return filter(instructions, MethodInsnNode.class);
+		return Streams.filter(instructions, MethodInsnNode.class);
+	}
+
+	public static Stream<AbstractInsnNode> instructionsStream(MethodNode methodNode) {
+		return Streams.itToStream(methodNode.instructions.iterator());
+	}
+
+	public static Stream<AbstractInsnNode> instructionsStream(InsnList instructions) {
+		return Streams.itToStream(instructions.iterator());
 	}
 
 }
