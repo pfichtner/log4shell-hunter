@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner;
 
+import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -7,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,13 +18,8 @@ import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
-import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupWithNamingContextLookupsWithoutThrowingException;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCalls;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerWithDirContextLookups;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerWithNamingContextLookups;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
-import com.github.pfichtner.log4shell.scanner.detectors.RefsToInitialContextLookups;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
@@ -85,16 +80,7 @@ class CVEDetectorTest {
 
 	@Test
 	void approveAll() throws IOException {
-		List<Detector<Detections>> detectors = Arrays.asList( //
-				new JndiManagerLookupCalls(), //
-				new JndiManagerWithNamingContextLookups(), //
-				new JndiLookupWithNamingContextLookupsWithoutThrowingException(), //
-				new JndiManagerWithDirContextLookups(), //
-				new Log4jPluginAnnotation(), //
-				new RefsToInitialContextLookups(), //
-				new IsJndiEnabledPropertyAccess() //
-		);
-		verify(toBeApproved(new CVEDetector(detectors)), options());
+		verify(toBeApproved(new CVEDetector(allDetectors())), options());
 	}
 
 	private Options options() {

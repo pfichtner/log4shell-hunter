@@ -5,6 +5,7 @@ import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.readClass;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -84,12 +85,20 @@ public class CVEDetector {
 	}
 
 	public void check(String jar) throws IOException {
-		for (Detection detection : analyze(jar).getDetections()) {
+		check(new File(jar));
+	}
+
+	public void check(File file) throws IOException {
+		for (Detection detection : analyze(file).getDetections()) {
 			System.out.println(detection.format());
 		}
 	}
 
 	public Detections analyze(String jar) throws IOException {
+		return analyze(new File(jar));
+	}
+
+	public Detections analyze(File jar) throws IOException {
 		Detections detections = new Detections();
 		new JarReader(jar).accept(new JarReaderVisitor() {
 			@Override

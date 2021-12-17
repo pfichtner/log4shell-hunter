@@ -33,10 +33,6 @@ public class JarReader {
 
 	private final File jar;
 
-	public JarReader(String jar) {
-		this(new File(jar));
-	}
-
 	public JarReader(File jar) {
 		this.jar = jar;
 	}

@@ -1,0 +1,3 @@
+[submodule "log4j-samples"]
+	path = log4j-samples
+	url = https://github.com/mergebase/log4j-samples
