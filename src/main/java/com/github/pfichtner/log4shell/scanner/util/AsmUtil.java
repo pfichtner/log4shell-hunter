@@ -3,8 +3,8 @@ package com.github.pfichtner.log4shell.scanner.util;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 
-import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -31,9 +31,12 @@ public final class AsmUtil {
 
 	public static boolean isClass(Path filename) {
 		// TODO globs can have excludes ([!XXX])
-		FileSystem fileSystem = filename.getFileSystem();
-		return fileSystem.getPathMatcher("glob:**.class").matches(filename)
-				&& !fileSystem.getPathMatcher("glob:/module-info.class").matches(filename);
+		return filename.getFileSystem().getPathMatcher("glob:**.class").matches(filename)
+				&& !isModuleInfoClass(filename).matches(filename);
+	}
+
+	private static PathMatcher isModuleInfoClass(Path filename) {
+		return filename.getFileSystem().getPathMatcher("glob:/module-info.class");
 	}
 
 	public static ClassNode readClass(byte[] bytes, int options) {
