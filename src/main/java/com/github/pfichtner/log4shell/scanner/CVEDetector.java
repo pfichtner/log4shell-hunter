@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner;
 
+import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.isClass;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.readClass;
 import static java.util.Collections.unmodifiableList;
@@ -7,6 +8,8 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,8 +102,20 @@ public class CVEDetector {
 	}
 
 	public Detections analyze(File jar) throws IOException {
-		Detections detections = new Detections();
-		new JarReader(jar).accept(new JarReaderVisitor() {
+		return analyze(jar.toURI());
+	}
+
+	private Detections analyze(URI uri) throws IOException {
+		return analyze(new JarReader(uri), new Detections());
+	}
+
+	private Detections analyze(JarReader jarReader, Detections detections) throws IOException {
+		jarReader.accept(visitor(detections, jarReader.getFileSystem()));
+		return detections;
+	}
+
+	private JarReaderVisitor visitor(Detections detections, FileSystem fileSystem) {
+		return new JarReaderVisitor() {
 			@Override
 			public void visitFile(Path file, byte[] bytes) {
 				if (isClass(file)) {
@@ -112,10 +127,16 @@ public class CVEDetector {
 					for (Detector<Detections> detector : detectors) {
 						detector.visitFile(detections, file, bytes);
 					}
+					if (isArchive(file.toString())) {
+						try {
+							analyze(new JarReader(file), detections);
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					}
 				}
 			}
-		});
-		return detections;
+		};
 	}
 
 }

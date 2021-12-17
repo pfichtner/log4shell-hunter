@@ -79,11 +79,21 @@ class CVEDetectorTest {
 	}
 
 	@Test
+	@Disabled
+	void nested() throws Exception {
+		CVEDetector sut = new CVEDetector(allDetectors());
+		String sysout = tapSystemOut(() -> sut.check(new File(getClass().getClassLoader()
+				.getResource("log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip")
+				.toURI())));
+		assertThat(sysout).isNotEmpty().contains("XXX");
+	}
+
+	@Test
 	void approveAll() throws IOException {
 		verify(toBeApproved(new CVEDetector(allDetectors())), options());
 	}
 
-	private Options options() {
+	private static Options options() {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
 	}
 

@@ -1,8 +1,8 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
+import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
 import static java.nio.file.Files.walk;
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
@@ -42,10 +42,6 @@ public class MergebaseLog4jSamplesIT {
 		try (Stream<Path> fileStream = walk(Paths.get("log4j-samples"))) {
 			return fileStream.filter(Files::isRegularFile).map(Path::toString).collect(toList());
 		}
-	}
-
-	private boolean isArchive(String file) {
-		return asList(".jar", ".war", ".zip", ".ear").stream().anyMatch(s -> file.endsWith(s));
 	}
 
 }

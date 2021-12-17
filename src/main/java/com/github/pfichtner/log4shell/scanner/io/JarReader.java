@@ -19,6 +19,8 @@ import java.util.Map;
 
 public class JarReader {
 
+	private FileSystem fileSystem;
+
 	public static class JarReaderVisitor {
 
 		public void visitDirectory(Path dir) {
@@ -31,15 +33,26 @@ public class JarReader {
 
 	}
 
-	private final File jar;
+	public JarReader(File jar) throws IOException {
+		this(jar.toURI());
+	}
 
-	public JarReader(File jar) {
-		this.jar = jar;
+	public JarReader(URI jar) throws IOException {
+		URI uri = URI.create("jar:file:" + jar.getPath());
+		this.fileSystem = newFileSystem(uri, zipProperties());
+	}
+
+	public JarReader(Path path) throws IOException {
+		this.fileSystem = newFileSystem(path, null);
+	}
+	
+	public FileSystem getFileSystem() {
+		return fileSystem;
 	}
 
 	public void accept(JarReaderVisitor visitor) throws IOException {
-		try (FileSystem zipfs = newFileSystem(URI.create("jar:file:" + jar.toURI().getPath()), zipProperties())) {
-			walkFileTree(zipfs.getPath("/"), new SimpleFileVisitor<Path>() {
+		try {
+			walkFileTree(fileSystem.getPath("/"), new SimpleFileVisitor<Path>() {
 
 				@Override
 				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -56,6 +69,8 @@ public class JarReader {
 				}
 
 			});
+		} finally {
+			fileSystem.close();
 		}
 	}
 
