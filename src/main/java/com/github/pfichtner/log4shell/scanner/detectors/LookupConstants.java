@@ -14,12 +14,14 @@ import org.objectweb.asm.tree.MethodNode;
 
 public final class LookupConstants {
 
+	private static final String LOOKUP = "lookup";
+
 	private LookupConstants() {
 		super();
 	}
 
 	// TODO do not depend on method name
-	public static final Predicate<MethodNode> methodNameIsLookup = methodNameIs("lookup");
+	public static final Predicate<MethodNode> methodNameIsLookup = methodNameIs(LOOKUP);
 
 	// TODO do not depend on class name
 	public static boolean classIsJndiLookup(Path filename) {
@@ -42,17 +44,21 @@ public final class LookupConstants {
 		return Arrays.asList(types).equals(nullSafety(exceptions));
 	}
 
+	public static final Predicate<MethodInsnNode> jndiManagerLookup = node -> ("(Ljava/lang/String;)Ljava/lang/Object;"
+			.equals(node.desc)) && "org/apache/logging/log4j/core/net/JndiManager".equals(node.owner)
+			&& LOOKUP.equals(node.name) && INVOKEVIRTUAL == node.getOpcode();
+
 	public static final Predicate<MethodInsnNode> namingContextLookup = node -> ("(Ljava/lang/String;)Ljava/lang/Object;"
-			.equals(node.desc)) && "javax/naming/Context".equals(node.owner) && "lookup".equals(node.name)
+			.equals(node.desc)) && "javax/naming/Context".equals(node.owner) && LOOKUP.equals(node.name)
 			&& INVOKEINTERFACE == node.getOpcode();
 
 	public static final Predicate<MethodInsnNode> initialContextLookup = node -> ("(Ljava/lang/String;)Ljava/lang/Object;"
-			.equals(node.desc)) && "javax/naming/InitialContext".equals(node.owner) && "lookup".equals(node.name)
+			.equals(node.desc)) && "javax/naming/InitialContext".equals(node.owner) && LOOKUP.equals(node.name)
 			&& INVOKEVIRTUAL == node.getOpcode();
 
 	public static final Predicate<MethodInsnNode> dirContextLookup = node -> ("(Ljava/lang/String;)Ljava/lang/Object;"
 			.equals(node.desc) || "(Ljava/lang/String;)Ljavax/naming/directory/Attributes;".equals(node.desc))
-			&& "javax/naming/directory/DirContext".equals(node.owner) && "lookup".equals(node.name)
+			&& "javax/naming/directory/DirContext".equals(node.owner) && LOOKUP.equals(node.name)
 			&& INVOKEINTERFACE == node.getOpcode();
 
 }

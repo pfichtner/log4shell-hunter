@@ -13,7 +13,6 @@ import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
 
@@ -36,7 +35,7 @@ import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
  */
 public class IsJndiEnabledPropertyAccess implements Detector<Detections> {
 
-	private static final String LOG4J2_ENABLE_JNDI = "log4j2.enableJndi";
+	public static final String LOG4J2_ENABLE_JNDI = "log4j2.enableJndi";
 
 	private static final Predicate<LdcInsnNode> constantPoolLoad = n -> LOG4J2_ENABLE_JNDI.equals(n.cst);
 
@@ -50,12 +49,8 @@ public class IsJndiEnabledPropertyAccess implements Detector<Detections> {
 		// LdcInsn("log4j2.enableJndi");
 		// Insn(ICONST_0);
 		filter(classNode.methods.stream().map(AsmUtil::instructionsStream).flatMap(identity()), LdcInsnNode.class)
-				.filter(possiblyAccessToGetBooleanProperty).forEach(_i -> detections.add(this, filename));
-	}
-
-	@Override
-	public String format(Detection detection) {
-		return LOG4J2_ENABLE_JNDI + " access";
+				.filter(possiblyAccessToGetBooleanProperty)
+				.forEach(_i -> detections.add(this, filename, LOG4J2_ENABLE_JNDI + " access"));
 	}
 
 }

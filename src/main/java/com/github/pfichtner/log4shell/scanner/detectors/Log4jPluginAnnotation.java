@@ -10,7 +10,6 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 
 public class Log4jPluginAnnotation implements Detector<Detections> {
@@ -21,7 +20,7 @@ public class Log4jPluginAnnotation implements Detector<Detections> {
 	@Override
 	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
 		if (hasPluginAnnotation(classNode)) {
-			detections.add(this, filename);
+			detections.add(this, filename, "@Plugin(name = \"" + NAME + "\", category = \"" + CATEGORY + "\")");
 		}
 	}
 
@@ -39,11 +38,6 @@ public class Log4jPluginAnnotation implements Detector<Detections> {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public String format(Detection detection) {
-		return "@Plugin(name = \"" + NAME + "\", category = \"" + CATEGORY + "\")";
 	}
 
 }

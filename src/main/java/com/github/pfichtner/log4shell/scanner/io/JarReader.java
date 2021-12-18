@@ -21,13 +21,17 @@ public class JarReader {
 
 	private FileSystem fileSystem;
 
-	public static class JarReaderVisitor {
+	public static interface JarReaderVisitor {
 
-		public void visitDirectory(Path dir) {
+		default void visitDirectory(Path dir) {
 			// noop
 		}
 
-		public void visitFile(Path file, byte[] bytes) {
+		default void visitFile(Path file, byte[] bytes) {
+			// noop
+		}
+
+		default void end() {
 			// noop
 		}
 
@@ -71,6 +75,7 @@ public class JarReader {
 			});
 		} finally {
 			fileSystem.close();
+			visitor.end();
 		}
 	}
 

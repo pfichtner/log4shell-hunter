@@ -41,11 +41,15 @@ public class CVEDetector {
 			}
 
 			public String format() {
-				return detector.format(this) + " found in class " + filename;
+				return object + " found in class " + filename;
 			}
 
 			public Detector<?> getDetector() {
 				return detector;
+			}
+			
+			public Path getFilename() {
+				return filename;
 			}
 
 			public Object getObject() {
@@ -55,10 +59,6 @@ public class CVEDetector {
 		}
 
 		private final List<Detection> detections = new ArrayList<>();
-
-		public void add(Detector<?> detector, Path filename) {
-			add(detector, filename, null);
-		}
 
 		public void add(Detector<?> detector, Path filename, Object object) {
 			this.detections.add(new Detection(detector, filename, object));
@@ -75,6 +75,7 @@ public class CVEDetector {
 	}
 
 	@SafeVarargs
+	// TODO introduce multiplexer
 	public CVEDetector(Detector<Detections>... detectors) {
 		this(Arrays.asList(detectors));
 	}
@@ -127,7 +128,6 @@ public class CVEDetector {
 					} catch (Exception e) {
 						System.err.println("Error while reading class " + file + ": " + e.getMessage());
 					}
-
 				} else {
 					for (Detector<Detections> detector : detectors) {
 						detector.visitFile(detections, file, bytes);
@@ -141,6 +141,14 @@ public class CVEDetector {
 					}
 				}
 			}
+
+			@Override
+			public void end() {
+				for (Detector<Detections> detector : detectors) {
+					detector.visitEnd(detections);
+				}
+			}
+
 		};
 	}
 
