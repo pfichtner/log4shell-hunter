@@ -10,13 +10,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.objectweb.asm.tree.ClassNode;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Entry;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.io.JarReader;
@@ -26,55 +23,36 @@ public class CVEDetector {
 
 	private AbstractDetector detector;
 
-	public static class Detections implements Iterable<Entry> {
+	public static class Detection {
 
-		public static class Entry {
+		private final Detector detector;
+		private final Path filename;
+		private final Object object;
 
-			private final Detector detector;
-			private final Path filename;
-			private final Object object;
-
-			public Entry(Detector detector, Path filename, Object object) {
-				this.detector = detector;
-				this.filename = filename;
-				this.object = object;
-			}
-
-			public String format() {
-				return object + " found in class " + filename;
-			}
-
-			public Detector getDetector() {
-				return detector;
-			}
-
-			public Path getFilename() {
-				return filename;
-			}
-
-			public Object getObject() {
-				return object;
-			}
-
+		public Detection(Detector detector, Path filename, Object object) {
+			this.detector = detector;
+			this.filename = filename;
+			this.object = object;
 		}
 
-		private final List<Entry> entries = new ArrayList<>();
-
-		public void add(Detector detector, Path filename, Object object) {
-			this.entries.add(new Entry(detector, filename, object));
+		public String format() {
+			return object + " found in class " + filename;
 		}
 
-		public List<Entry> getEntries() {
-			return entries;
+		public Detector getDetector() {
+			return detector;
 		}
 
-		public List<String> getFormatted() {
-			return entries.stream().map(Entry::format).collect(toList());
+		public Path getFilename() {
+			return filename;
 		}
 
-		@Override
-		public Iterator<Entry> iterator() {
-			return entries.iterator();
+		public Object getObject() {
+			return object;
+		}
+
+		public static List<String> getFormatted(List<Detection> entries) {
+			return entries.stream().map(CVEDetector.Detection::format).collect(toList());
 		}
 
 	}
@@ -92,24 +70,24 @@ public class CVEDetector {
 	}
 
 	public void check(File file) throws IOException {
-		for (Entry detection : analyze(file)) {
+		for (CVEDetector.Detection detection : analyze(file)) {
 			System.out.println(file + ": " + detection.format());
 		}
 	}
 
-	public Detections analyze(String jar) throws IOException {
+	public List<Detection> analyze(String jar) throws IOException {
 		return analyze(new File(jar));
 	}
 
-	public Detections analyze(File jar) throws IOException {
+	public List<Detection> analyze(File jar) throws IOException {
 		return analyze(jar.toURI());
 	}
 
-	private Detections analyze(URI uri) throws IOException {
+	private List<Detection> analyze(URI uri) throws IOException {
 		return analyze(new JarReader(uri));
 	}
 
-	private Detections analyze(JarReader jarReader) throws IOException {
+	private List<Detection> analyze(JarReader jarReader) throws IOException {
 		jarReader.accept(visitor(jarReader.getFileSystem()));
 		return detector.getDetections();
 	}

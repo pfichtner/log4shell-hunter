@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
+import static com.github.pfichtner.log4shell.scanner.CVEDetector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +51,7 @@ class JndiManagerWithNamingContextLookupsTest {
 	@Test
 	void log4j14HasJndiManagerWithContextLookups() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
-		assertThat(detector.analyze(log4jJars.version("2.14.1").getAbsolutePath()).getFormatted())
+		assertThat(getFormatted(detector.analyze(log4jJars.version("2.14.1").getAbsolutePath())))
 				.containsExactly(refTo("javax.naming.Context#lookup(java.lang.String)"));
 	}
 

@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
@@ -61,11 +62,10 @@ public class MergebaseLog4jSamplesIT {
 		all.add(isJndiEnabledPropertyAccess);
 
 		return new Multiplexer(all) {
-			
+
 			@Override
 			public void visitEnd() {
-				List<Detector> detectors = getDetections().getEntries().stream().map(d -> d.getDetector())
-						.collect(toList());
+				List<Detector> detectors = getDetections().stream().map(Detection::getDetector).collect(toList());
 
 				// if we have Detections on classes (Paths) one of vulns, this is vulnerable IF
 				// NOT we also have isJndiEnabledPropertyAccess

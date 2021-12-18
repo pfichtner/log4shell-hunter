@@ -1,13 +1,14 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
+import static com.github.pfichtner.log4shell.scanner.CVEDetector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.File;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector;
@@ -43,10 +44,10 @@ public class Log4jPluginAnnotationTest {
 	void log4j20beta9HasPluginWithDirectContextAccess() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
 		String expected = "@Plugin(name = \"jndi\", category = \"Lookup\") found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class";
-		Assertions.assertAll( //
-				() -> assertThat(detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath()).getFormatted())
+		assertAll( //
+				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath())))
 						.containsExactly(expected), //
-				() -> assertThat(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath()).getFormatted())
+				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath())))
 						.containsExactly(expected) //
 
 		);

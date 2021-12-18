@@ -1,6 +1,7 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
 
 import java.net.URI;
 import java.nio.file.Path;
@@ -10,7 +11,7 @@ import java.util.List;
 
 import org.objectweb.asm.tree.ClassNode;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupWithNamingContextLookupsWithoutThrowingException;
@@ -29,7 +30,7 @@ public final class Detectors {
 		public Multiplexer(List<AbstractDetector> detectors) {
 			this.detectors = detectors;
 		}
-		
+
 		public List<AbstractDetector> getMultiplexed() {
 			return detectors;
 		}
@@ -63,11 +64,9 @@ public final class Detectors {
 		}
 
 		@Override
-		public Detections getDetections() {
-			Detections result = new Detections();
-			detectors.stream().map(d -> d.getDetections()).map(Detections::getEntries).flatMap(Collection::stream)
-					.forEach(c -> result.add(c.getDetector(), c.getFilename(), c.getObject()));
-			return result;
+		public List<Detection> getDetections() {
+			return detectors.stream().map(AbstractDetector::getDetections).flatMap(Collection::stream)
+					.collect(toList());
 		}
 
 	}

@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
+import static com.github.pfichtner.log4shell.scanner.CVEDetector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +21,7 @@ public class IsJndiEnabledPropertyAccessTest {
 	@Test
 	void propertyAccessWasIntroducedLog4J216() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
-		assertThat(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath()).getFormatted()).containsExactly(
+		assertThat(getFormatted(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath()))).containsExactly(
 				"log4j2.enableJndi access found in class /org/apache/logging/log4j/core/net/JndiManager.class");
 	}
 

@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector;
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 
 public final class Util {
@@ -39,14 +39,14 @@ public final class Util {
 		return elements::contains;
 	}
 
-	public static Map<File, Detections> withDetections(Map<File, Detections> results) {
-		return results.entrySet().stream().filter(e -> !e.getValue().getEntries().isEmpty())
+	public static Map<File, List<Detection>> withDetections(Map<File, List<Detection>> results) {
+		return results.entrySet().stream().filter(e -> !e.getValue().isEmpty())
 				.collect(toMap(Entry::getKey, Entry::getValue));
 	}
 
-	public static Map<File, Detections> analyse(Log4jJars log4jJars, AbstractDetector sut) throws IOException {
+	public static Map<File, List<Detection>> analyse(Log4jJars log4jJars, AbstractDetector sut) throws IOException {
 		CVEDetector detector = new CVEDetector(sut);
-		Map<File, Detections> results = new HashMap<>();
+		Map<File, List<Detection>> results = new HashMap<>();
 		for (File log4j : log4jJars) {
 			results.put(log4j, detector.analyze(log4j.getAbsolutePath()));
 		}
