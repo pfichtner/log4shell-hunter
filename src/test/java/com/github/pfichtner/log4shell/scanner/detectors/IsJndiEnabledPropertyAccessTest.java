@@ -28,7 +28,7 @@ public class IsJndiEnabledPropertyAccessTest {
 	@Test
 	void canDetectAccess() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.versions("2.16.0", "2.12.2").toArray(new File[0]));
+				.containsOnlyKeys(log4jJars.versions("2.17.0", "2.16.0", "2.12.2").toArray(new File[0]));
 	}
 
 }

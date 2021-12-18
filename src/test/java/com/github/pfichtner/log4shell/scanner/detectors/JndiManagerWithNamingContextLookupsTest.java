@@ -42,7 +42,8 @@ class JndiManagerWithNamingContextLookupsTest {
 			 * Starting with 2.15. DirContext lookups are made
 			 */
 			"2.15.0", //
-			"2.16.0" //
+			"2.16.0", //
+			"2.17.0" //
 
 	);
 

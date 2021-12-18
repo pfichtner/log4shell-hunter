@@ -20,8 +20,8 @@ public class RefsToInitialContextLookupsTest {
 
 	List<File> versionsWithInitialContextLookups = log4jJars.versions( //
 			"2.0-beta9", //
-			"2.0-rc1" //
-
+			"2.0-rc1", //
+			"2.17.0" //
 	);
 
 	RefsToInitialContextLookups sut = new RefsToInitialContextLookups();

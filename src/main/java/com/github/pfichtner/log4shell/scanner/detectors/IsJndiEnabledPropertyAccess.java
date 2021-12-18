@@ -2,14 +2,11 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
 import static java.util.function.Function.identity;
-import static org.objectweb.asm.Opcodes.ICONST_0;
 
 import java.nio.file.Path;
 import java.util.function.Predicate;
 
-import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 
 import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
@@ -35,19 +32,15 @@ public class IsJndiEnabledPropertyAccess extends AbstractDetector {
 
 	public static final String LOG4J2_ENABLE_JNDI = "log4j2.enableJndi";
 
-	private static final Predicate<LdcInsnNode> constantPoolLoad = n -> LOG4J2_ENABLE_JNDI.equals(n.cst);
-
-	private static final Predicate<LdcInsnNode> possiblyAccessToGetBooleanProperty = constantPoolLoad.and(n -> {
-		AbstractInsnNode next = n.getNext();
-		return next instanceof InsnNode && next.getOpcode() == ICONST_0;
-	});
+	private static final Predicate<LdcInsnNode> constantPoolLoadOfLog4jEnableJndi = n -> LOG4J2_ENABLE_JNDI
+			.equals(n.cst);
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
 		// LdcInsn("log4j2.enableJndi");
 		// Insn(ICONST_0);
 		filter(classNode.methods.stream().map(AsmUtil::instructionsStream).flatMap(identity()), LdcInsnNode.class)
-				.filter(possiblyAccessToGetBooleanProperty)
+				.filter(constantPoolLoadOfLog4jEnableJndi)
 				.forEach(_i -> addDetections(filename, LOG4J2_ENABLE_JNDI + " access"));
 	}
 
