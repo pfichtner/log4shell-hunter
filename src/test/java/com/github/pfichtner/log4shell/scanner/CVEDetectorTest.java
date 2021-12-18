@@ -16,7 +16,7 @@ import org.approvaltests.core.Options.FileOptions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
+import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Entry;
 import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCalls;
@@ -119,7 +119,7 @@ class CVEDetectorTest {
 
 	private String content(CVEDetector cveDetector, List<AbstractDetector> detectors, File log4jJar)
 			throws IOException {
-		List<Detection> detections = cveDetector.analyze(log4jJar.getAbsolutePath()).getDetections();
+		List<Entry> detections = cveDetector.analyze(log4jJar.getAbsolutePath()).getEntries();
 		StringBuilder sb = new StringBuilder();
 		sb.append(log4jJar.getAbsoluteFile().getName()).append(SEPARATOR);
 		for (AbstractDetector detector : detectors) {
@@ -128,8 +128,8 @@ class CVEDetectorTest {
 		return sb.toString();
 	}
 
-	private boolean contains(List<Detection> detections, Detector detector) {
-		return detections.stream().map(Detection::getDetector).anyMatch(detector::equals);
+	private boolean contains(List<Entry> detections, Detector detector) {
+		return detections.stream().map(Entry::getDetector).anyMatch(detector::equals);
 	}
 
 	private String runCheck(CVEDetector sut, String version) throws Exception {

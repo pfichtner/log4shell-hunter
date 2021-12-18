@@ -65,7 +65,7 @@ public final class Detectors {
 		@Override
 		public Detections getDetections() {
 			Detections result = new Detections();
-			detectors.stream().map(d -> d.getDetections()).map(Detections::getDetections).flatMap(Collection::stream)
+			detectors.stream().map(d -> d.getDetections()).map(Detections::getEntries).flatMap(Collection::stream)
 					.forEach(c -> result.add(c.getDetector(), c.getFilename(), c.getObject()));
 			return result;
 		}

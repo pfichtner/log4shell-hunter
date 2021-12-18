@@ -40,7 +40,7 @@ public final class Util {
 	}
 
 	public static Map<File, Detections> withDetections(Map<File, Detections> results) {
-		return results.entrySet().stream().filter(e -> !e.getValue().getDetections().isEmpty())
+		return results.entrySet().stream().filter(e -> !e.getValue().getEntries().isEmpty())
 				.collect(toMap(Entry::getKey, Entry::getValue));
 	}
 

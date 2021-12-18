@@ -64,7 +64,7 @@ public class MergebaseLog4jSamplesIT {
 			
 			@Override
 			public void visitEnd() {
-				List<Detector> detectors = getDetections().getDetections().stream().map(d -> d.getDetector())
+				List<Detector> detectors = getDetections().getEntries().stream().map(d -> d.getDetector())
 						.collect(toList());
 
 				// if we have Detections on classes (Paths) one of vulns, this is vulnerable IF
