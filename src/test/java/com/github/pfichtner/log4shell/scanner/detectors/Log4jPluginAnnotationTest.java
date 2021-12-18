@@ -31,7 +31,7 @@ public class Log4jPluginAnnotationTest {
 			"2.0-beta8" //
 	);
 
-	Log4jPluginAnnotation sut = new Log4jPluginAnnotation();
+	AbstractDetector sut = new Log4jPluginAnnotation();
 
 	@Test
 	void canDetectPluginClass() throws Exception {

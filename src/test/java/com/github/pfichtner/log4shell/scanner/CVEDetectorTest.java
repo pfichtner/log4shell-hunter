@@ -16,8 +16,9 @@ import org.approvaltests.core.Options.FileOptions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections.Detection;
+import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
+import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCalls;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
@@ -90,15 +91,15 @@ class CVEDetectorTest {
 
 	@Test
 	void approveAll() throws IOException {
-		List<Detector<Detections>> allDetectors = allDetectors();
-		verify(toBeApproved(new CVEDetector(allDetectors), allDetectors), options());
+		Multiplexer multiplexer = allDetectors();
+		verify(toBeApproved(new CVEDetector(multiplexer), multiplexer.getMultiplexed()), options());
 	}
 
 	private static Options options() {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
 	}
 
-	private String toBeApproved(CVEDetector detector, List<Detector<Detections>> detectors) throws IOException {
+	private String toBeApproved(CVEDetector detector, List<AbstractDetector> detectors) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(header(detector, detectors)).append("\n");
 		for (File file : log4jJars) {
@@ -107,26 +108,27 @@ class CVEDetectorTest {
 		return sb.toString();
 	}
 
-	private String header(CVEDetector detector, List<Detector<Detections>> detectors) {
+	private String header(CVEDetector detector, List<AbstractDetector> detectors) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("File").append(SEPARATOR);
-		for (Detector<Detections> visitor : detectors) {
+		for (AbstractDetector visitor : detectors) {
 			sb.append(visitor.getName()).append(SEPARATOR);
 		}
 		return sb.toString();
 	}
 
-	private String content(CVEDetector cveDetector, List<Detector<Detections>> detectors, File log4jJar) throws IOException {
+	private String content(CVEDetector cveDetector, List<AbstractDetector> detectors, File log4jJar)
+			throws IOException {
 		List<Detection> detections = cveDetector.analyze(log4jJar.getAbsolutePath()).getDetections();
 		StringBuilder sb = new StringBuilder();
 		sb.append(log4jJar.getAbsoluteFile().getName()).append(SEPARATOR);
-		for (Detector<Detections> detector : detectors) {
+		for (AbstractDetector detector : detectors) {
 			sb.append(contains(detections, detector) ? "X" : "").append(SEPARATOR);
 		}
 		return sb.toString();
 	}
 
-	private boolean contains(List<Detection> detections, Detector<Detections> detector) {
+	private boolean contains(List<Detection> detections, Detector detector) {
 		return detections.stream().map(Detection::getDetector).anyMatch(detector::equals);
 	}
 

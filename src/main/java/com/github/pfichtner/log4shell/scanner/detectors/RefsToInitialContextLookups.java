@@ -8,16 +8,13 @@ import java.nio.file.Path;
 
 import org.objectweb.asm.tree.ClassNode;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
-import com.github.pfichtner.log4shell.scanner.io.Detector;
-
-public class RefsToInitialContextLookups implements Detector<Detections> {
+public class RefsToInitialContextLookups extends AbstractDetector {
 
 	@Override
-	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
+	public void visitClass(Path filename, ClassNode classNode) {
 		// TODO should be distinctBy target
 		methodInsnNodes(classNode, methodNameIsLookup).filter(initialContextLookup).distinct()
-				.forEach(n -> detections.add(this, filename, Detector.referenceTo(n)));
+				.forEach(n -> addDetections(filename, referenceTo(n)));
 	}
 
 }

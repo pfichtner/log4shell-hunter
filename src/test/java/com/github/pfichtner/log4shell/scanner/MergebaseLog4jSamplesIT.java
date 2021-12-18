@@ -17,7 +17,8 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
+import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
+import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupWithNamingContextLookupsWithoutThrowingException;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCalls;
@@ -47,24 +48,23 @@ public class MergebaseLog4jSamplesIT {
 
 	}
 
-	private Detector<Detections> combined() {
+	private AbstractDetector combined() {
 
 		JndiManagerLookupCalls vuln1 = new JndiManagerLookupCalls();
 		JndiLookupWithNamingContextLookupsWithoutThrowingException vuln2 = new JndiLookupWithNamingContextLookupsWithoutThrowingException();
 		RefsToInitialContextLookups vuln3 = new RefsToInitialContextLookups();
 
-		List<Detector<Detections>> vulns = Arrays.asList(vuln1, vuln2, vuln3);
+		List<AbstractDetector> vulns = Arrays.asList(vuln1, vuln2, vuln3);
 		IsJndiEnabledPropertyAccess isJndiEnabledPropertyAccess = new IsJndiEnabledPropertyAccess();
 
-		List<Detector<Detections>> all = new ArrayList<>(vulns);
+		List<AbstractDetector> all = new ArrayList<>(vulns);
 		all.add(isJndiEnabledPropertyAccess);
 
-		return new Detectors.Multiplexer(all) {
-
+		return new Multiplexer(all) {
+			
 			@Override
-			public void visitEnd(Detections detections) {
-
-				List<Detector<?>> detectors = detections.getDetections().stream().map(d -> d.getDetector())
+			public void visitEnd() {
+				List<Detector> detectors = getDetections().getDetections().stream().map(d -> d.getDetector())
 						.collect(toList());
 
 				// if we have Detections on classes (Paths) one of vulns, this is vulnerable IF

@@ -12,8 +12,6 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
-import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
 
 /**
@@ -33,7 +31,7 @@ import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
  * (<code>false</code>) directly after {@value #LOG4J2_ENABLE_JNDI} load on the
  * stack.
  */
-public class IsJndiEnabledPropertyAccess implements Detector<Detections> {
+public class IsJndiEnabledPropertyAccess extends AbstractDetector {
 
 	public static final String LOG4J2_ENABLE_JNDI = "log4j2.enableJndi";
 
@@ -45,12 +43,12 @@ public class IsJndiEnabledPropertyAccess implements Detector<Detections> {
 	});
 
 	@Override
-	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
+	public void visitClass(Path filename, ClassNode classNode) {
 		// LdcInsn("log4j2.enableJndi");
 		// Insn(ICONST_0);
 		filter(classNode.methods.stream().map(AsmUtil::instructionsStream).flatMap(identity()), LdcInsnNode.class)
 				.filter(possiblyAccessToGetBooleanProperty)
-				.forEach(_i -> detections.add(this, filename, LOG4J2_ENABLE_JNDI + " access"));
+				.forEach(_i -> addDetections(filename, LOG4J2_ENABLE_JNDI + " access"));
 	}
 
 }

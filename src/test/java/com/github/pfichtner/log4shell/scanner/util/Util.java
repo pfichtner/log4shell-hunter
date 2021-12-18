@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
-import com.github.pfichtner.log4shell.scanner.io.Detector;
+import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 
 public final class Util {
 
@@ -44,7 +44,7 @@ public final class Util {
 				.collect(toMap(Entry::getKey, Entry::getValue));
 	}
 
-	public static Map<File, Detections> analyse(Log4jJars log4jJars, Detector<Detections> sut) throws IOException {
+	public static Map<File, Detections> analyse(Log4jJars log4jJars, AbstractDetector sut) throws IOException {
 		CVEDetector detector = new CVEDetector(sut);
 		Map<File, Detections> results = new HashMap<>();
 		for (File log4j : log4jJars) {

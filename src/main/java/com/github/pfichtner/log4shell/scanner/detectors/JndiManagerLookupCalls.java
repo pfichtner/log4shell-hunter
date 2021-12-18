@@ -12,20 +12,18 @@ import java.util.stream.Stream;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
-import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
 
 /**
  * Detects calls in classes that are named <code>JndiLookup</code> to
  * org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String)
  */
-public class JndiManagerLookupCalls implements Detector<Detections> {
+public class JndiManagerLookupCalls extends AbstractDetector {
 
 	@Override
-	public void visitClass(Detections detections, Path filename, ClassNode classNode) {
+	public void visitClass(Path filename, ClassNode classNode) {
 		if (classIsJndiLookup(filename)) {
-			jndiManagerLookupCalls(classNode).forEach(n -> detections.add(this, filename, Detector.referenceTo(n)));
+			jndiManagerLookupCalls(classNode).forEach(n -> addDetections(filename, referenceTo(n)));
 		}
 	}
 
