@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner.util;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
+import static org.objectweb.asm.Opcodes.ACC_ANNOTATION;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,8 +34,8 @@ public final class AsmUtil {
 		return classNode;
 	}
 
-	public static Map<Object, Object> toMap(AnnotationNode annotationNode, List<Object> values) {
-		return IntStream.range(0, values.size() / 2).boxed().collect(
+	public static Map<Object, Object> toMap(AnnotationNode annotationNode) {
+		return IntStream.range(0, annotationNode.values.size() / 2).boxed().collect(
 				Collectors.toMap(i -> annotationNode.values.get(i * 2), i -> annotationNode.values.get(i * 2 + 1)));
 	}
 
@@ -64,6 +65,10 @@ public final class AsmUtil {
 
 	public static Stream<AbstractInsnNode> instructionsStream(InsnList instructions) {
 		return Streams.itToStream(instructions.iterator());
+	}
+
+	public static boolean isAnno(ClassNode classNode) {
+		return (classNode.access & ACC_ANNOTATION) != 0;
 	}
 
 }
