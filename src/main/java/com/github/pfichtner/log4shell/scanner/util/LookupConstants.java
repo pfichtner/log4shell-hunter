@@ -1,12 +1,12 @@
-package com.github.pfichtner.log4shell.scanner.detectors;
+package com.github.pfichtner.log4shell.scanner.util;
 
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -14,22 +14,18 @@ public final class LookupConstants {
 
 	private static final String LOOKUP_NAME = "lookup";
 
+	public static final Type PLUGIN_TYPE = Type.getObjectType("org/apache/logging/log4j/core/config/plugins/Plugin");
+
+	public static final Type JNDI_LOOKUP_TYPE = Type.getObjectType("org/apache/logging/log4j/core/lookup/JndiLookup");
+
+	public static final Type JNDI_MANAGER_TYPE = Type.getObjectType("org/apache/logging/log4j/core/net/JndiManager");
+
 	private LookupConstants() {
 		super();
 	}
 
 	// TODO do not depend on method name
 	public static final Predicate<MethodNode> methodNameIsLookup = methodNameIs(LOOKUP_NAME);
-
-	// TODO do not depend on class name
-	public static boolean classIsJndiLookup(Path filename) {
-		return filename.toString().endsWith("JndiLookup.class");
-	}
-
-	// TODO do not depend on class name
-	public static boolean classIsJndiManager(Path filename) {
-		return filename.toString().endsWith("JndiManager.class");
-	}
 
 	public static Predicate<MethodNode> methodNameIs(String name) {
 		return methodNode -> methodNode.name.equals(name);

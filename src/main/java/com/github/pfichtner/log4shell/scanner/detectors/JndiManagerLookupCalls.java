@@ -1,14 +1,16 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.classIsJndiLookup;
-import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.jndiManagerLookup;
-import static com.github.pfichtner.log4shell.scanner.detectors.LookupConstants.methodNameIsLookup;
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.repackageComparator;
+import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.JNDI_LOOKUP_TYPE;
+import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.jndiManagerLookup;
+import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.methodNameIsLookup;
 import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
 import static java.util.function.Function.identity;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
@@ -22,7 +24,7 @@ public class JndiManagerLookupCalls extends AbstractDetector {
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
-		if (classIsJndiLookup(filename)) {
+		if (repackageComparator.isClass(Type.getObjectType(classNode.name), JNDI_LOOKUP_TYPE)) {
 			jndiManagerLookupCalls(classNode).forEach(n -> addDetections(filename, referenceTo(n)));
 		}
 	}
