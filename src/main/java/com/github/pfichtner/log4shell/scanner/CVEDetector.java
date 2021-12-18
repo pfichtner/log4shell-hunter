@@ -3,7 +3,6 @@ package com.github.pfichtner.log4shell.scanner;
 import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
 import static com.github.pfichtner.log4shell.scanner.io.Files.isClass;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.readClass;
-import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
@@ -12,7 +11,6 @@ import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.objectweb.asm.tree.ClassNode;
@@ -24,7 +22,7 @@ import com.github.pfichtner.log4shell.scanner.io.JarReader.JarReaderVisitor;
 
 public class CVEDetector {
 
-	private List<Detector<Detections>> detectors;
+	private Detector<Detections> detector;
 
 	public static class Detections {
 
@@ -47,7 +45,7 @@ public class CVEDetector {
 			public Detector<?> getDetector() {
 				return detector;
 			}
-			
+
 			public Path getFilename() {
 				return filename;
 			}
@@ -74,18 +72,16 @@ public class CVEDetector {
 
 	}
 
-	@SafeVarargs
-	// TODO introduce multiplexer
-	public CVEDetector(Detector<Detections>... detectors) {
-		this(Arrays.asList(detectors));
+	public CVEDetector(Detector<Detections> detector) {
+		this.detector = detector;
 	}
 
-	public CVEDetector(List<Detector<Detections>> detectors) {
-		this.detectors = unmodifiableList(new ArrayList<>(detectors));
+	public CVEDetector(List<Detector<Detections>> allDetectors) {
+		this(Detectors.multiplexer(allDetectors));
 	}
 
-	public List<Detector<Detections>> getDetectors() {
-		return detectors;
+	public Detector<Detections> getDetector() {
+		return detector;
 	}
 
 	public void check(String jar) throws IOException {
@@ -122,16 +118,12 @@ public class CVEDetector {
 				if (isClass(file)) {
 					try {
 						ClassNode classNode = readClass(bytes, 0);
-						for (Detector<Detections> detector : detectors) {
-							detector.visitClass(detections, file, classNode);
-						}
+						detector.visitClass(detections, file, classNode);
 					} catch (Exception e) {
 						System.err.println("Error while reading class " + file + ": " + e.getMessage());
 					}
 				} else {
-					for (Detector<Detections> detector : detectors) {
-						detector.visitFile(detections, file, bytes);
-					}
+					detector.visitFile(detections, file, bytes);
 					if (isArchive(file.toString())) {
 						try {
 							analyze(new JarReader(file), detections);
@@ -144,9 +136,7 @@ public class CVEDetector {
 
 			@Override
 			public void end() {
-				for (Detector<Detections> detector : detectors) {
-					detector.visitEnd(detections);
-				}
+				detector.visitEnd(detections);
 			}
 
 		};

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
-import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detections;
 import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
@@ -26,36 +25,6 @@ import com.github.pfichtner.log4shell.scanner.detectors.RefsToInitialContextLook
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 
 public class MergebaseLog4jSamplesIT {
-
-	private static class Multiplexer implements Detector<Detections> {
-		private final List<Detector<Detections>> detectors;
-
-		private Multiplexer(List<Detector<Detections>> detectors) {
-			this.detectors = detectors;
-		}
-
-		@Override
-		public void visitFile(Detections detections, Path file, byte[] bytes) {
-			for (Detector<Detections> detector : detectors) {
-				detector.visitFile(detections, file, bytes);
-			}
-		}
-
-		@Override
-		public void visitClass(Detections detections, Path filename, ClassNode classNode) {
-			for (Detector<Detections> detector : detectors) {
-				detector.visitClass(detections, filename, classNode);
-			}
-		}
-
-		@Override
-		public void visitEnd(Detections detections) {
-			for (Detector<Detections> detector : detectors) {
-				detector.visitEnd(detections);
-			}
-		}
-
-	}
 
 	@Test
 	void checkSamples() throws IOException {
@@ -90,7 +59,7 @@ public class MergebaseLog4jSamplesIT {
 		List<Detector<Detections>> all = new ArrayList<>(vulns);
 		all.add(isJndiEnabledPropertyAccess);
 
-		return new Multiplexer(all) {
+		return new Detectors.Multiplexer(all) {
 
 			@Override
 			public void visitEnd(Detections detections) {

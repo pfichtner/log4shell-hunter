@@ -90,36 +90,37 @@ class CVEDetectorTest {
 
 	@Test
 	void approveAll() throws IOException {
-		verify(toBeApproved(new CVEDetector(allDetectors())), options());
+		List<Detector<Detections>> allDetectors = allDetectors();
+		verify(toBeApproved(new CVEDetector(allDetectors), allDetectors), options());
 	}
 
 	private static Options options() {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
 	}
 
-	private String toBeApproved(CVEDetector detector) throws IOException {
+	private String toBeApproved(CVEDetector detector, List<Detector<Detections>> detectors) throws IOException {
 		StringBuilder sb = new StringBuilder();
-		sb.append(header(detector)).append("\n");
+		sb.append(header(detector, detectors)).append("\n");
 		for (File file : log4jJars) {
-			sb.append(content(detector, file)).append("\n");
+			sb.append(content(detector, detectors, file)).append("\n");
 		}
 		return sb.toString();
 	}
 
-	private String header(CVEDetector detector) {
+	private String header(CVEDetector detector, List<Detector<Detections>> detectors) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("File").append(SEPARATOR);
-		for (Detector<Detections> visitor : detector.getDetectors()) {
+		for (Detector<Detections> visitor : detectors) {
 			sb.append(visitor.getName()).append(SEPARATOR);
 		}
 		return sb.toString();
 	}
 
-	private String content(CVEDetector cveDetector, File log4jJar) throws IOException {
+	private String content(CVEDetector cveDetector, List<Detector<Detections>> detectors, File log4jJar) throws IOException {
 		List<Detection> detections = cveDetector.analyze(log4jJar.getAbsolutePath()).getDetections();
 		StringBuilder sb = new StringBuilder();
 		sb.append(log4jJar.getAbsoluteFile().getName()).append(SEPARATOR);
-		for (Detector<Detections> detector : cveDetector.getDetectors()) {
+		for (Detector<Detections> detector : detectors) {
 			sb.append(contains(detections, detector) ? "X" : "").append(SEPARATOR);
 		}
 		return sb.toString();
