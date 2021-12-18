@@ -49,7 +49,7 @@ public class MergebaseLog4jSamplesIT {
 
 	}
 
-	private AbstractDetector combined() {
+	private Multiplexer combined() {
 
 		JndiManagerLookupCalls vuln1 = new JndiManagerLookupCalls();
 		JndiLookupWithNamingContextLookupsWithoutThrowingException vuln2 = new JndiLookupWithNamingContextLookupsWithoutThrowingException();
@@ -65,6 +65,7 @@ public class MergebaseLog4jSamplesIT {
 
 			@Override
 			public void visitEnd() {
+				super.visitEnd();
 				List<Detector> detectors = getDetections().stream().map(Detection::getDetector).collect(toList());
 
 				// if we have Detections on classes (Paths) one of vulns, this is vulnerable IF
@@ -74,12 +75,11 @@ public class MergebaseLog4jSamplesIT {
 				boolean hasPropertyAccess = detectors.contains(isJndiEnabledPropertyAccess);
 
 				if (isVuln && !hasPropertyAccess) {
-					System.err.println(
-							"Log4J version with context lookup found (without " + LOG4J2_ENABLE_JNDI + " check)");
+					String object = getResource() +  ": Log4J version with context lookup found (without " + LOG4J2_ENABLE_JNDI
+							+ " check)";
+					System.err.println(object);
 				}
-
 			}
-
 		};
 
 	}

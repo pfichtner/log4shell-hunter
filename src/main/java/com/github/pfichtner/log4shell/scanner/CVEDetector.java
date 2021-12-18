@@ -96,8 +96,8 @@ public class CVEDetector {
 		return new JarReaderVisitor() {
 
 			@Override
-			public void visit(URI jar) {
-				detector.visit(jar);
+			public void visit(String resource) {
+				detector.visit(resource);
 			}
 
 			@Override

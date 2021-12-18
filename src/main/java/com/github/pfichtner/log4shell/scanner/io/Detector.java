@@ -1,6 +1,5 @@
 package com.github.pfichtner.log4shell.scanner.io;
 
-import java.net.URI;
 import java.nio.file.Path;
 
 import org.objectweb.asm.tree.ClassNode;
@@ -11,16 +10,12 @@ public interface Detector {
 		return getClass().getSimpleName();
 	}
 
-	default void visit(URI jar) {
-	}
+	void visit(String resource);
 
-	default void visitClass(Path filename, ClassNode classNode) {
-	}
+	void visitClass(Path filename, ClassNode classNode);
 
-	default void visitFile(Path file, byte[] bytes) {
-	}
+	void visitFile(Path file, byte[] bytes);
 
-	default void visitEnd() {
-	}
+	void visitEnd();
 
 }

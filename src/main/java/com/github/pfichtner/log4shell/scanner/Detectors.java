@@ -1,10 +1,8 @@
 package com.github.pfichtner.log4shell.scanner;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
-import java.net.URI;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +25,6 @@ public final class Detectors {
 	public static class Multiplexer extends AbstractDetector {
 
 		private final List<AbstractDetector> detectors;
-		private List<Detection> detections = emptyList();
 
 		public Multiplexer(List<AbstractDetector> detectors) {
 			this.detectors = detectors;
@@ -38,14 +35,16 @@ public final class Detectors {
 		}
 
 		@Override
-		public void visit(URI jar) {
+		public void visit(String resource) {
+			super.visit(resource);
 			for (AbstractDetector detector : detectors) {
-				detector.visit(jar);
+				detector.visit(resource);
 			}
 		}
 
 		@Override
 		public void visitFile(Path file, byte[] bytes) {
+			super.visitFile(file, bytes);
 			for (AbstractDetector detector : detectors) {
 				detector.visitFile(file, bytes);
 			}
@@ -53,6 +52,7 @@ public final class Detectors {
 
 		@Override
 		public void visitClass(Path filename, ClassNode classNode) {
+			super.visitClass(filename, classNode);
 			for (AbstractDetector detector : detectors) {
 				detector.visitClass(filename, classNode);
 			}
@@ -60,16 +60,16 @@ public final class Detectors {
 
 		@Override
 		public void visitEnd() {
+			super.visitEnd();
 			for (AbstractDetector detector : detectors) {
 				detector.visitEnd();
 			}
-			this.detections = detectors.stream().map(AbstractDetector::getDetections).flatMap(Collection::stream)
-					.collect(toList());
 		}
 
 		@Override
 		public List<Detection> getDetections() {
-			return detections;
+			return detectors.stream().map(AbstractDetector::getDetections).flatMap(Collection::stream)
+					.collect(toList());
 		}
 
 	}

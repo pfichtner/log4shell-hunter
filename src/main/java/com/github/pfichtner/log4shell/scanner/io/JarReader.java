@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -19,12 +20,12 @@ import java.util.Map;
 
 public class JarReader {
 
+	private final String resource;
 	private FileSystem fileSystem;
-	private URI jar;
 
 	public static interface JarReaderVisitor {
 		
-		default void visit(URI jar) {
+		default void visit(String resource) {
 			// noop
 		}
 
@@ -47,11 +48,12 @@ public class JarReader {
 	}
 
 	public JarReader(URI jar) throws IOException {
-		this.jar = jar;
+		this.resource = jar.toString();
 		this.fileSystem = newFileSystem(URI.create("jar:file:" + jar.getPath()), zipProperties());
 	}
 
 	public JarReader(Path path) throws IOException {
+		this.resource = path.toString();
 		this.fileSystem = newFileSystem(path, null);
 	}
 
@@ -60,30 +62,33 @@ public class JarReader {
 	}
 
 	public void accept(JarReaderVisitor visitor) throws IOException {
+		visitor.visit(this.resource);
 		try {
-			visitor.visit(this.jar);
-			walkFileTree(fileSystem.getPath("/"), new SimpleFileVisitor<Path>() {
-				
-
-				@Override
-				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-					visitor.visitDirectory(dir);
-					return CONTINUE;
-				}
-
-				@Override
-				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					ByteArrayOutputStream content = new ByteArrayOutputStream();
-					copy(file, content);
-					visitor.visitFile(file, content.toByteArray());
-					return CONTINUE;
-				}
-
-			});
+			walkFileTree(fileSystem.getPath("/"), adapter(visitor));
 		} finally {
 			fileSystem.close();
 			visitor.end();
 		}
+	}
+
+	private FileVisitor<Path> adapter(JarReaderVisitor visitor) {
+		return new SimpleFileVisitor<Path>() {
+
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+				visitor.visitDirectory(dir);
+				return CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				ByteArrayOutputStream content = new ByteArrayOutputStream();
+				copy(file, content);
+				visitor.visitFile(file, content.toByteArray());
+				return CONTINUE;
+			}
+
+		};
 	}
 
 	private static Map<String, String> zipProperties() {
