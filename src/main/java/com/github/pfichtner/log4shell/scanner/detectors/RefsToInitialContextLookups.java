@@ -8,6 +8,10 @@ import java.nio.file.Path;
 
 import org.objectweb.asm.tree.ClassNode;
 
+/**
+ * log4j-core-2.0-beta9 and log4j-core-2.0-rc1 did not have a JndiManager but
+ * did JNDI access by theirself.
+ */
 public class RefsToInitialContextLookups extends AbstractDetector {
 
 	@Override
