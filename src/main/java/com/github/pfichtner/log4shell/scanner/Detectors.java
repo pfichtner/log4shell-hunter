@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
@@ -26,6 +27,7 @@ public final class Detectors {
 	public static class Multiplexer extends AbstractDetector {
 
 		private final List<AbstractDetector> detectors;
+		private List<Detection> detections = emptyList();
 
 		public Multiplexer(List<AbstractDetector> detectors) {
 			this.detectors = detectors;
@@ -61,12 +63,13 @@ public final class Detectors {
 			for (AbstractDetector detector : detectors) {
 				detector.visitEnd();
 			}
+			this.detections = detectors.stream().map(AbstractDetector::getDetections).flatMap(Collection::stream)
+					.collect(toList());
 		}
 
 		@Override
 		public List<Detection> getDetections() {
-			return detectors.stream().map(AbstractDetector::getDetections).flatMap(Collection::stream)
-					.collect(toList());
+			return detections;
 		}
 
 	}
