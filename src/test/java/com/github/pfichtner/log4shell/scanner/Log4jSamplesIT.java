@@ -22,21 +22,42 @@ import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupWithNamingContextLookupsWithoutThrowingException;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCalls;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerWithDirContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.detectors.RefsToInitialContextLookups;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 
-public class MergebaseLog4jSamplesIT {
+public class Log4jSamplesIT {
 
 	@Test
-	void checkSamples() throws IOException {
+	void checkMergeBaseSamples() throws IOException {
 		// TODO assert if right category (one of following)
 		// List<String> asList = Arrays.asList("false-hits", "old-hits", "true-hits");
 
 		CVEDetector sut = new CVEDetector(combined());
 
-		List<String> filenames = filenames();
+		List<String> filenames = filenames("log4j-samples");
 		assumeFalse(filenames.isEmpty(), "git submodule empty, please clone recursivly");
+		for (String filename : filenames) {
+			if (isArchive(filename)) {
+				System.out.println("-- " + filename);
+				sut.check(filename);
+				System.out.println();
+			} else {
+				// System.err.println("Ignoring " + file);
+			}
+		}
+
+	}
+
+	@Test
+	void checkMySamples() throws IOException {
+		// TODO assert if right category (one of following)
+		// List<String> asList = Arrays.asList("false-hits", "old-hits", "true-hits");
+
+		CVEDetector sut = new CVEDetector(combined());
+
+		List<String> filenames = filenames("my-log4j-samples");
 		for (String filename : filenames) {
 			if (isArchive(filename)) {
 				System.out.println("-- " + filename);
@@ -51,11 +72,13 @@ public class MergebaseLog4jSamplesIT {
 
 	private Multiplexer combined() {
 
-		JndiManagerLookupCalls vuln1 = new JndiManagerLookupCalls();
+		JndiManagerWithDirContextLookups vuln1 = new JndiManagerWithDirContextLookups();
 		JndiLookupWithNamingContextLookupsWithoutThrowingException vuln2 = new JndiLookupWithNamingContextLookupsWithoutThrowingException();
 		RefsToInitialContextLookups vuln3 = new RefsToInitialContextLookups();
-
 		List<AbstractDetector> vulns = Arrays.asList(vuln1, vuln2, vuln3);
+		
+		// TODO verify if the class found by vulns are plugins
+		Log4jPluginAnnotation isPlugin = new Log4jPluginAnnotation();
 		IsJndiEnabledPropertyAccess isJndiEnabledPropertyAccess = new IsJndiEnabledPropertyAccess();
 
 		List<AbstractDetector> all = new ArrayList<>(vulns);
@@ -75,17 +98,16 @@ public class MergebaseLog4jSamplesIT {
 				boolean hasPropertyAccess = detectors.contains(isJndiEnabledPropertyAccess);
 
 				if (isVuln && !hasPropertyAccess) {
-					String object = getResource() +  ": Log4J version with context lookup found (without " + LOG4J2_ENABLE_JNDI
-							+ " check)";
-					System.err.println(object);
+					System.err.println(getResource() + ": Log4J version with context lookup found (without "
+							+ LOG4J2_ENABLE_JNDI + " check)");
 				}
 			}
 		};
 
 	}
 
-	private List<String> filenames() throws IOException {
-		try (Stream<Path> fileStream = walk(Paths.get("log4j-samples"))) {
+	private List<String> filenames(String base) throws IOException {
+		try (Stream<Path> fileStream = walk(Paths.get(base))) {
 			return fileStream.filter(Files::isRegularFile).map(Path::toString).collect(toList());
 		}
 	}

@@ -14,8 +14,8 @@ import org.objectweb.asm.tree.ClassNode;
 
 public class Log4jPluginAnnotation extends AbstractDetector {
 
-	private static final String NAME_JNDI = "jndi";
-	private static final String CATEGORY_LOOKUP = "Lookup";
+	public static final String NAME_JNDI = "jndi";
+	public static final String CATEGORY_LOOKUP = "Lookup";
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
