@@ -12,13 +12,14 @@ import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
-import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
-import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.DirContextLookupsCallsFromJndiManager;
-import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiManager;
-import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCalls;
+import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupConstructorWithISException;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
+import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
+import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
+import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiManager;
 
 public final class Detectors {
 
@@ -81,7 +82,8 @@ public final class Detectors {
 			new DirContextLookupsCallsFromJndiManager(), //
 			new Log4jPluginAnnotation(), //
 			new InitialContextLookupsCalls(), //
-			new IsJndiEnabledPropertyAccess() //
+			new IsJndiEnabledPropertyAccess(), //
+			new JndiLookupConstructorWithISException() //
 	));
 
 	private Detectors() {
