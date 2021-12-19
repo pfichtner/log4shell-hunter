@@ -132,6 +132,14 @@ public class Log4jSamplesIT {
 
 		return new Multiplexer(all) {
 
+			private String resource;
+
+			@Override
+			public void visit(String resource) {
+				this.resource = resource;
+				super.visit(resource);
+			}
+
 			@Override
 			public void visitEnd() {
 				super.visitEnd();
@@ -145,7 +153,7 @@ public class Log4jSamplesIT {
 				boolean hasPropertyAccess = detectors.contains(isAtLeastLog4J217);
 
 				if (isVuln && !hasPropertyAccess) {
-					System.err.println(getResource()
+					System.err.println(resource
 							+ ": Log4J version with context lookup found (without code introduced in log4j-2.17)");
 				}
 			}

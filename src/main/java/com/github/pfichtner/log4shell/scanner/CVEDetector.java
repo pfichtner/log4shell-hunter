@@ -29,7 +29,7 @@ public class CVEDetector {
 		private final Path filename;
 		private final Object object;
 
-		public Detection(Detector detector, Path filename, Object object) {
+		public Detection(Detector detector, Object resource, Path filename, Object object) {
 			this.detector = detector;
 			this.filename = filename;
 			this.object = object;
@@ -59,10 +59,6 @@ public class CVEDetector {
 
 	public CVEDetector(AbstractDetector detector) {
 		this.detector = detector;
-	}
-
-	public Detector getDetector() {
-		return detector;
 	}
 
 	public void check(String jar) throws IOException {
@@ -113,7 +109,7 @@ public class CVEDetector {
 					detector.visitFile(file, bytes);
 					if (isArchive(file.toString())) {
 						try {
-							analyze(new JarReader(file));
+							new JarReader(file).accept(this);
 						} catch (IOException e) {
 							throw new RuntimeException(e);
 						}

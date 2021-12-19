@@ -5,6 +5,7 @@ import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodName;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -15,12 +16,14 @@ import com.github.pfichtner.log4shell.scanner.io.Detector;
 public abstract class AbstractDetector implements Detector {
 
 	private List<Detection> detections;
-	private String resource;
+	private Stack<String> resources = new Stack<>();
 
 	@Override
 	public void visit(String resource) {
-		this.resource = resource;
-		this.detections = new ArrayList<>();
+		if (this.resources.isEmpty()) {
+			this.detections = new ArrayList<>();
+		}
+		this.resources.push(resource);
 	}
 
 	@Override
@@ -35,11 +38,11 @@ public abstract class AbstractDetector implements Detector {
 
 	@Override
 	public void visitEnd() {
-		// noop
+		this.resources.pop();
 	}
 
 	public String getResource() {
-		return resource;
+		return resources.peek();
 	}
 
 	public List<Detection> getDetections() {
@@ -47,7 +50,7 @@ public abstract class AbstractDetector implements Detector {
 	}
 
 	public void addDetections(Path filename, String description) {
-		detections.add(new Detection(this, filename, description));
+		detections.add(new Detection(this, getResource(), filename, description));
 	}
 
 	public static String referenceTo(MethodInsnNode node) {
