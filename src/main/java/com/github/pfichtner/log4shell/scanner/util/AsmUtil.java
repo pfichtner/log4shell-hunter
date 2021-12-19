@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.typeComparator;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 import static org.objectweb.asm.Opcodes.ACC_ANNOTATION;
@@ -19,6 +20,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -73,6 +75,18 @@ public final class AsmUtil {
 
 	public static boolean isAnno(ClassNode classNode) {
 		return (classNode.access & ACC_ANNOTATION) != 0;
+	}
+
+	public static Predicate<LdcInsnNode> constantPoolLoadOf(Predicate<Object> predicate) {
+		return n -> predicate.test(n.cst);
+	}
+
+	public static Predicate<MethodNode> isConstructor() {
+		return n -> typeComparator().methodNameIs(n, "<init>");
+	}
+
+	public static Predicate<MethodNode> voidNoArgs() {
+		return n -> n.desc.equals("()V");
 	}
 
 }

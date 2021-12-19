@@ -36,6 +36,7 @@ import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotationObf
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
+import com.github.pfichtner.log4shell.scanner.util.LookupConstants;
 
 public class Log4jSamplesIT {
 
@@ -82,7 +83,8 @@ public class Log4jSamplesIT {
 		}
 	}
 
-	private AbstractDetector combinedNext() {
+	// TODO fails(?) finding matches in nested archives
+	private AbstractDetector combined_NEXT() {
 		Log4jPluginAnnotationObfuscateAwareClassNodeCollector collector = new Log4jPluginAnnotationObfuscateAwareClassNodeCollector();
 		AbstractDetector cacheAll = new AbstractDetector() {
 
@@ -101,7 +103,8 @@ public class Log4jSamplesIT {
 						.map(n -> Type.getObjectType(n.name)).collect(toList());
 				cached.entrySet().stream()
 						.filter(e -> Log4jPluginAnnotation.hasPluginAnnotation(e.getValue(), possiblePluginAnnoClasses))
-						.forEach(e -> addDetections(e.getKey(), "XXX"));
+						.forEach(e -> addDetections(e.getKey(), "Possible " + LookupConstants.PLUGIN_TYPE));
+				cached.clear();
 			}
 
 		};
