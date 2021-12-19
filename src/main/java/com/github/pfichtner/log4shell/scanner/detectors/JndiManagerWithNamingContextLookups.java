@@ -3,7 +3,7 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.repackageComparator;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodInsnNodes;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.JNDI_MANAGER_TYPE;
-import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.methodNameIsLookup;
+import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.LOOKUP_NAME;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.namingContextLookup;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.throwsNamingException;
 
@@ -17,8 +17,8 @@ public class JndiManagerWithNamingContextLookups extends AbstractDetector {
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
 		if (repackageComparator.isClass(Type.getObjectType(classNode.name), JNDI_MANAGER_TYPE)) {
-			methodInsnNodes(classNode, methodNameIsLookup.and(throwsNamingException)).filter(namingContextLookup)
-					.distinct().forEach(n -> addDetections(filename, referenceTo(n)));
+			methodInsnNodes(classNode, throwsNamingException.and(n -> repackageComparator.methodNameIs(n, LOOKUP_NAME)))
+					.filter(namingContextLookup).distinct().forEach(n -> addDetections(filename, referenceTo(n)));
 		}
 	}
 

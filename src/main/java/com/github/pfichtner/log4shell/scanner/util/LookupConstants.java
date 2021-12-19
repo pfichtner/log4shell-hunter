@@ -12,7 +12,7 @@ import org.objectweb.asm.tree.MethodNode;
 
 public final class LookupConstants {
 
-	private static final String LOOKUP_NAME = "lookup";
+	public static final String LOOKUP_NAME = "lookup";
 
 	public static final Type PLUGIN_TYPE = Type.getObjectType("org/apache/logging/log4j/core/config/plugins/Plugin");
 
@@ -22,13 +22,6 @@ public final class LookupConstants {
 
 	private LookupConstants() {
 		super();
-	}
-
-	// TODO do not depend on method name
-	public static final Predicate<MethodNode> methodNameIsLookup = methodNameIs(LOOKUP_NAME);
-
-	public static Predicate<MethodNode> methodNameIs(String name) {
-		return methodNode -> methodNode.name.equals(name);
 	}
 
 	public static final Predicate<MethodNode> throwsNamingException = methodNode -> Arrays

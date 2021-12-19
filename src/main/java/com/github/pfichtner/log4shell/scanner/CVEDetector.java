@@ -52,7 +52,7 @@ public class CVEDetector {
 		}
 
 		public static List<String> getFormatted(List<Detection> entries) {
-			return entries.stream().map(CVEDetector.Detection::format).collect(toList());
+			return entries.stream().map(Detection::format).collect(toList());
 		}
 
 	}
@@ -70,7 +70,7 @@ public class CVEDetector {
 	}
 
 	public void check(File file) throws IOException {
-		for (CVEDetector.Detection detection : analyze(file)) {
+		for (Detection detection : analyze(file)) {
 			System.out.println(file + ": " + detection.format());
 		}
 	}

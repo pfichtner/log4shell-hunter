@@ -2,8 +2,8 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.repackageComparator;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.JNDI_LOOKUP_TYPE;
+import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.LOOKUP_NAME;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.jndiManagerLookup;
-import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.methodNameIsLookup;
 import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
 import static java.util.function.Function.identity;
 
@@ -30,11 +30,8 @@ public class JndiManagerLookupCalls extends AbstractDetector {
 	}
 
 	private Stream<MethodInsnNode> jndiManagerLookupCalls(ClassNode classNode) {
-		// TODO JndiManager could be renamed and obfuscated too, so how can we check if
-		// this is a reference to
-		// https://github.com/apache/logging-log4j2/blob/master/log4j-core/src/main/java/org/apache/logging/log4j/core/net/JndiManager.java
-		return filter(classNode.methods.stream().filter(methodNameIsLookup).map(AsmUtil::instructionsStream)
-				.flatMap(identity()), MethodInsnNode.class).filter(jndiManagerLookup);
+		return filter(classNode.methods.stream().filter(n -> repackageComparator.methodNameIs(n, LOOKUP_NAME))
+				.map(AsmUtil::instructionsStream).flatMap(identity()), MethodInsnNode.class).filter(jndiManagerLookup);
 	}
 
 }
