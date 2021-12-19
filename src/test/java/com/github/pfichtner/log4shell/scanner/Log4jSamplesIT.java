@@ -5,6 +5,7 @@ import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
 import static java.nio.file.Files.walk;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,33 +13,59 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.function.Executable;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
-import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
-import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
-import com.github.pfichtner.log4shell.scanner.detectors.DirContextLookupsCallsFromJndiManager;
-import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCalls;
+import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
+import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
+import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
+import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 
 public class Log4jSamplesIT {
 
-	@Test
-	void checkMergeBaseSamples() throws IOException {
-		// TODO assert if right category (one of following)
-		// List<String> asList = Arrays.asList("false-hits", "old-hits", "true-hits");
+	@TestFactory
+	Stream<DynamicTest> checkMergeBaseSamples() throws IOException {
+		return forAllModes(() -> {
+			// TODO assert if right category (one of following)
+			// List<String> asList = Arrays.asList("false-hits", "old-hits", "true-hits");
 
-		CVEDetector sut = new CVEDetector(combined());
+			List<String> filenames = filenames("log4j-samples");
+			assumeFalse(filenames.isEmpty(), "git submodule empty, please clone recursivly");
+			doCheck(new CVEDetector(combined()), filenames);
+		});
 
-		List<String> filenames = filenames("log4j-samples");
-		assumeFalse(filenames.isEmpty(), "git submodule empty, please clone recursivly");
+	}
+
+	@TestFactory
+	Stream<DynamicTest> checkMySamples() throws IOException {
+		return forAllModes(() -> {
+			// TODO assert if right category (one of following)
+			// List<String> asList = Arrays.asList("false-hits", "old-hits", "true-hits");
+			doCheck(new CVEDetector(combined()), filenames("my-log4j-samples"));
+		});
+
+	}
+
+	private Stream<DynamicTest> forAllModes(Executable executable) {
+		return EnumSet.allOf(AsmTypeComparator.class).stream().map(c -> dynamicTest(c.name(), () -> {
+			System.out.println("*** using " + c);
+			AsmTypeComparator.useTypeComparator(c);
+			executable.execute();
+		}));
+	}
+
+	private void doCheck(CVEDetector sut, List<String> filenames) throws IOException {
 		for (String filename : filenames) {
 			if (isArchive(filename)) {
 				System.out.println("-- " + filename);
@@ -48,39 +75,18 @@ public class Log4jSamplesIT {
 				// System.err.println("Ignoring " + file);
 			}
 		}
-
 	}
 
-	@Test
-	void checkMySamples() throws IOException {
-		// TODO assert if right category (one of following)
-		// List<String> asList = Arrays.asList("false-hits", "old-hits", "true-hits");
-
-		CVEDetector sut = new CVEDetector(combined());
-
-		List<String> filenames = filenames("my-log4j-samples");
-		for (String filename : filenames) {
-			if (isArchive(filename)) {
-				System.out.println("-- " + filename);
-				sut.check(filename);
-				System.out.println();
-			} else {
-				// System.err.println("Ignoring " + file);
-			}
-		}
-
-	}
-
-	private Multiplexer combined() {
+	private AbstractDetector combined() {
 
 		// TODO shouldn't it be?
 //		JndiManagerWithDirContextLookups vuln1 = new JndiManagerWithDirContextLookups();
 		JndiManagerLookupCallsFromJndiLookup vuln1 = new JndiManagerLookupCallsFromJndiLookup();
-		
+
 		NamingContextLookupCallsFromJndiLookup vuln2 = new NamingContextLookupCallsFromJndiLookup();
 		InitialContextLookupsCalls vuln3 = new InitialContextLookupsCalls();
 		List<AbstractDetector> vulns = Arrays.asList(vuln1, vuln2, vuln3);
-		
+
 		// TODO verify if the class found by vulns are plugins
 		Log4jPluginAnnotation isPlugin = new Log4jPluginAnnotation();
 		IsJndiEnabledPropertyAccess isJndiEnabledPropertyAccess = new IsJndiEnabledPropertyAccess();
