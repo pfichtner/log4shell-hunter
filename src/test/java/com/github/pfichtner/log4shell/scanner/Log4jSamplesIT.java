@@ -14,12 +14,16 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.function.Executable;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
@@ -28,6 +32,7 @@ import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCal
 import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
+import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotationObfuscateAwareClassNodeCollector;
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
@@ -75,6 +80,34 @@ public class Log4jSamplesIT {
 				// System.err.println("Ignoring " + file);
 			}
 		}
+	}
+
+	private AbstractDetector combinedNext() {
+		Log4jPluginAnnotationObfuscateAwareClassNodeCollector collector = new Log4jPluginAnnotationObfuscateAwareClassNodeCollector();
+		AbstractDetector cacheAll = new AbstractDetector() {
+
+			private final Map<Path, ClassNode> cached = new HashMap<>();
+
+			@Override
+			public void visitClass(Path filename, ClassNode classNode) {
+				super.visitClass(filename, classNode);
+				cached.put(filename, classNode);
+			}
+
+			@Override
+			public void visitEnd() {
+				super.visitEnd();
+				List<Type> possiblePluginAnnoClasses = collector.getPossiblePluginAnnoClasses().values().stream()
+						.map(n -> Type.getObjectType(n.name)).collect(toList());
+				cached.entrySet().stream()
+						.filter(e -> Log4jPluginAnnotation.hasPluginAnnotation(e.getValue(), possiblePluginAnnoClasses))
+						.forEach(e -> addDetections(e.getKey(), "XXX"));
+			}
+
+		};
+
+		return new Multiplexer(Arrays.asList(cacheAll, collector));
+
 	}
 
 	private AbstractDetector combined() {

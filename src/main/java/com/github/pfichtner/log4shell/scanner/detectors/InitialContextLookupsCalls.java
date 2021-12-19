@@ -1,6 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.repackageComparator;
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.typeComparator;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodInsnNodes;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.LOOKUP_NAME;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.initialContextLookup;
@@ -17,7 +17,7 @@ public class InitialContextLookupsCalls extends AbstractDetector {
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
-		methodInsnNodes(classNode, n -> repackageComparator.methodNameIs(n, LOOKUP_NAME)).filter(initialContextLookup)
+		methodInsnNodes(classNode, n -> typeComparator().methodNameIs(n, LOOKUP_NAME)).filter(initialContextLookup)
 				.distinct().forEach(n -> addDetections(filename, referenceTo(n)));
 	}
 

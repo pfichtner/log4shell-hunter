@@ -1,6 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.repackageComparator;
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.typeComparator;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.JNDI_LOOKUP_TYPE;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.LOOKUP_NAME;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.jndiManagerLookup;
@@ -23,8 +23,8 @@ public class JndiManagerLookupCallsFromJndiLookup extends AbstractDetector {
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
-		if (repackageComparator.isClass(Type.getObjectType(classNode.name), JNDI_LOOKUP_TYPE)) {
-			filter(classNode.methods.stream().filter(n -> repackageComparator.methodNameIs(n, LOOKUP_NAME))
+		if (typeComparator().isClass(Type.getObjectType(classNode.name), JNDI_LOOKUP_TYPE)) {
+			filter(classNode.methods.stream().filter(n -> typeComparator().methodNameIs(n, LOOKUP_NAME))
 					.map(AsmUtil::instructionsStream).flatMap(identity()), MethodInsnNode.class)
 							.filter(jndiManagerLookup).forEach(n -> addDetections(filename, referenceTo(n)));
 		}

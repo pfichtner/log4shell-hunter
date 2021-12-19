@@ -1,6 +1,11 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.toMap;
+
+import java.util.Map;
+
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public enum AsmTypeComparator {
@@ -13,6 +18,11 @@ public enum AsmTypeComparator {
 		@Override
 		public boolean methodNameIs(MethodNode node, String name) {
 			return node.name.equals(name);
+		}
+
+		@Override
+		public boolean annotationIs(AnnotationNode annotationNode, Map<Object, Object> expected) {
+			return expected.equals(toMap(annotationNode));
 		}
 	},
 
@@ -33,6 +43,12 @@ public enum AsmTypeComparator {
 			return lastIndexOf > 0 ? internalName.substring(lastIndexOf + 1) : internalName;
 		}
 
+		@Override
+		public boolean annotationIs(AnnotationNode annotationNode, Map<Object, Object> expected) {
+			// TODO values are of type classes we should ignore package names
+			return expected.equals(toMap(annotationNode));
+		}
+
 	},
 
 	obfuscatorComparator {
@@ -44,6 +60,13 @@ public enum AsmTypeComparator {
 		@Override
 		public boolean methodNameIs(MethodNode node, String name) {
 			return true;
+		}
+
+		@Override
+		public boolean annotationIs(AnnotationNode annotationNode, Map<Object, Object> expected) {
+			// keys could be renamed (obfuscated)
+			// TODO values are of type classes we should ignore package names
+			return toMap(annotationNode).entrySet().containsAll(expected.entrySet());
 		}
 
 	};
@@ -66,5 +89,7 @@ public enum AsmTypeComparator {
 	public abstract boolean isClass(Type type1, Type type2);
 
 	public abstract boolean methodNameIs(MethodNode node, String name);
+
+	public abstract boolean annotationIs(AnnotationNode annotationNode, Map<Object, Object> expected);
 
 }

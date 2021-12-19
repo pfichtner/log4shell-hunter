@@ -35,8 +35,12 @@ public final class AsmUtil {
 	}
 
 	public static Map<Object, Object> toMap(AnnotationNode annotationNode) {
-		return IntStream.range(0, annotationNode.values.size() / 2).boxed().collect(
-				Collectors.toMap(i -> annotationNode.values.get(i * 2), i -> annotationNode.values.get(i * 2 + 1)));
+		return toMap(annotationNode.values);
+	}
+
+	public static Map<Object, Object> toMap(List<Object> values) {
+		return IntStream.range(0, values.size() / 2).boxed()
+				.collect(Collectors.toMap(i -> values.get(i * 2), i -> values.get(i * 2 + 1)));
 	}
 
 	public static <T> List<T> nullSafety(List<T> list) {
