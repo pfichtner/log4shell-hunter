@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
@@ -49,8 +50,8 @@ public abstract class AbstractDetector implements Detector {
 		return detections;
 	}
 
-	public void addDetections(Path filename, String description) {
-		detections.add(new Detection(this, getResource(), filename, description));
+	public void addDetections(Path filename, ClassNode classNode, String description) {
+		detections.add(new Detection(this, getResource(), filename, Type.getObjectType(classNode.name), description));
 	}
 
 	public static String referenceTo(MethodInsnNode node) {

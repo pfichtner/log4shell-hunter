@@ -35,22 +35,22 @@ public class Log4jPluginAnnotationTest {
 	AbstractDetector sut = new Log4jPluginAnnotation();
 
 	@Test
-	void canDetectPluginClass() throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutPluginAnnotation));
+	void log4j20beta9HasPluginWithDirectContextAccess() throws Exception {
+		CVEDetector detector = new CVEDetector(sut);
+		String expected = "@Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup";
+		assertAll( //
+				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath())))
+						.hasOnlyOneElementSatisfying(s -> s.startsWith(expected)), //
+				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath())))
+						.hasOnlyOneElementSatisfying(s -> s.startsWith(expected)) //
+
+		);
 	}
 
 	@Test
-	void log4j20beta9HasPluginWithDirectContextAccess() throws Exception {
-		CVEDetector detector = new CVEDetector(sut);
-		String expected = "@Plugin(name = \"jndi\", category = \"Lookup\") found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class";
-		assertAll( //
-				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath())))
-						.containsExactly(expected), //
-				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath())))
-						.containsExactly(expected) //
-
-		);
+	void canDetectPluginClass() throws Exception {
+		assertThat(withDetections(analyse(log4jJars, sut)))
+				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutPluginAnnotation));
 	}
 
 }

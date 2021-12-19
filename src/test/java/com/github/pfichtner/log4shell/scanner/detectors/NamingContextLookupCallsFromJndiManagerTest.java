@@ -53,12 +53,11 @@ class NamingContextLookupCallsFromJndiManagerTest {
 	void log4j14HasJndiManagerWithContextLookups() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
 		assertThat(getFormatted(detector.analyze(log4jJars.version("2.14.1").getAbsolutePath())))
-				.containsExactly(refTo("javax.naming.Context#lookup(java.lang.String)"));
+				.hasOnlyOneElementSatisfying(s -> s.startsWith(refTo("javax.naming.Context#lookup(java.lang.String)")));
 	}
 
 	private static String refTo(String ref) {
-		return String.format("Reference to %s found in class /org/apache/logging/log4j/core/net/JndiManager.class",
-				ref);
+		return String.format("Reference to %s found in class org.apache.logging.log4j.core.net.JndiManager", ref);
 	}
 
 	@Test

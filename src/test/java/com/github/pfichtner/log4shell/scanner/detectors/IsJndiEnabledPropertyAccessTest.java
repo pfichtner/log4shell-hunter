@@ -21,8 +21,9 @@ public class IsJndiEnabledPropertyAccessTest {
 	@Test
 	void propertyAccessWasIntroducedLog4J216() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
-		assertThat(getFormatted(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath()))).containsExactly(
-				"log4j2.enableJndi access found in class /org/apache/logging/log4j/core/net/JndiManager.class");
+		assertThat(getFormatted(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath())))
+				.hasOnlyOneElementSatisfying(s -> s.startsWith(
+						"log4j2.enableJndi access found in class org.apache.logging.log4j.core.net.JndiManager"));
 	}
 
 	@Test

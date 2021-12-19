@@ -28,7 +28,7 @@ public class JndiLookupConstructorWithISException extends AbstractDetector {
 			classNode.methods.stream().filter(isConstructor().and(voidNoArgs())).findFirst().ifPresent(c -> {
 				filter(instructionsStream(c), LdcInsnNode.class)
 						.filter(constantPoolLoadOf(JNDI_MUST_BE_ENABLED_BY_SETTING::equals))
-						.forEach(_i -> addDetections(filename, JNDI_MUST_BE_ENABLED_BY_SETTING + " access"));
+						.forEach(_i -> addDetections(filename, classNode, JNDI_MUST_BE_ENABLED_BY_SETTING + " access"));
 			});
 		}
 	}

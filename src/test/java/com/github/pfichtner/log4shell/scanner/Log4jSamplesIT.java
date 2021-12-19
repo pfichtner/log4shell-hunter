@@ -103,7 +103,7 @@ public class Log4jSamplesIT {
 						.map(n -> Type.getObjectType(n.name)).collect(toList());
 				cached.entrySet().stream()
 						.filter(e -> Log4jPluginAnnotation.hasPluginAnnotation(e.getValue(), possiblePluginAnnoClasses))
-						.forEach(e -> addDetections(e.getKey(), "Possible " + LookupConstants.PLUGIN_TYPE));
+						.forEach(e -> addDetections(e.getKey(), e.getValue(), "Possible " + LookupConstants.PLUGIN_TYPE));
 				cached.clear();
 			}
 

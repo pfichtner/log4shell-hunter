@@ -12,6 +12,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
@@ -26,29 +27,41 @@ public class CVEDetector {
 	public static class Detection {
 
 		private final Detector detector;
+		private final Object resource; // e.g. the JAR
 		private final Path filename;
+		private final Type in;
 		private final Object object;
 
-		public Detection(Detector detector, Object resource, Path filename, Object object) {
+		public Detection(Detector detector, Object resource, Path filename, Type in, Object object) {
 			this.detector = detector;
+			this.resource = resource;
 			this.filename = filename;
+			this.in = in;
 			this.object = object;
-		}
-
-		public String format() {
-			return object + " found in class " + filename;
 		}
 
 		public Detector getDetector() {
 			return detector;
 		}
 
+		public Object getResource() {
+			return resource;
+		}
+
 		public Path getFilename() {
 			return filename;
 		}
 
+		public Type getIn() {
+			return in;
+		}
+
 		public Object getObject() {
 			return object;
+		}
+
+		public String format() {
+			return object + " found in class " + in.getClassName() + " in resource " + resource;
 		}
 
 		public static List<String> getFormatted(List<Detection> entries) {

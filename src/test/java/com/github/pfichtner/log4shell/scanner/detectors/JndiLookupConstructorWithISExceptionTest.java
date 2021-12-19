@@ -22,8 +22,9 @@ public class JndiLookupConstructorWithISExceptionTest {
 	void throwingISEinJndiLookupConstructorWasIntroducedWIthLog4J217() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
 		assertThat(getFormatted(detector.analyze(log4jJars.version("2.17.0").getAbsolutePath())))
-				.containsExactly("JNDI must be enabled by setting log4j2.enableJndiLookup=true access "
-						+ "found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class");
+				.hasOnlyOneElementSatisfying(
+						s -> s.startsWith("JNDI must be enabled by setting log4j2.enableJndiLookup=true access "
+								+ "found in class org.apache.logging.log4j.core.lookup.JndiLookup"));
 	}
 
 	@Test

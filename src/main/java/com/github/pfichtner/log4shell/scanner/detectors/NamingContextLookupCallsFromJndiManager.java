@@ -22,7 +22,7 @@ public class NamingContextLookupCallsFromJndiManager extends AbstractDetector {
 	public void visitClass(Path filename, ClassNode classNode) {
 		if (typeComparator().isClass(Type.getObjectType(classNode.name), JNDI_MANAGER_TYPE)) {
 			methodInsnNodes(classNode, throwsNamingException.and(n -> typeComparator().methodNameIs(n, LOOKUP_NAME)))
-					.filter(namingContextLookup).distinct().forEach(n -> addDetections(filename, referenceTo(n)));
+					.filter(namingContextLookup).distinct().forEach(n -> addDetections(filename, classNode, referenceTo(n)));
 		}
 	}
 

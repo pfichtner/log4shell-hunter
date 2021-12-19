@@ -27,17 +27,17 @@ public class InitialContextLookupsCallsTest {
 	InitialContextLookupsCalls sut = new InitialContextLookupsCalls();
 
 	@Test
-	void canDetectPluginClass() throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(versionsWithInitialContextLookups.toArray(new File[0]));
-	}
-
-	@Test
 	void log4j20beta9HasPluginWithDirectContextAccess() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
 		List<Detection> detections = detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath());
-		assertThat(getFormatted(detections)).containsExactly(
-				"Reference to javax.naming.InitialContext#lookup(java.lang.String) found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class");
+		assertThat(getFormatted(detections)).hasOnlyOneElementSatisfying(s -> s.startsWith(
+				"Reference to javax.naming.InitialContext#lookup(java.lang.String) found in class org.apache.logging.log4j.core.lookup.JndiLookup"));
+	}
+
+	@Test
+	void canDetectPluginClass() throws Exception {
+		assertThat(withDetections(analyse(log4jJars, sut)))
+				.containsOnlyKeys(versionsWithInitialContextLookups.toArray(new File[0]));
 	}
 
 }

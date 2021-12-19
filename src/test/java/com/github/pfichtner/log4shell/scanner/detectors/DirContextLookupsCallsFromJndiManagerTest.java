@@ -29,13 +29,12 @@ class DirContextLookupsCallsFromJndiManagerTest {
 	void log4j16HasJndiManagerWithDirContextLookups() throws Exception {
 		CVEDetector detector = new CVEDetector(sut);
 		List<Detection> detections = detector.analyze(log4jJars.version("2.16.0").getAbsolutePath());
-		assertThat(getFormatted(detections))
-				.containsExactly(refTo("javax.naming.directory.DirContext#lookup(java.lang.String)"));
+		assertThat(getFormatted(detections)).hasOnlyOneElementSatisfying(
+				s -> s.startsWith(refTo("javax.naming.directory.DirContext#lookup(java.lang.String)")));
 	}
 
 	private static String refTo(String ref) {
-		return String.format("Reference to %s found in class /org/apache/logging/log4j/core/net/JndiManager.class",
-				ref);
+		return String.format("Reference to %s found in class org.apache.logging.log4j.core.net.JndiManager", ref);
 	}
 
 	@Test

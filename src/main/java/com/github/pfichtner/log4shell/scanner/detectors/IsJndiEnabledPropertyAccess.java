@@ -38,7 +38,7 @@ public class IsJndiEnabledPropertyAccess extends AbstractDetector {
 		// Insn(ICONST_0);
 		filter(classNode.methods.stream().map(AsmUtil::instructionsStream).flatMap(identity()), LdcInsnNode.class)
 				.filter(constantPoolLoadOf(LOG4J2_ENABLE_JNDI::equals))
-				.forEach(_i -> addDetections(filename, LOG4J2_ENABLE_JNDI + " access"));
+				.forEach(_i -> addDetections(filename, classNode, LOG4J2_ENABLE_JNDI + " access"));
 	}
 
 }

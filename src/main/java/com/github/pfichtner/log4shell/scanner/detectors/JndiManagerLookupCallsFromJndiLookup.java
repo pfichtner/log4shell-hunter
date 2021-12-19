@@ -26,7 +26,7 @@ public class JndiManagerLookupCallsFromJndiLookup extends AbstractDetector {
 		if (typeComparator().isClass(Type.getObjectType(classNode.name), JNDI_LOOKUP_TYPE)) {
 			filter(classNode.methods.stream().filter(n -> typeComparator().methodNameIs(n, LOOKUP_NAME))
 					.map(AsmUtil::instructionsStream).flatMap(identity()), MethodInsnNode.class)
-							.filter(jndiManagerLookup).forEach(n -> addDetections(filename, referenceTo(n)));
+							.filter(jndiManagerLookup).forEach(n -> addDetections(filename, classNode, referenceTo(n)));
 		}
 	}
 
