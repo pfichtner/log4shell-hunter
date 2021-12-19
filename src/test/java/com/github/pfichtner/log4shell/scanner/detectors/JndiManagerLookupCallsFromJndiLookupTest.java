@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-class JndiManagerLookupCallsTest {
+class JndiManagerLookupCallsFromJndiLookupTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
@@ -64,7 +64,7 @@ class JndiManagerLookupCallsTest {
 
 	);
 
-	JndiManagerLookupCalls sut = new JndiManagerLookupCalls();
+	JndiManagerLookupCallsFromJndiLookup sut = new JndiManagerLookupCallsFromJndiLookup();
 
 	@Test
 	void canDetectLookupCalls() throws Exception {

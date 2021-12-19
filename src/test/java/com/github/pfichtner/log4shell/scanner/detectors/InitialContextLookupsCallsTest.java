@@ -14,7 +14,7 @@ import com.github.pfichtner.log4shell.scanner.CVEDetector;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-public class RefsToInitialContextLookupsTest {
+public class InitialContextLookupsCallsTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
@@ -24,7 +24,7 @@ public class RefsToInitialContextLookupsTest {
 			"2.17.0" //
 	);
 
-	RefsToInitialContextLookups sut = new RefsToInitialContextLookups();
+	InitialContextLookupsCalls sut = new InitialContextLookupsCalls();
 
 	@Test
 	void canDetectPluginClass() throws Exception {

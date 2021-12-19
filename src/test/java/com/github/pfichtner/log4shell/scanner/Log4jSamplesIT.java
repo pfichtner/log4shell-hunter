@@ -21,10 +21,11 @@ import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupWithNamingContextLookupsWithoutThrowingException;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerWithDirContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
+import com.github.pfichtner.log4shell.scanner.detectors.DirContextLookupsCallsFromJndiManager;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
-import com.github.pfichtner.log4shell.scanner.detectors.RefsToInitialContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCalls;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 
 public class Log4jSamplesIT {
@@ -72,9 +73,12 @@ public class Log4jSamplesIT {
 
 	private Multiplexer combined() {
 
-		JndiManagerWithDirContextLookups vuln1 = new JndiManagerWithDirContextLookups();
-		JndiLookupWithNamingContextLookupsWithoutThrowingException vuln2 = new JndiLookupWithNamingContextLookupsWithoutThrowingException();
-		RefsToInitialContextLookups vuln3 = new RefsToInitialContextLookups();
+		// TODO shouldn't it be?
+//		JndiManagerWithDirContextLookups vuln1 = new JndiManagerWithDirContextLookups();
+		JndiManagerLookupCallsFromJndiLookup vuln1 = new JndiManagerLookupCallsFromJndiLookup();
+		
+		NamingContextLookupCallsFromJndiLookup vuln2 = new NamingContextLookupCallsFromJndiLookup();
+		InitialContextLookupsCalls vuln3 = new InitialContextLookupsCalls();
 		List<AbstractDetector> vulns = Arrays.asList(vuln1, vuln2, vuln3);
 		
 		// TODO verify if the class found by vulns are plugins

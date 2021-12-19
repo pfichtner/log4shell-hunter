@@ -13,12 +13,12 @@ import org.objectweb.asm.tree.ClassNode;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupWithNamingContextLookupsWithoutThrowingException;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCalls;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerWithDirContextLookups;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerWithNamingContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
+import com.github.pfichtner.log4shell.scanner.detectors.DirContextLookupsCallsFromJndiManager;
+import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiManager;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
-import com.github.pfichtner.log4shell.scanner.detectors.RefsToInitialContextLookups;
+import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCalls;
 
 public final class Detectors {
 
@@ -75,12 +75,12 @@ public final class Detectors {
 	}
 
 	private static final List<AbstractDetector> detectors = unmodifiableList(Arrays.asList( //
-			new JndiManagerLookupCalls(), //
-			new JndiManagerWithNamingContextLookups(), //
-			new JndiLookupWithNamingContextLookupsWithoutThrowingException(), //
-			new JndiManagerWithDirContextLookups(), //
+			new JndiManagerLookupCallsFromJndiLookup(), //
+			new NamingContextLookupCallsFromJndiManager(), //
+			new NamingContextLookupCallsFromJndiLookup(), //
+			new DirContextLookupsCallsFromJndiManager(), //
 			new Log4jPluginAnnotation(), //
-			new RefsToInitialContextLookups(), //
+			new InitialContextLookupsCalls(), //
 			new IsJndiEnabledPropertyAccess() //
 	));
 

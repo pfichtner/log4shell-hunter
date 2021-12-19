@@ -12,7 +12,11 @@ import java.nio.file.Path;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
-public class JndiManagerWithDirContextLookups extends AbstractDetector {
+/**
+ * <code>org/apache/logging/log4j/core/net/JndiManager#lookup(...) throws NamingException</code>
+ * ---> <code>javax/naming/directory/DirContext#lookup(java.lang.String)<code>
+ */
+public class DirContextLookupsCallsFromJndiManager extends AbstractDetector {
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {

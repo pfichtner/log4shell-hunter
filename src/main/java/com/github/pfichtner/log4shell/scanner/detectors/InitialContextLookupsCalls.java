@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.ClassNode;
  * log4j-core-2.0-beta9 and log4j-core-2.0-rc1 did not have a JndiManager but
  * did JNDI access by themselves.
  */
-public class RefsToInitialContextLookups extends AbstractDetector {
+public class InitialContextLookupsCalls extends AbstractDetector {
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {

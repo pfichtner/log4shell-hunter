@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
-import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCalls;
+import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
@@ -72,7 +72,7 @@ class CVEDetectorTest {
 
 	@Test
 	void detectsAndPrintsViaCheckForCalls() {
-		CVEDetector sut = new CVEDetector(new JndiManagerLookupCalls());
+		CVEDetector sut = new CVEDetector(new JndiManagerLookupCallsFromJndiLookup());
 		String expected = "Reference to org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String) found in class /org/apache/logging/log4j/core/lookup/JndiLookup.class\n";
 		assertAll( //
 				() -> assertThat(runCheck(sut, "2.10.0")).endsWith("/log4j-core-2.10.0.jar: " + expected), //
