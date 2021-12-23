@@ -1,10 +1,7 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
-import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
 import static java.nio.file.Files.walk;
-import static java.util.Arrays.asList;
-import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -20,19 +17,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.function.Executable;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodInsnNode;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
-import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
-import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
-import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCalls;
-import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
-import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
-import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiManager;
 import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
-import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
 
 public class Log4jSamplesIT {
 
@@ -44,7 +30,7 @@ public class Log4jSamplesIT {
 
 			List<String> filenames = filenames("log4j-samples");
 			assumeFalse(filenames.isEmpty(), "git submodule empty, please clone recursivly");
-			doCheck(new CVEDetector(combined()), filenames);
+			doCheck(new CVEDetector(new Log4JDetector()), filenames);
 		});
 
 	}
@@ -54,7 +40,7 @@ public class Log4jSamplesIT {
 		return forAllModes(() -> {
 			// TODO assert if right category (one of following)
 			// List<String> asList = Arrays.asList("false-hits", "old-hits", "true-hits");
-			doCheck(new CVEDetector(combined()), filenames("my-log4j-samples"));
+			doCheck(new CVEDetector(new Log4JDetector()), filenames("my-log4j-samples"));
 		});
 
 	}
@@ -77,67 +63,6 @@ public class Log4jSamplesIT {
 				// System.err.println("Ignoring " + file);
 			}
 		}
-	}
-
-	private AbstractDetector combined() {
-		/**
-		 * <pre>
-		 * 2.0-beta9, 2.0-rc1 -> Plugin direct calls (InitialContextLookupsCalls)
-		 * 2.0-rc2, 2.0.1, 2.0.2, 2.0 -> NamingContextLookupCallsFromJndiLookup (the plugin)
-		 * 2.1+ -> NamingContextLookupCallsFromJndiManager, JndiManagerLookupCallsFromJndiLookup (the plugin)
-		 * </pre>
-		 */
-
-		Log4jPluginAnnotation plugins = new Log4jPluginAnnotation();
-		InitialContextLookupsCalls initialContextLookupsCalls = new InitialContextLookupsCalls();
-		NamingContextLookupCallsFromJndiLookup namingContextLookupCallsFromJndiLookup = new NamingContextLookupCallsFromJndiLookup();
-		NamingContextLookupCallsFromJndiManager namingContextLookupCallsFromJndiManager = new NamingContextLookupCallsFromJndiManager();
-
-		return new Multiplexer(asList(plugins, initialContextLookupsCalls, namingContextLookupCallsFromJndiLookup,
-				namingContextLookupCallsFromJndiManager)) {
-
-			@Override
-			public void visitEnd() {
-				for (Detection detection : plugins.getDetections()) {
-					if (detectionsContains(initialContextLookupsCalls, detection.getIn())) {
-						addDetection(detection.getFilename(), detection.getIn(),
-								"Possible 2.0-beta9, 2.0-rc1 match "
-										+ Type.getObjectType(detection.getIn().name).getClassName() + " in "
-										+ detection.getFilename() + " of " + detection.getResource());
-					} else if (detectionsContains(namingContextLookupCallsFromJndiLookup, detection.getIn())) {
-						addDetection(detection.getFilename(), detection.getIn(),
-								"Possible 2.0-rc2, 2.0.1, 2.0.2, 2.0 match "
-										+ Type.getObjectType(detection.getIn().name).getClassName() + " in "
-										+ detection.getFilename() + " of " + detection.getResource());
-					} else {
-						List<String> lookupCalls = namingContextLookupCallsFromJndiManager.getDetections().stream()
-								.map(Detection::getIn).map(n -> n.name).collect(toList());
-						List<String> allRefs = methodCallOwners(detection.getIn());
-						if (lookupCalls.stream().anyMatch(l -> allRefs.contains(l))) {
-							addDetection(detection.getFilename(), detection.getIn(),
-									"Possible 2.1+ match " + Type.getObjectType(detection.getIn().name).getClassName()
-											+ " in " + detection.getFilename() + " of " + detection.getResource());
-						}
-					}
-
-				}
-				super.visitEnd();
-			}
-
-			private List<String> methodCallOwners(ClassNode in) {
-				return methodCalls(in).map(n -> n.owner).collect(toList());
-			}
-
-			private Stream<MethodInsnNode> methodCalls(ClassNode in) {
-				return filter(in.methods.stream().map(AsmUtil::instructionsStream).flatMap(identity()),
-						MethodInsnNode.class);
-			}
-
-			private boolean detectionsContains(AbstractDetector detector, ClassNode classNode) {
-				return detector.getDetections().stream().map(Detection::getIn).anyMatch(classNode::equals);
-			}
-		};
-
 	}
 
 	private List<String> filenames(String base) throws IOException {
