@@ -9,13 +9,13 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
+import com.github.pfichtner.log4shell.scanner.detectors.DirContextLookupsCallsFromJndiManager;
 import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCalls;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupConstructorWithISException;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
@@ -37,12 +37,13 @@ public class Log4JDetector extends AbstractDetector {
 	private final InitialContextLookupsCalls initialContextLookupsCalls = new InitialContextLookupsCalls();
 	private final NamingContextLookupCallsFromJndiLookup namingContextLookupCallsFromJndiLookup = new NamingContextLookupCallsFromJndiLookup();
 	private final NamingContextLookupCallsFromJndiManager namingContextLookupCallsFromJndiManager = new NamingContextLookupCallsFromJndiManager();
+	private final DirContextLookupsCallsFromJndiManager dirContextLookupsCallsFromJndiManager = new DirContextLookupsCallsFromJndiManager();
 
 	private final JndiLookupConstructorWithISException jndiLookupConstructorWithISException = new JndiLookupConstructorWithISException();
 
-	private final Multiplexer multiplexer = new Multiplexer(
-			asList(plugins, initialContextLookupsCalls, namingContextLookupCallsFromJndiLookup,
-					namingContextLookupCallsFromJndiManager, jndiLookupConstructorWithISException));
+	private final Multiplexer multiplexer = new Multiplexer(asList(plugins, initialContextLookupsCalls,
+			namingContextLookupCallsFromJndiLookup, namingContextLookupCallsFromJndiManager,
+			dirContextLookupsCallsFromJndiManager, jndiLookupConstructorWithISException));
 
 	@Override
 	public void visit(String resource) {
@@ -72,10 +73,12 @@ public class Log4JDetector extends AbstractDetector {
 				} else if (detectionsContains(namingContextLookupCallsFromJndiLookup, detection.getIn())) {
 					reAdd(detection, "2.0-rc2, 2.0.1, 2.0.2, 2.0");
 				} else {
-					List<String> lookupCalls = namingContextLookupCallsFromJndiManager.getDetections().stream()
-							.map(Detection::getIn).map(n -> n.name).collect(toList());
 					List<String> allRefs = methodCallOwners(detection.getIn());
-					if (lookupCalls.stream().anyMatch(l -> allRefs.contains(l))) {
+					if (dirContextLookupsCallsFromJndiManager.getDetections().stream().map(Detection::getIn)
+							.map(n -> n.name).anyMatch(l -> allRefs.contains(l))) {
+						reAdd(detection, "2.15, 2.16");
+					} else if (namingContextLookupCallsFromJndiManager.getDetections().stream().map(Detection::getIn)
+							.map(n -> n.name).anyMatch(l -> allRefs.contains(l))) {
 						reAdd(detection, "2.1+");
 					}
 				}
@@ -85,9 +88,7 @@ public class Log4JDetector extends AbstractDetector {
 	}
 
 	private void reAdd(Detection detection, String version) {
-		addDetection(detection.getFilename(), detection.getIn(),
-				"Possible " + version + " match " + Type.getObjectType(detection.getIn().name).getClassName() + " in "
-						+ detection.getFilename() + " of " + detection.getResource());
+		addDetection(detection.getFilename(), detection.getIn(), "Possible " + version + " match");
 	}
 
 	private boolean isLog4j217Plus() {
