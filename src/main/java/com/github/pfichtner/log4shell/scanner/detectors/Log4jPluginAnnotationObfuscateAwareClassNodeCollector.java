@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
+@Deprecated
 public class Log4jPluginAnnotationObfuscateAwareClassNodeCollector extends AbstractDetector {
 
 	private Map<Path, ClassNode> possiblePluginAnnoClasses;

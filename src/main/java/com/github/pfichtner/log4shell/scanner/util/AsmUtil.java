@@ -1,6 +1,7 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.typeComparator;
+import static java.util.Collections.emptyMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 import static org.objectweb.asm.Opcodes.ACC_ANNOTATION;
@@ -37,7 +38,7 @@ public final class AsmUtil {
 	}
 
 	public static Map<Object, Object> toMap(AnnotationNode annotationNode) {
-		return toMap(annotationNode.values);
+		return annotationNode.values == null ? emptyMap() : toMap(annotationNode.values);
 	}
 
 	public static Map<Object, Object> toMap(List<Object> values) {

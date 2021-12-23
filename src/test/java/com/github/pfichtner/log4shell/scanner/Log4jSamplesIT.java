@@ -1,7 +1,10 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
+import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
 import static java.nio.file.Files.walk;
+import static java.util.Arrays.asList;
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -11,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +21,15 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.assertj.core.internal.bytebuddy.jar.asm.MethodVisitor;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.function.Executable;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
@@ -34,8 +40,10 @@ import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFr
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotationObfuscateAwareClassNodeCollector;
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
+import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiManager;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
+import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
 import com.github.pfichtner.log4shell.scanner.util.LookupConstants;
 
 public class Log4jSamplesIT {
@@ -103,17 +111,76 @@ public class Log4jSamplesIT {
 						.map(n -> Type.getObjectType(n.name)).collect(toList());
 				cached.entrySet().stream()
 						.filter(e -> Log4jPluginAnnotation.hasPluginAnnotation(e.getValue(), possiblePluginAnnoClasses))
-						.forEach(e -> addDetections(e.getKey(), e.getValue(), "Possible " + LookupConstants.PLUGIN_TYPE));
+						.forEach(e -> addDetections(e.getKey(), e.getValue(),
+								"Possible " + LookupConstants.PLUGIN_TYPE));
 				cached.clear();
 			}
 
 		};
 
-		return new Multiplexer(Arrays.asList(cacheAll, collector));
+		return new Multiplexer(asList(cacheAll, collector));
 
 	}
 
 	private AbstractDetector combined() {
+		/**
+		 * <pre>
+		 * 2.0-beta9, 2.0-rc1 -> Plugin direct calls (InitialContextLookupsCalls)
+		 * 2.0-rc2, 2.0.1, 2.0.2, 2.0 -> NamingContextLookupCallsFromJndiLookup (the plugin)
+		 * 2.1+ -> NamingContextLookupCallsFromJndiManager, JndiManagerLookupCallsFromJndiLookup (the plugin)
+		 * </pre>
+		 */
+
+		Log4jPluginAnnotation plugins = new Log4jPluginAnnotation();
+		InitialContextLookupsCalls initialContextLookupsCalls = new InitialContextLookupsCalls();
+		NamingContextLookupCallsFromJndiLookup namingContextLookupCallsFromJndiLookup = new NamingContextLookupCallsFromJndiLookup();
+		NamingContextLookupCallsFromJndiManager namingContextLookupCallsFromJndiManager = new NamingContextLookupCallsFromJndiManager();
+
+		return new Multiplexer(asList(plugins, initialContextLookupsCalls, namingContextLookupCallsFromJndiLookup,
+				namingContextLookupCallsFromJndiManager)) {
+			@Override
+			public void visitEnd() {
+				for (Detection detection : plugins.getDetections()) {
+					if (detectionsContains(initialContextLookupsCalls, detection.getIn())) {
+						System.err.println("Possible 2.0-beta9, 2.0-rc1 match "
+								+ Type.getObjectType(detection.getIn().name).getClassName() + " in "
+								+ detection.getFilename() + " of " + detection.getResource());
+					} else if (detectionsContains(namingContextLookupCallsFromJndiLookup, detection.getIn())) {
+						System.err.println("Possible 2.0-rc2, 2.0.1, 2.0.2, 2.0 match "
+								+ Type.getObjectType(detection.getIn().name).getClassName() + " in "
+								+ detection.getFilename() + " of " + detection.getResource());
+					} else {
+						List<String> lookupCalls = namingContextLookupCallsFromJndiManager.getDetections().stream()
+								.map(Detection::getIn).map(n -> n.name).collect(toList());
+						List<String> allRefs = methodCallOwners(detection.getIn());
+						if (lookupCalls.stream().anyMatch(l -> allRefs.contains(l))) {
+							System.err.println(
+									"Possible 2.1+ match " + Type.getObjectType(detection.getIn().name).getClassName()
+											+ " in " + detection.getFilename() + " of " + detection.getResource());
+						}
+					}
+
+				}
+				super.visitEnd();
+			}
+
+			private List<String> methodCallOwners(ClassNode in) {
+				return methodCalls(in).map(n -> n.owner).collect(toList());
+			}
+
+			private Stream<MethodInsnNode> methodCalls(ClassNode in) {
+				return filter(in.methods.stream().map(AsmUtil::instructionsStream).flatMap(identity()),
+						MethodInsnNode.class);
+			}
+
+			private boolean detectionsContains(AbstractDetector detector, ClassNode classNode) {
+				return detector.getDetections().stream().map(Detection::getIn).anyMatch(classNode::equals);
+			}
+		};
+
+	}
+
+	private AbstractDetector combinedOLD() {
 
 		// TODO shouldn't it be?
 //		JndiManagerWithDirContextLookups vuln1 = new JndiManagerWithDirContextLookups();
@@ -121,7 +188,7 @@ public class Log4jSamplesIT {
 
 		NamingContextLookupCallsFromJndiLookup vuln2 = new NamingContextLookupCallsFromJndiLookup();
 		InitialContextLookupsCalls vuln3 = new InitialContextLookupsCalls();
-		List<AbstractDetector> vulns = Arrays.asList(vuln1, vuln2, vuln3);
+		List<AbstractDetector> vulns = asList(vuln1, vuln2, vuln3);
 
 		// TODO verify if the class found by vulns are plugins
 		Log4jPluginAnnotation isPlugin = new Log4jPluginAnnotation();
@@ -166,7 +233,7 @@ public class Log4jSamplesIT {
 			private Predicate<Detection> isFalsePositivesLog4J() {
 				return new Predicate<Detection>() {
 
-					List<String> classesWithNamingContexLookupCalls = Arrays.asList( //
+					List<String> classesWithNamingContexLookupCalls = asList( //
 							"/net/JMSSink.class", //
 							"/net/JMSAppender.class", //
 							"/core/selector/JNDIContextSelector.class", //

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.objectweb.asm.Type;
@@ -29,14 +30,14 @@ public class CVEDetector {
 		private final Detector detector;
 		private final Object resource; // e.g. the JAR
 		private final Path filename;
-		private final Type in;
+		private final ClassNode classNode;
 		private final Object object;
 
-		public Detection(Detector detector, Object resource, Path filename, Type in, Object object) {
+		public Detection(Detector detector, Object resource, Path filename, ClassNode in, Object object) {
 			this.detector = detector;
 			this.resource = resource;
 			this.filename = filename;
-			this.in = in;
+			this.classNode = in;
 			this.object = object;
 		}
 
@@ -52,8 +53,8 @@ public class CVEDetector {
 			return filename;
 		}
 
-		public Type getIn() {
-			return in;
+		public ClassNode getIn() {
+			return classNode;
 		}
 
 		public Object getObject() {
@@ -61,7 +62,7 @@ public class CVEDetector {
 		}
 
 		public String format() {
-			return object + " found in class " + in.getClassName() + " in resource " + resource;
+			return object + " found in class " + Type.getObjectType(classNode.name).getClassName() + " in resource " + resource;
 		}
 
 		public static List<String> getFormatted(List<Detection> entries) {
@@ -97,11 +98,12 @@ public class CVEDetector {
 	}
 
 	private List<Detection> analyze(JarReader jarReader) throws IOException {
-		jarReader.accept(visitor(jarReader.getFileSystem()));
-		return detector.getDetections();
+		List<Detection> detections = new ArrayList<>();
+		jarReader.accept(visitor(jarReader.getFileSystem(), detections));
+		return detections;
 	}
 
-	private JarReaderVisitor visitor(FileSystem fileSystem) {
+	private JarReaderVisitor visitor(FileSystem fileSystem, List<Detection> detections) {
 		return new JarReaderVisitor() {
 
 			@Override
@@ -132,6 +134,7 @@ public class CVEDetector {
 
 			@Override
 			public void end() {
+				detections.addAll(detector.getDetections());
 				detector.visitEnd();
 			}
 
