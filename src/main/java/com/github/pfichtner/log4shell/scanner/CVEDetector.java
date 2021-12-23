@@ -31,14 +31,14 @@ public class CVEDetector {
 		private final Object resource; // e.g. the JAR
 		private final Path filename;
 		private final ClassNode classNode;
-		private final Object object;
+		private final String description;
 
-		public Detection(Detector detector, Object resource, Path filename, ClassNode in, Object object) {
+		public Detection(Detector detector, Object resource, Path filename, ClassNode in, String description) {
 			this.detector = detector;
 			this.resource = resource;
 			this.filename = filename;
 			this.classNode = in;
-			this.object = object;
+			this.description = description;
 		}
 
 		public Detector getDetector() {
@@ -56,13 +56,14 @@ public class CVEDetector {
 		public ClassNode getIn() {
 			return classNode;
 		}
-
-		public Object getObject() {
-			return object;
+		
+		public String getDescription() {
+			return description;
 		}
 
 		public String format() {
-			return object + " found in class " + Type.getObjectType(classNode.name).getClassName() + " in resource " + resource;
+			return description + " found in class " + Type.getObjectType(classNode.name).getClassName()
+					+ " in resource " + resource;
 		}
 
 		public static List<String> getFormatted(List<Detection> entries) {
@@ -134,8 +135,8 @@ public class CVEDetector {
 
 			@Override
 			public void end() {
-				detections.addAll(detector.getDetections());
 				detector.visitEnd();
+				detections.addAll(detector.getDetections());
 			}
 
 		};

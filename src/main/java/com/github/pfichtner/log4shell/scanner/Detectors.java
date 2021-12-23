@@ -1,16 +1,13 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static java.util.Collections.unmodifiableList;
-import static java.util.stream.Collectors.toList;
 
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.objectweb.asm.tree.ClassNode;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.DirContextLookupsCallsFromJndiManager;
 import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCalls;
@@ -61,16 +58,11 @@ public final class Detectors {
 
 		@Override
 		public void visitEnd() {
-			super.visitEnd();
 			for (AbstractDetector detector : detectors) {
+				detector.getDetections().forEach(this::addDetection);
 				detector.visitEnd();
 			}
-		}
-
-		@Override
-		public List<Detection> getDetections() {
-			return detectors.stream().map(AbstractDetector::getDetections).flatMap(Collection::stream)
-					.collect(toList());
+			super.visitEnd();
 		}
 
 	}

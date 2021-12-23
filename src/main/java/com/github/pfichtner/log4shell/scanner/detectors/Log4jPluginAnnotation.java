@@ -32,7 +32,7 @@ public class Log4jPluginAnnotation extends AbstractDetector {
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
 		if (hasPluginAnnotation(classNode)) {
-			addDetections(filename, classNode,
+			addDetection(filename, classNode,
 					"@Plugin(name = \"" + NAME_JNDI + "\", category = \"" + CATEGORY_LOOKUP + "\")");
 		}
 	}

@@ -15,8 +15,8 @@ import com.github.pfichtner.log4shell.scanner.io.Detector;
 
 public abstract class AbstractDetector implements Detector {
 
-	private List<Detection> detections;
 	private Stack<String> resources = new Stack<>();
+	private List<Detection> detections;
 
 	@Override
 	public void visit(String resource) {
@@ -47,8 +47,12 @@ public abstract class AbstractDetector implements Detector {
 		return detections;
 	}
 
-	public void addDetections(Path filename, ClassNode classNode, String description) {
-		detections.add(new Detection(this, getResource(), filename, classNode, description));
+	public void addDetection(Path filename, ClassNode classNode, String description) {
+		addDetection(new Detection(this, getResource(), filename, classNode, description));
+	}
+
+	public void addDetection(Detection detection) {
+		detections.add(detection);
 	}
 
 	public static String referenceTo(MethodInsnNode node) {

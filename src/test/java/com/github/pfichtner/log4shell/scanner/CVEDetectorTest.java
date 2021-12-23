@@ -128,8 +128,8 @@ class CVEDetectorTest {
 		return sb.toString();
 	}
 
-	private boolean contains(List<CVEDetector.Detection> detections, Detector detector) {
-		return detections.stream().map(CVEDetector.Detection::getDetector).anyMatch(detector::equals);
+	private boolean contains(List<Detection> detections, Detector detector) {
+		return detections.stream().map(Detection::getDetector).anyMatch(detector::equals);
 	}
 
 	private String runCheck(CVEDetector sut, String version) throws Exception {
