@@ -64,8 +64,8 @@ public enum AsmTypeComparator {
 
 		@Override
 		public boolean annotationIs(AnnotationNode annotationNode, Map<Object, Object> expected) {
-			// keys could be renamed (obfuscated)
-			// TODO values are of type classes we should ignore package names
+			// keys could be renamed (obfuscated) so we just check the values
+			// TODO when values' types are classes we should ignore package names
 			return toMap(annotationNode).values().containsAll(expected.values());
 		}
 

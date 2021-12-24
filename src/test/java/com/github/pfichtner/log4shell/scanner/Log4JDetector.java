@@ -1,16 +1,13 @@
 package com.github.pfichtner.log4shell.scanner;
 
-import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodInsnNodes;
 import static java.util.Arrays.asList;
-import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodInsnNode;
 
 import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
 import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
@@ -21,7 +18,6 @@ import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupConstructorWit
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiManager;
-import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
 
 public class Log4JDetector extends AbstractDetector {
 
@@ -66,11 +62,11 @@ public class Log4JDetector extends AbstractDetector {
 	@Override
 	public void visitEnd() {
 		multiplexer.visitEnd();
-		if (!isLog4j217Plus()) {
+		if (!isLog4j217OrGreater()) {
 			for (Detection detection : plugins.getDetections()) {
-				if (detectionsContains(initialContextLookupsCalls, detection.getIn())) {
+				if (detectionsOfContains(initialContextLookupsCalls, detection.getIn())) {
 					reAdd(detection, "2.0-beta9, 2.0-rc1");
-				} else if (detectionsContains(namingContextLookupCallsFromJndiLookup, detection.getIn())) {
+				} else if (detectionsOfContains(namingContextLookupCallsFromJndiLookup, detection.getIn())) {
 					reAdd(detection, "2.0-rc2, 2.0.1, 2.0.2, 2.0");
 				} else {
 					List<String> allRefs = methodCallOwners(detection.getIn());
@@ -91,19 +87,19 @@ public class Log4JDetector extends AbstractDetector {
 		addDetection(detection.getFilename(), detection.getIn(), "Possible " + version + " match");
 	}
 
-	private boolean isLog4j217Plus() {
+	private boolean isLog4j217OrGreater() {
 		return !jndiLookupConstructorWithISException.getDetections().isEmpty();
 	}
 
-	private static List<String> methodCallOwners(ClassNode in) {
-		return methodCalls(in).map(n -> n.owner).collect(toList());
+	private static List<String> methodCallOwners(ClassNode classNode) {
+		return methodInsnNodes(classNode, m -> true).map(n -> n.owner).collect(toList());
 	}
 
-	private static Stream<MethodInsnNode> methodCalls(ClassNode in) {
-		return filter(in.methods.stream().map(AsmUtil::instructionsStream).flatMap(identity()), MethodInsnNode.class);
+	private static boolean detectionsOfContains(AbstractDetector detector, ClassNode classNode) {
+		return detectionsContains(detector.getDetections(), classNode);
 	}
 
-	private boolean detectionsContains(AbstractDetector detector, ClassNode classNode) {
-		return detector.getDetections().stream().map(Detection::getIn).anyMatch(classNode::equals);
+	private static boolean detectionsContains(List<Detection> detections, ClassNode classNode) {
+		return detections.stream().map(Detection::getIn).anyMatch(classNode::equals);
 	}
 }
