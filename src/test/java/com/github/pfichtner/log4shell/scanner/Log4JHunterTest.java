@@ -5,12 +5,14 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
+import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 class Log4JHunterTest {
@@ -85,8 +88,20 @@ class Log4JHunterTest {
 
 	@Test
 	void mainNoArgGiven() throws Exception {
-		assertThat(catchSystemExit(() -> assertThat(tapSystemErr(() -> Log4JHunter.main())).contains("no filename")))
-				.isEqualTo(1);
+		assertThat(verifyIsError()).containsIgnoringCase("no filename");
+	}
+
+	@Test
+	void mainInvalidMode() throws Exception {
+		assertThat(verifyIsError("-m", "XXX")).contains(allAsmTypeComparatorNames());
+	}
+
+	private String verifyIsError(String... args) throws Exception {
+		return tapSystemErr(() -> assertThat(catchSystemExit(() -> Log4JHunter.main(args))).isNotZero());
+	}
+
+	private List<String> allAsmTypeComparatorNames() {
+		return EnumSet.allOf(AsmTypeComparator.class).stream().map(AsmTypeComparator::name).collect(toList());
 	}
 
 	@Test
