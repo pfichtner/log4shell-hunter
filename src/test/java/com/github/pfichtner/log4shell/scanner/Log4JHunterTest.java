@@ -9,6 +9,7 @@ import static java.util.stream.Collectors.toList;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +70,13 @@ class Log4JHunterTest {
 				zip + ": @Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar", //
 				zip + ": Reference to javax.naming.InitialContext#lookup(java.lang.String) found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar" //
 		));
+	}
+
+	@Test
+	void throwsExceptionIfFileCannotBeRead() throws Exception {
+		String zip = "XXXXsomeNonExistentFileXXX.jar";
+		RuntimeException rte = assertThrows(RuntimeException.class, () -> new Log4JHunter().check(new File(zip)));
+		assertThat(rte).hasMessageContaining(zip).hasMessageContaining("not readable");
 	}
 
 	@Test

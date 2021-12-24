@@ -56,7 +56,7 @@ public class DetectionCollector {
 		public ClassNode getIn() {
 			return classNode;
 		}
-		
+
 		public String getDescription() {
 			return description;
 		}
@@ -81,6 +81,9 @@ public class DetectionCollector {
 	}
 
 	public List<Detection> analyze(File jar) throws IOException {
+		if (!jar.isFile() || !jar.canRead()) {
+			throw new IllegalStateException("File " + jar + " not readable");
+		}
 		return analyze(jar.toURI());
 	}
 

@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner;
 
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.useTypeComparator;
 import static org.kohsuke.args4j.ParserProperties.defaults;
 
 import java.io.File;
@@ -39,7 +40,11 @@ public class Log4JHunter {
 					System.err.println("No filename given");
 					System.exit(1);
 				} else {
-					new Log4JHunter().check(args[0]);
+					useTypeComparator(o.typeComparator);
+					Log4JHunter log4jHunter = new Log4JHunter();
+					for (String file : o.files) {
+						log4jHunter.check(file);
+					}
 				}
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
