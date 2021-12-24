@@ -2,7 +2,7 @@
 
 ### FIRST RELEASE AVAILABLE
 
-Are you afraid of having JARs where a vulnerable version of log4j was included (shaded) or that coders did copy vulnerable log4j classes into the project. This is where most scanners will have false negatives. Most scanners rely on metadata like pom.xml describing the log4j version. 
+Are you afraid of having JARs where a vulnerable version of log4j was included (shaded) or that coders did copy vulnerable log4j classes into the project. This is where most scanners will have false negatives because they rely on metadata like pom.xml describing the log4j version. 
 
 This scanner does bytecode analysis! So it does **not** depend on: 
 - fingerprinted jar files
