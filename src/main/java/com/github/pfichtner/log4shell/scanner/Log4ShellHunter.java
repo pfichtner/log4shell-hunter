@@ -31,7 +31,7 @@ public class Log4ShellHunter {
 
 	public static void main(String... args) throws IOException {
 		Optional<Options> options = parseOptions(args);
-		if (!options.isPresent()) {
+		if (options.isEmpty()) {
 			System.exit(1);
 		}
 		options.ifPresent(o -> {
