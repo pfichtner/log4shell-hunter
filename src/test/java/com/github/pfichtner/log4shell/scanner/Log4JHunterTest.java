@@ -1,6 +1,8 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
+import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
+import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.util.Arrays.asList;
 import static org.approvaltests.Approvals.verify;
@@ -14,7 +16,6 @@ import java.util.List;
 
 import org.approvaltests.core.Options;
 import org.approvaltests.core.Options.FileOptions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
@@ -32,21 +33,6 @@ class Log4JHunterTest {
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
 	@Test
-	@Disabled
-	void test() {
-		// TODO File walker wrap
-		// TODO in jar
-		// TODO in directory/jar
-		// TODO in directory/directory/jar
-		// TODO in directory/directory/jar/jar/jar
-
-		// TODO mix in one JAR: Self compiled, different versions of log4j +
-		// self compiled +
-		// own class with and without Annotation
-
-	}
-
-	@Test
 	void detectsAndPrintsViaPluginDetection() {
 		DetectionCollector collector = new DetectionCollector(new Log4jPluginAnnotation());
 		String expected = "@Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup";
@@ -54,7 +40,6 @@ class Log4JHunterTest {
 				() -> assertThat(runCheck(collector, "2.10.0")).contains("/log4j-core-2.10.0.jar: " + expected), //
 				() -> assertThat(runCheck(collector, "2.14.1")).contains("/log4j-core-2.14.1.jar: " + expected) //
 		);
-
 	}
 
 	@Test
@@ -81,6 +66,27 @@ class Log4JHunterTest {
 				zip + ": @Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar", //
 				zip + ": Reference to javax.naming.InitialContext#lookup(java.lang.String) found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar" //
 		));
+	}
+
+	@Test
+	void main() throws Exception {
+		String zip = "log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip";
+		File file = new File(getClass().getClassLoader().getResource(zip).toURI());
+		String[] out = tapSystemOut(() -> Log4JHunter.main(file.getAbsolutePath())).split("\n");
+		assertThat(out).hasSize(2).satisfies(a -> {
+			assertThat(a[0]).endsWith(
+					zip + ": Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup"
+							+ " in resource /log4j-core-2.16.0.jar");
+			assertThat(a[1]).endsWith(zip
+					+ ": Possible 2.0-beta9, 2.0-rc1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup"
+					+ " in resource /log4j-core-2.0-beta9.jar");
+		});
+	}
+
+	@Test
+	void mainNoArgGiven() throws Exception {
+		assertThat(catchSystemExit(() -> assertThat(tapSystemErr(() -> Log4JHunter.main())).contains("no filename")))
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -131,7 +137,11 @@ class Log4JHunterTest {
 	}
 
 	private String runCheck(DetectionCollector collector, File file) throws Exception {
-		return tapSystemOut(() -> new Log4JHunter(collector).check(file));
+		return runCheck(new Log4JHunter(collector), file);
+	}
+
+	private String runCheck(Log4JHunter log4jHunter, File file) throws Exception {
+		return tapSystemOut(() -> log4jHunter.check(file));
 	}
 
 }

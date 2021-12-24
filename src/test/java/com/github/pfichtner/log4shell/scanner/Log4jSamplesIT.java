@@ -22,10 +22,6 @@ import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 
 public class Log4jSamplesIT {
 
-	private static void doCheck(List<String> filenames) throws IOException {
-		doCheck(new DetectionCollector(new Log4JDetector()), filenames);
-	}
-
 	@Test
 	void approveLog4jSamples() throws Exception {
 		List<String> filenames = filenames("log4j-samples");
@@ -40,6 +36,10 @@ public class Log4jSamplesIT {
 
 	private static Stream<Executable> allModesCheck(List<String> filenames) {
 		return forAllModes(() -> doCheck(filenames));
+	}
+
+	private static void doCheck(List<String> filenames) throws IOException {
+		doCheck(new DetectionCollector(new Log4JDetector()), filenames);
 	}
 
 	private static String executeTapSysOut(Stream<Executable> executables) throws Exception {
