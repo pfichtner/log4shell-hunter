@@ -16,10 +16,6 @@ So log4shell-hunter will find vulnerable log4j versions even if:
 - log4j was repacked (uberjar, fatjar), even if packages have been renamed, e.g. org.apache.logging -> org.acme.foo.logger.bar
 
 The scanner analyzes jars and tries to detect: 
-- classes that are annotated with log4j's Plugin annotation ```org.apache.logging.log4j.core.config.plugins.Plugin```.   
-
-  TODO: At the moment log4shell-hunter depends on that classname, in one of the next versions log4shell-hunter tries to detect if a class is annotated with ```Plugin``` even if the class was renamed (perhaps even obfuscated)
-- classes that have calls to ```org.apache.logging.log4j.core.net.JndiManager#lookup(String)```. 
-
-  TODO: At the moment log4shell-hunter depends on that classname/methodname, in one of the next versions log4shell-hunter tries to detect if there is a call to any public synchronized method throwing a NamingException which has references javax.naming.Context
-
+- classes that are annotated with log4j's Plugin annotation ```org.apache.logging.log4j.core.config.plugins.Plugin```. 
+- 
+  This even works if the Plugin has renamed or even obfuscated (depending on the log4shell-hunter's mode parameter)
