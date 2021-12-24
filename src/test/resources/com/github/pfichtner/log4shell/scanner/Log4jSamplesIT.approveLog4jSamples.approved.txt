@@ -1,3 +1,4 @@
+*** using defaultComparator
 -- log4j-samples/false-hits/log4j-api-2.14.1.jar
 
 -- log4j-samples/false-hits/log4j-api-2.0.jar
@@ -55,6 +56,7 @@ log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.jar: Possible
 
 -- log4j-samples/old-hits/log4j-1.2.17.jar
 
+*** using repackageComparator
 -- log4j-samples/false-hits/log4j-api-2.14.1.jar
 
 -- log4j-samples/false-hits/log4j-api-2.0.jar
@@ -113,6 +115,7 @@ log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.jar: Possible
 
 -- log4j-samples/old-hits/log4j-1.2.17.jar
 
+*** using obfuscatorComparator
 -- log4j-samples/false-hits/log4j-api-2.14.1.jar
 
 -- log4j-samples/false-hits/log4j-api-2.0.jar
