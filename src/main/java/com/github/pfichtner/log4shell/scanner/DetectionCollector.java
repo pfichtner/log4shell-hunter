@@ -21,7 +21,7 @@ import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.io.JarReader;
 import com.github.pfichtner.log4shell.scanner.io.JarReader.JarReaderVisitor;
 
-public class CVEDetector {
+public class DetectionCollector {
 
 	private AbstractDetector detector;
 
@@ -72,18 +72,8 @@ public class CVEDetector {
 
 	}
 
-	public CVEDetector(AbstractDetector detector) {
+	public DetectionCollector(AbstractDetector detector) {
 		this.detector = detector;
-	}
-
-	public void check(String jar) throws IOException {
-		check(new File(jar));
-	}
-
-	public void check(File file) throws IOException {
-		for (Detection detection : analyze(file)) {
-			System.out.println(file + ": " + detection.format());
-		}
 	}
 
 	public List<Detection> analyze(String jar) throws IOException {

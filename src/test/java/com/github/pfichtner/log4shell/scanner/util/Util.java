@@ -13,8 +13,8 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector;
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
+import com.github.pfichtner.log4shell.scanner.DetectionCollector;
+import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 
 public final class Util {
@@ -45,7 +45,7 @@ public final class Util {
 	}
 
 	public static Map<File, List<Detection>> analyse(Log4jJars log4jJars, AbstractDetector sut) throws IOException {
-		CVEDetector detector = new CVEDetector(sut);
+		DetectionCollector detector = new DetectionCollector(sut);
 		Map<File, List<Detection>> results = new HashMap<>();
 		for (File log4j : log4jJars) {
 			results.put(log4j, detector.analyze(log4j.getAbsolutePath()));

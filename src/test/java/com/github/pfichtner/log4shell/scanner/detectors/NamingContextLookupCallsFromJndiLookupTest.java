@@ -1,6 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.CVEDetector.Detection.getFormatted;
+import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector;
+import com.github.pfichtner.log4shell.scanner.DetectionCollector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 class NamingContextLookupCallsFromJndiLookupTest {
@@ -28,7 +28,7 @@ class NamingContextLookupCallsFromJndiLookupTest {
 
 	@Test
 	void log4j202HasJndiManagerWithContextLookups() throws Exception {
-		CVEDetector detector = new CVEDetector(sut);
+		DetectionCollector detector = new DetectionCollector(sut);
 		assertThat(getFormatted(detector.analyze(log4jJars.version("2.0.2").getAbsolutePath())))
 				.hasOnlyOneElementSatisfying(s -> s.startsWith(refTo("javax.naming.Context#lookup(java.lang.String)")));
 	}

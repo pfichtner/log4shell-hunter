@@ -23,7 +23,7 @@ import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 public class Log4jSamplesIT {
 
 	private static void doCheck(List<String> filenames) throws IOException {
-		doCheck(new CVEDetector(new Log4JDetector()), filenames);
+		doCheck(new DetectionCollector(new Log4JDetector()), filenames);
 	}
 
 	@Test
@@ -68,11 +68,11 @@ public class Log4jSamplesIT {
 		return EnumSet.allOf(AsmTypeComparator.class).stream();
 	}
 
-	private static void doCheck(CVEDetector sut, List<String> filenames) throws IOException {
+	private static void doCheck(DetectionCollector sut, List<String> filenames) throws IOException {
 		for (String filename : filenames) {
 			if (isArchive(filename)) {
 				System.out.println("-- " + filename);
-				sut.check(filename);
+				new Log4JHunter(sut).check(filename);
 				System.out.println();
 			} else {
 				// System.err.println("Ignoring " + file);

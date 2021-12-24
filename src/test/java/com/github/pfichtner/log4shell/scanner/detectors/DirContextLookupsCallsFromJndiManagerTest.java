@@ -1,6 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.CVEDetector.Detection.getFormatted;
+import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,8 +10,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector;
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
+import com.github.pfichtner.log4shell.scanner.DetectionCollector;
+import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 class DirContextLookupsCallsFromJndiManagerTest {
@@ -27,7 +27,7 @@ class DirContextLookupsCallsFromJndiManagerTest {
 
 	@Test
 	void log4j16HasJndiManagerWithDirContextLookups() throws Exception {
-		CVEDetector detector = new CVEDetector(sut);
+		DetectionCollector detector = new DetectionCollector(sut);
 		List<Detection> detections = detector.analyze(log4jJars.version("2.16.0").getAbsolutePath());
 		assertThat(getFormatted(detections)).hasOnlyOneElementSatisfying(
 				s -> s.startsWith(refTo("javax.naming.directory.DirContext#lookup(java.lang.String)")));

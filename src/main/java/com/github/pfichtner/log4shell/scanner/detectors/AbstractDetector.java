@@ -10,7 +10,7 @@ import java.util.Stack;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector.Detection;
+import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 
 public abstract class AbstractDetector implements Detector {

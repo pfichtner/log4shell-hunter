@@ -1,6 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
-import static com.github.pfichtner.log4shell.scanner.CVEDetector.Detection.getFormatted;
+import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,7 +9,7 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.pfichtner.log4shell.scanner.CVEDetector;
+import com.github.pfichtner.log4shell.scanner.DetectionCollector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 public class JndiLookupConstructorWithISExceptionTest {
@@ -20,7 +20,7 @@ public class JndiLookupConstructorWithISExceptionTest {
 
 	@Test
 	void throwingISEinJndiLookupConstructorWasIntroducedWIthLog4J217() throws Exception {
-		CVEDetector detector = new CVEDetector(sut);
+		DetectionCollector detector = new DetectionCollector(sut);
 		assertThat(getFormatted(detector.analyze(log4jJars.version("2.17.0").getAbsolutePath())))
 				.hasOnlyOneElementSatisfying(
 						s -> s.startsWith("JNDI must be enabled by setting log4j2.enableJndiLookup=true access "
