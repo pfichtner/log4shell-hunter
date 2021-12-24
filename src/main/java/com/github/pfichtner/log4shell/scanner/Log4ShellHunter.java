@@ -17,7 +17,7 @@ import org.kohsuke.args4j.Option;
 import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
 import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 
-public class Log4JHunter {
+public class Log4ShellHunter {
 
 	private final DetectionCollector detectionCollector;
 
@@ -41,7 +41,7 @@ public class Log4JHunter {
 					System.exit(1);
 				} else {
 					useTypeComparator(o.typeComparator);
-					Log4JHunter log4jHunter = new Log4JHunter();
+					Log4ShellHunter log4jHunter = new Log4ShellHunter();
 					for (String file : o.files) {
 						log4jHunter.check(file);
 					}
@@ -64,11 +64,11 @@ public class Log4JHunter {
 		}
 	}
 
-	public Log4JHunter() {
+	public Log4ShellHunter() {
 		this(new DetectionCollector(new Log4JDetector()));
 	}
 
-	public Log4JHunter(DetectionCollector detectionCollector) {
+	public Log4ShellHunter(DetectionCollector detectionCollector) {
 		this.detectionCollector = detectionCollector;
 	}
 

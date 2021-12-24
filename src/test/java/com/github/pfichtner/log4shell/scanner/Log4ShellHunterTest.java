@@ -30,7 +30,7 @@ import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-class Log4JHunterTest {
+class Log4ShellHunterTest {
 
 	private static final String SEPARATOR = ",";
 
@@ -75,7 +75,7 @@ class Log4JHunterTest {
 	@Test
 	void throwsExceptionIfFileCannotBeRead() throws Exception {
 		String zip = "XXXXsomeNonExistentFileXXX.jar";
-		RuntimeException rte = assertThrows(RuntimeException.class, () -> new Log4JHunter().check(new File(zip)));
+		RuntimeException rte = assertThrows(RuntimeException.class, () -> new Log4ShellHunter().check(new File(zip)));
 		assertThat(rte).hasMessageContaining(zip).hasMessageContaining("not readable");
 	}
 
@@ -83,7 +83,7 @@ class Log4JHunterTest {
 	void main() throws Exception {
 		String zip = "log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip";
 		File file = new File(getClass().getClassLoader().getResource(zip).toURI());
-		String[] out = tapSystemOut(() -> Log4JHunter.main(file.getAbsolutePath())).split("\n");
+		String[] out = tapSystemOut(() -> Log4ShellHunter.main(file.getAbsolutePath())).split("\n");
 		assertThat(out).hasSize(2).satisfies(a -> {
 			assertThat(a[0]).endsWith(
 					zip + ": Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup"
@@ -105,7 +105,7 @@ class Log4JHunterTest {
 	}
 
 	private String verifyIsError(String... args) throws Exception {
-		return tapSystemErr(() -> assertThat(catchSystemExit(() -> Log4JHunter.main(args))).isNotZero());
+		return tapSystemErr(() -> assertThat(catchSystemExit(() -> Log4ShellHunter.main(args))).isNotZero());
 	}
 
 	private List<String> allAsmTypeComparatorNames() {
@@ -160,10 +160,10 @@ class Log4JHunterTest {
 	}
 
 	private String runCheck(DetectionCollector collector, File file) throws Exception {
-		return runCheck(new Log4JHunter(collector), file);
+		return runCheck(new Log4ShellHunter(collector), file);
 	}
 
-	private String runCheck(Log4JHunter log4jHunter, File file) throws Exception {
+	private String runCheck(Log4ShellHunter log4jHunter, File file) throws Exception {
 		return tapSystemOut(() -> log4jHunter.check(file));
 	}
 

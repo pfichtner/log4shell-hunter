@@ -72,7 +72,7 @@ public class Log4jSamplesIT {
 		for (String filename : filenames) {
 			if (isArchive(filename)) {
 				System.out.println("-- " + filename);
-				new Log4JHunter(sut).check(filename);
+				new Log4ShellHunter(sut).check(filename);
 				System.out.println();
 			} else {
 				// System.err.println("Ignoring " + file);

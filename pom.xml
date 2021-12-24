@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.pfichtner</groupId>
-	<artifactId>log4shell-bytecode-scanner</artifactId>
+	<artifactId>log4shell-hunter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
@@ -99,9 +99,13 @@
 			            <configuration>
 			                <archive>
 				                <manifest>
-				                    <mainClass>com.github.pfichtner.log4shell.scanner.Log4JHunter</mainClass>
+				                    <mainClass>com.github.pfichtner.log4shell.scanner.Log4ShellHunter</mainClass>
 				                </manifest>
-			                </archive>
+					</archive>
+					<appendAssemblyId>false</appendAssemblyId>
+			                <descriptorRefs>
+			                    <descriptorRef>jar-with-dependencies</descriptorRef>
+			                </descriptorRefs>
 			            </configuration>
 			        </execution>
 			    </executions>
