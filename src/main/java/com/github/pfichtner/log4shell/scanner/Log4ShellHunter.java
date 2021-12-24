@@ -77,9 +77,11 @@ public class Log4ShellHunter {
 	}
 
 	public void check(File file) throws IOException {
+		System.out.println(file);
 		for (Detection detection : detectionCollector.analyze(file)) {
-			System.out.println(file + ": " + detection.format());
+			System.out.println("> " + detection.format());
 		}
+		System.out.println();
 	}
 
 }
