@@ -102,12 +102,17 @@ class Log4ShellHunterTest {
 				"> Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.16.0.jar", //
 				"> Possible 2.0-beta9, 2.0-rc1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar" //
 		));
-
 	}
 
 	@Test
 	void mainNoArgGiven() throws Exception {
-		assertThat(verifyIsError()).containsIgnoringCase("no filename");
+		assertThat(verifyIsError()).contains("archives to analyze");
+	}
+
+	@Test
+	void printsHelp() throws Exception {
+		assertThat(tapSystemErr(() -> assertThat(catchSystemExit(() -> Log4ShellHunter.main("-h"))).isZero()))
+				.contains("archives to analyze").contains("mode to compare");
 	}
 
 	@Test

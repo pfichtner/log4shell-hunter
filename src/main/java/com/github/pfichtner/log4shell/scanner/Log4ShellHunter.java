@@ -1,13 +1,13 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.useTypeComparator;
+import static org.kohsuke.args4j.OptionHandlerFilter.ALL;
 import static org.kohsuke.args4j.ParserProperties.defaults;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -22,45 +22,38 @@ public class Log4ShellHunter {
 	private final DetectionCollector detectionCollector;
 
 	private static class Options {
-		@Option(name = "-m", usage = "mode")
+		@Option(name = "-h", help = true, usage = "prints this help", hidden = true)
+		private boolean help;
+
+		@Option(name = "-m", usage = "mode to compare class/method names")
 		private AsmTypeComparator typeComparator = AsmTypeComparator.repackageComparator;
 
-		@Argument
+		@Argument(required = true, usage = "archives to analyze")
 		private List<String> files = new ArrayList<String>();
 	}
 
 	public static void main(String... args) throws IOException {
-		Optional<Options> options = parseOptions(args);
-		if (options.isEmpty()) {
-			System.exit(1);
-		}
-		options.ifPresent(o -> {
-			try {
-				if (o.files.isEmpty()) {
-					System.err.println("No filename given");
-					System.exit(1);
-				} else {
-					useTypeComparator(o.typeComparator);
-					Log4ShellHunter log4jHunter = new Log4ShellHunter();
-					for (String file : o.files) {
-						log4jHunter.check(file);
-					}
-				}
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
-			}
-		});
-	}
-
-	private static Optional<Options> parseOptions(String... args) {
 		Options options = new Options();
 		CmdLineParser parser = new CmdLineParser(options, defaults().withUsageWidth(133));
 		try {
 			parser.parseArgument(args);
-			return Optional.of(options);
+			if (options.help) {
+				parser.printUsage(System.err);
+				parser.printExample(ALL);
+				System.exit(0);
+			} else if (options.files.isEmpty()) {
+				System.err.println("No filename given");
+				System.exit(1);
+			} else {
+				useTypeComparator(options.typeComparator);
+				Log4ShellHunter log4jHunter = new Log4ShellHunter();
+				for (String file : options.files) {
+					log4jHunter.check(file);
+				}
+			}
 		} catch (CmdLineException e) {
 			parser.printUsage(System.err);
-			return Optional.empty();
+			System.exit(1);
 		}
 	}
 
