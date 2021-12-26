@@ -1,12 +1,10 @@
 package com.github.pfichtner.log4shell.scanner;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 
-import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.DirContextLookupsCallsFromJndiManager;
@@ -20,54 +18,9 @@ import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCalls
 
 public final class Detectors {
 
-	public static class Multiplexer extends AbstractDetector {
+	private static final Log4JDetector log4jDetector = new Log4JDetector();
 
-		private final List<AbstractDetector> detectors;
-
-		public Multiplexer(List<AbstractDetector> detectors) {
-			this.detectors = detectors;
-		}
-
-		public List<AbstractDetector> getMultiplexed() {
-			return detectors;
-		}
-
-		@Override
-		public void visit(String resource) {
-			super.visit(resource);
-			for (AbstractDetector detector : detectors) {
-				detector.visit(resource);
-			}
-		}
-
-		@Override
-		public void visitFile(Path file, byte[] bytes) {
-			super.visitFile(file, bytes);
-			for (AbstractDetector detector : detectors) {
-				detector.visitFile(file, bytes);
-			}
-		}
-
-		@Override
-		public void visitClass(Path filename, ClassNode classNode) {
-			super.visitClass(filename, classNode);
-			for (AbstractDetector detector : detectors) {
-				detector.visitClass(filename, classNode);
-			}
-		}
-
-		@Override
-		public void visitEnd() {
-			for (AbstractDetector detector : detectors) {
-				detector.getDetections().forEach(this::addDetection);
-				detector.visitEnd();
-			}
-			super.visitEnd();
-		}
-
-	}
-
-	private static final List<AbstractDetector> detectors = unmodifiableList(Arrays.asList( //
+	private static final List<AbstractDetector> detectors = unmodifiableList(asList( //
 			new JndiManagerLookupCallsFromJndiLookup(), //
 			new NamingContextLookupCallsFromJndiManager(), //
 			new NamingContextLookupCallsFromJndiLookup(), //
@@ -82,12 +35,14 @@ public final class Detectors {
 		super();
 	}
 
-	public static Multiplexer allDetectors() {
-		return multiplexer(detectors);
+	public static List<AbstractDetector> allDetectors() {
+		return detectors;
 	}
 
-	public static Multiplexer multiplexer(List<AbstractDetector> allDetectors) {
-		return new Multiplexer(allDetectors);
+	public static List<AbstractDetector> allDetectorsWithLog4JDetector() {
+		List<AbstractDetector> detectors = new ArrayList<>(asList(log4jDetector));
+		detectors.addAll(allDetectors());
+		return detectors;
 	}
 
 }

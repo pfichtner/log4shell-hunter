@@ -1,6 +1,7 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
+import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectorsWithLog4JDetector;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
@@ -22,7 +23,6 @@ import org.approvaltests.core.Options.FileOptions;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
-import com.github.pfichtner.log4shell.scanner.Detectors.Multiplexer;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
@@ -72,7 +72,7 @@ class Log4ShellHunterTest {
 		File zip = new File(getClass().getClassLoader()
 				.getResource("log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip")
 				.toURI());
-		String[] out = runCheck(new DetectionCollector(allDetectors()), zip).split("\n");
+		String[] out = runCheck(new DetectionCollector(new Multiplexer(allDetectors())), zip).split("\n");
 		assertThat(out).containsSequence(asList( //
 				zip.toString(), //
 				"> Reference to javax.naming.Context#lookup(java.lang.String) found in class org.apache.logging.log4j.core.net.JndiManager in resource /log4j-core-2.12.2.jar", //
@@ -109,17 +109,21 @@ class Log4ShellHunterTest {
 
 	@Test
 	void mainNoArgGiven() throws Exception {
-		verify(execMain());
+		verifyMain();
 	}
 
 	@Test
 	void printsHelp() throws Exception {
-		verify(execMain("-h"));
+		verifyMain("-h");
 	}
 
 	@Test
 	void mainInvalidMode() throws Exception {
-		verify(execMain("-m", "XXX-INVALID-XXX"));
+		verifyMain("-m", "XXX-INVALID-MODE-XXX");
+	}
+
+	private void verifyMain(String... args) throws Exception {
+		verify(execMain(args));
 	}
 
 	private String execMain(String... args) throws Exception {
@@ -135,7 +139,7 @@ class Log4ShellHunterTest {
 
 	@Test
 	void approveAll() throws IOException {
-		Multiplexer multiplexer = allDetectors();
+		Multiplexer multiplexer = new Multiplexer(allDetectorsWithLog4JDetector());
 		verify(toBeApproved(new DetectionCollector(multiplexer), multiplexer.getMultiplexed()), options());
 	}
 
@@ -153,23 +157,15 @@ class Log4ShellHunterTest {
 	}
 
 	private String header(DetectionCollector collector, List<AbstractDetector> detectors) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("File").append(SEPARATOR);
-		for (AbstractDetector visitor : detectors) {
-			sb.append(visitor.getName()).append(SEPARATOR);
-		}
-		return sb.toString();
+		return "File" + SEPARATOR + //
+				detectors.stream().map(AbstractDetector::getName).collect(joining(SEPARATOR));
 	}
 
-	private String content(DetectionCollector collector, List<AbstractDetector> detectors, File log4jJar)
+	private String content(DetectionCollector collector, List<AbstractDetector> detectors, File jar)
 			throws IOException {
-		List<Detection> detections = collector.analyze(log4jJar.getAbsolutePath());
-		StringBuilder sb = new StringBuilder();
-		sb.append(log4jJar.getAbsoluteFile().getName()).append(SEPARATOR);
-		for (AbstractDetector detector : detectors) {
-			sb.append(contains(detections, detector) ? "X" : "").append(SEPARATOR);
-		}
-		return sb.toString();
+		List<Detection> detections = collector.analyze(jar.getAbsolutePath());
+		return jar.getAbsoluteFile().getName() + SEPARATOR //
+				+ detectors.stream().map(d -> contains(detections, d) ? "X" : "").collect(joining(SEPARATOR));
 	}
 
 	private boolean contains(List<Detection> detections, Detector detector) {
