@@ -5,7 +5,7 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.joining;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.approvaltests.core.Options;
 import org.approvaltests.core.Options.FileOptions;
@@ -27,10 +27,13 @@ import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
-import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 class Log4ShellHunterTest {
+
+	private static final String STDERR = "STDERR";
+	private static final String STDOUT = "STDOUT";
+	private static final String RC = "RC";
 
 	private static final String SEPARATOR = ",";
 
@@ -106,26 +109,28 @@ class Log4ShellHunterTest {
 
 	@Test
 	void mainNoArgGiven() throws Exception {
-		assertThat(verifyIsError()).contains("archives to analyze");
+		verify(execMain());
 	}
 
 	@Test
 	void printsHelp() throws Exception {
-		assertThat(tapSystemErr(() -> assertThat(catchSystemExit(() -> Log4ShellHunter.main("-h"))).isZero()))
-				.contains("archives to analyze").contains("mode to compare");
+		verify(execMain("-h"));
 	}
 
 	@Test
 	void mainInvalidMode() throws Exception {
-		assertThat(verifyIsError("-m", "XXX-INVALID-XXX")).contains(allAsmTypeComparatorNames());
+		verify(execMain("-m", "XXX-INVALID-XXX"));
 	}
 
-	private String verifyIsError(String... args) throws Exception {
-		return tapSystemErr(() -> assertThat(catchSystemExit(() -> Log4ShellHunter.main(args))).isNotZero());
-	}
-
-	private List<String> allAsmTypeComparatorNames() {
-		return EnumSet.allOf(AsmTypeComparator.class).stream().map(AsmTypeComparator::name).collect(toList());
+	private String execMain(String... args) throws Exception {
+		Map<String, String> values = new HashMap<>();
+		values.put(STDERR, tapSystemErr(() -> values.put(STDOUT, tapSystemOut(
+				() -> values.put(RC, String.valueOf(catchSystemExit(() -> Log4ShellHunter.main(args))))))));
+		return asList( //
+				"stdout: " + values.getOrDefault(STDOUT, ""), //
+				"stderr: " + values.getOrDefault(STDERR, ""), //
+				"rc: " + values.getOrDefault(RC, "") //
+		).stream().collect(joining("\n"));
 	}
 
 	@Test

@@ -38,7 +38,7 @@ public class Log4ShellHunter {
 		try {
 			parser.parseArgument(args);
 			if (options.help) {
-				parser.printUsage(System.err);
+				parser.printUsage(System.out);
 				parser.printExample(ALL);
 				System.exit(0);
 			} else if (options.files.isEmpty()) {
