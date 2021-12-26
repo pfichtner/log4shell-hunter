@@ -37,7 +37,7 @@ public class InitialContextLookupsCallsTest {
 	@Test
 	void canDetectPluginClass() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(versionsWithInitialContextLookups.toArray(new File[0]));
+				.containsOnlyKeys(versionsWithInitialContextLookups.toArray(File[]::new));
 	}
 
 }

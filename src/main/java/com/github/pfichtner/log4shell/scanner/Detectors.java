@@ -1,7 +1,6 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ public final class Detectors {
 
 	private static final Log4JDetector log4jDetector = new Log4JDetector();
 
-	private static final List<AbstractDetector> detectors = unmodifiableList(asList( //
+	private static final List<AbstractDetector> detectors = List.of( //
 			new JndiManagerLookupCallsFromJndiLookup(), //
 			new NamingContextLookupCallsFromJndiManager(), //
 			new NamingContextLookupCallsFromJndiLookup(), //
@@ -29,7 +28,7 @@ public final class Detectors {
 			new InitialContextLookupsCalls(), //
 			new IsJndiEnabledPropertyAccess(), //
 			new JndiLookupConstructorWithISException() //
-	));
+	);
 
 	private Detectors() {
 		super();
@@ -42,7 +41,7 @@ public final class Detectors {
 	public static List<AbstractDetector> allDetectorsWithLog4JDetector() {
 		List<AbstractDetector> detectors = new ArrayList<>(asList(log4jDetector));
 		detectors.addAll(allDetectors());
-		return detectors;
+		return List.copyOf(detectors);
 	}
 
 }

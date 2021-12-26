@@ -35,7 +35,7 @@ public class JndiLookupConstructorWithISExceptionTest {
 	@Test
 	void canDetectAccess() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.versions("2.12.3", "2.17.0").toArray(new File[0]));
+				.containsOnlyKeys(log4jJars.versions("2.12.3", "2.17.0").toArray(File[]::new));
 	}
 
 }

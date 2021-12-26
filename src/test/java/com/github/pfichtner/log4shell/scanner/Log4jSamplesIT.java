@@ -66,7 +66,7 @@ public class Log4jSamplesIT {
 	private static String[] args(List<String> filenames, AsmTypeComparator typeComparator) {
 		List<String> args = new ArrayList<>(asList("-m", String.valueOf(typeComparator)));
 		filenames.stream().filter(f -> isArchive(f)).forEach(args::add);
-		return args.toArray(new String[0]);
+		return args.toArray(String[]::new);
 	}
 
 	private List<String> filenames(String base) throws IOException {
