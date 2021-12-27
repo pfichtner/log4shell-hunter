@@ -13,6 +13,8 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.apache.maven.artifact.versioning.ComparableVersion;
+
 public final class Log4jJars implements Iterable<File> {
 
 	private final File dir;
@@ -62,8 +64,22 @@ public final class Log4jJars implements Iterable<File> {
 	}
 
 	private List<File> sortedList(Stream<File> stream) {
-		// TODO should compare versions, e.g. 2.1.0, 2.12.1, 2.0-rc1
-		return stream.sorted(comparing(File::getName)).collect(toList());
+		return stream.sorted(comparing(Log4jJars::comparableVersion)).collect(toList());
+	}
+
+	private static ComparableVersion comparableVersion(File file) {
+		return comparableVersion(file.getName());
+	}
+
+	private static ComparableVersion comparableVersion(String filename) {
+		String simpleName = removeSuffix(filename);
+		int firstDot = simpleName.indexOf('.');
+		int lastDash = firstDot < 0 ? simpleName.length() : simpleName.substring(0, firstDot).lastIndexOf('-');
+		return new ComparableVersion(simpleName.substring(lastDash + 1));
+	}
+
+	private static String removeSuffix(String filename) {
+		return filename.substring(0, filename.lastIndexOf('.'));
 	}
 
 	public File[] getLog4jJarsWithout(List<File> ignore) {
