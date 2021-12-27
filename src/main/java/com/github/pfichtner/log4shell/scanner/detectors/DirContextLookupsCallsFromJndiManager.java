@@ -22,7 +22,7 @@ public class DirContextLookupsCallsFromJndiManager extends AbstractDetector {
 	public void visitClass(Path filename, ClassNode classNode) {
 		if (typeComparator().isClass(Type.getObjectType(classNode.name), JNDI_MANAGER_TYPE)) {
 			methodInsnNodes(classNode, throwsNamingException.and(n -> typeComparator().methodNameIs(n, LOOKUP_NAME)))
-					.filter(dirContextLookup).distinct().forEach(n -> addDetection(filename, classNode, referenceTo(n)));
+					.filter(dirContextLookup).forEach(n -> addDetection(filename, classNode, referenceTo(n)));
 		}
 	}
 
