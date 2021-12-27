@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
+import static com.vdurmont.semver4j.Semver.SemverType.LOOSE;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -13,7 +14,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.apache.maven.artifact.versioning.ComparableVersion;
+import com.vdurmont.semver4j.Semver;
 
 public final class Log4jJars implements Iterable<File> {
 
@@ -67,15 +68,15 @@ public final class Log4jJars implements Iterable<File> {
 		return stream.sorted(comparing(Log4jJars::comparableVersion)).collect(toList());
 	}
 
-	private static ComparableVersion comparableVersion(File file) {
+	private static Semver comparableVersion(File file) {
 		return comparableVersion(file.getName());
 	}
 
-	private static ComparableVersion comparableVersion(String filename) {
+	private static Semver comparableVersion(String filename) {
 		String simpleName = removeSuffix(filename);
 		int firstDot = simpleName.indexOf('.');
 		int lastDash = firstDot < 0 ? simpleName.length() : simpleName.substring(0, firstDot).lastIndexOf('-');
-		return new ComparableVersion(simpleName.substring(lastDash + 1));
+		return new Semver(simpleName.substring(lastDash + 1), LOOSE);
 	}
 
 	private static String removeSuffix(String filename) {
