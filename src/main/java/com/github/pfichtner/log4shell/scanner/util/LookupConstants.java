@@ -20,14 +20,17 @@ public final class LookupConstants {
 
 	public static final Type JNDI_MANAGER_TYPE = Type.getObjectType("org/apache/logging/log4j/core/net/JndiManager");
 
+	static final String JAVAX_NAMING_NAMING_EXCEPTION = "javax/naming/NamingException";
+
 	private LookupConstants() {
 		super();
 	}
 
 	public static Predicate<MethodNode> throwsNamingException() {
-		return n -> Arrays.asList("javax/naming/NamingException").equals(n.exceptions);
+		return n -> Arrays.asList(JAVAX_NAMING_NAMING_EXCEPTION).equals(n.exceptions);
 	}
 
+	// TODO should we ignore "desc"?
 	public static Predicate<MethodInsnNode> isJndiManagerLookup(AsmTypeComparator typeComparator) {
 		return n -> "(Ljava/lang/String;)Ljava/lang/Object;".equals(n.desc) //
 				&& typeComparator.isClass(Type.getObjectType(n.owner), JNDI_MANAGER_TYPE)
@@ -35,21 +38,24 @@ public final class LookupConstants {
 				&& opcodeIs(n, INVOKEVIRTUAL);
 	}
 
-	public static Predicate<MethodInsnNode> namingContextLookup() {
+	// TODO should we ignore "desc"?
+	public static Predicate<MethodInsnNode> isNamingContextLookup() {
 		return n -> "(Ljava/lang/String;)Ljava/lang/Object;".equals(n.desc) //
 				&& ownerIs(n, "javax/naming/Context") //
 				&& nameIs(n, LOOKUP_NAME) //
 				&& opcodeIs(n, INVOKEINTERFACE); //
 	}
 
-	public static Predicate<MethodInsnNode> initialContextLookup() {
+	// TODO should we ignore "desc"?
+	public static Predicate<MethodInsnNode> isInitialContextLookup() {
 		return n -> "(Ljava/lang/String;)Ljava/lang/Object;".equals(n.desc) //
 				&& ownerIs(n, "javax/naming/InitialContext") //
 				&& nameIs(n, LOOKUP_NAME) //
 				&& opcodeIs(n, INVOKEVIRTUAL); //
 	}
 
-	public static Predicate<MethodInsnNode> dirContextLookup() {
+	// TODO should we ignore "desc"?
+	public static Predicate<MethodInsnNode> isDirContextLookup() {
 		return n -> ("(Ljava/lang/String;)Ljava/lang/Object;".equals(n.desc)
 				|| "(Ljava/lang/String;)Ljavax/naming/directory/Attributes;".equals(n.desc)) //
 				&& ownerIs(n, "javax/naming/directory/DirContext") //

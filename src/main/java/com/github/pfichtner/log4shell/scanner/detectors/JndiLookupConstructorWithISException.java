@@ -13,7 +13,13 @@ import java.nio.file.Path;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 
+import com.github.pfichtner.log4shell.scanner.util.LookupConstants;
+
 /**
+ * Searches in classes {@value LookupConstants#JNDI_LOOKUP_TYPE} noarg
+ * constructor for statements referring
+ * {@value #JNDI_MUST_BE_ENABLED_BY_SETTING}.
+ * 
  * With log4j-core-2.17 the constructor of JndiLookup throws
  * <code>IllegalStateException</code>s.
  */

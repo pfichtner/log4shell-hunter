@@ -21,19 +21,28 @@ import org.objectweb.asm.tree.MethodNode;
 
 import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 
+/**
+ * Searches for all classes that are annotated using log4j's
+ * <code>@Plugin</code> annotation, where the annotation has
+ * {@value #VALUE_NAME} for the attribute {@value #NAME_NAME} and
+ * {@value #VALUE_CATEGORY} for the attribute {@value #NAME_CATEGORY}.
+ */
 public class Log4jPluginAnnotation extends AbstractDetector {
 
-	public static final String NAME_JNDI = "jndi";
-	public static final String CATEGORY_LOOKUP = "Lookup";
+	private static final String NAME_NAME = "name";
+	private static final String NAME_CATEGORY = "category";
+
+	public static final String VALUE_NAME = "jndi";
+	public static final String VALUE_CATEGORY = "Lookup";
 
 	private static final Map<Object, Object> expectedAnnoContent = toMap(
-			Arrays.asList("name", NAME_JNDI, "category", CATEGORY_LOOKUP));
+			Arrays.asList(NAME_NAME, VALUE_NAME, NAME_CATEGORY, VALUE_CATEGORY));
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
 		if (hasPluginAnnotation(classNode)) {
 			addDetection(filename, classNode,
-					"@Plugin(name = \"" + NAME_JNDI + "\", category = \"" + CATEGORY_LOOKUP + "\")");
+					String.format("@Plugin(name = \"%s\", category = \"%s\")", VALUE_NAME, VALUE_CATEGORY));
 		}
 	}
 
@@ -57,10 +66,12 @@ public class Log4jPluginAnnotation extends AbstractDetector {
 		// String name(), String category(), String elementType() default EMPTY
 		List<MethodNode> methodsThatReturnsStrings = classNode.methods.stream()
 				.filter(n -> n.desc.equals("()Ljava/lang/String;")).collect(toList());
-		long methodsThatReturnsStringsWithDefaultEmptyString = methodsThatReturnsStrings.stream()
-				.filter(n -> "".equals(n.annotationDefault)).count();
 		return methodsThatReturnsStrings.size() == 3 //
-				&& methodsThatReturnsStringsWithDefaultEmptyString == 1;
+				&& methodsWithEmptyStringAsDefault(methodsThatReturnsStrings) == 1;
+	}
+
+	private static long methodsWithEmptyStringAsDefault(List<MethodNode> methods) {
+		return methods.stream().filter(n -> "".equals(n.annotationDefault)).count();
 	}
 
 	private static boolean hasRetentionPolicy(ClassNode classNode, String policy) {
