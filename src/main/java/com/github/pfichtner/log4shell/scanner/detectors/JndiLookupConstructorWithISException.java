@@ -10,7 +10,6 @@ import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
 
 import java.nio.file.Path;
 
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 
@@ -24,7 +23,7 @@ public class JndiLookupConstructorWithISException extends AbstractDetector {
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
-		if (typeComparator().isClass(Type.getObjectType(classNode.name), JNDI_LOOKUP_TYPE)) {
+		if (typeComparator().isClass(classNode, JNDI_LOOKUP_TYPE)) {
 			classNode.methods.stream().filter(isConstructor().and(voidNoArgs())).findFirst().ifPresent(c -> {
 				filter(instructionsStream(c), LdcInsnNode.class)
 						.filter(constantPoolLoadOf(JNDI_MUST_BE_ENABLED_BY_SETTING::equals))

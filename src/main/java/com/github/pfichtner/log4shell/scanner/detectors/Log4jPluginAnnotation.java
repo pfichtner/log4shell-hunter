@@ -72,11 +72,4 @@ public class Log4jPluginAnnotation extends AbstractDetector {
 								new String[] { "Ljava/lang/annotation/RetentionPolicy;", policy }));
 	}
 
-	// ----------------------------------------------------------------------------------------------------------
-
-	@Deprecated
-	public static boolean hasPluginAnnotation(ClassNode classNode, List<Type> annoTypes) {
-		return hasPluginAnnotation(classNode, n -> annoTypes.contains(Type.getType(n.desc)));
-	}
-
 }

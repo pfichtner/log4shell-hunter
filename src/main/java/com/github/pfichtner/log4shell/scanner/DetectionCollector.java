@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
 import static com.github.pfichtner.log4shell.scanner.io.Files.isClass;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.classType;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.readClass;
 import static java.util.stream.Collectors.toList;
 
@@ -13,7 +14,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
@@ -62,8 +62,8 @@ public class DetectionCollector {
 		}
 
 		public String format() {
-			return description + " found in class " + Type.getObjectType(classNode.name).getClassName()
-					+ " in resource " + resource;
+			return String.format("%s found in class %s in resource %s", description,
+					classType(classNode).getClassName(), resource);
 		}
 
 		public static List<String> getFormatted(List<Detection> entries) {

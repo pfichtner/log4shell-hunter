@@ -37,6 +37,10 @@ public final class AsmUtil {
 		return classNode;
 	}
 
+	public static Type classType(ClassNode classNode) {
+		return Type.getObjectType(classNode.name);
+	}
+
 	public static Map<Object, Object> toMap(AnnotationNode annotationNode) {
 		return annotationNode.values == null ? emptyMap() : toMap(annotationNode.values);
 	}

@@ -1,11 +1,13 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.classType;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.toMap;
 
 import java.util.Map;
 
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public enum AsmTypeComparator {
@@ -16,8 +18,8 @@ public enum AsmTypeComparator {
 		}
 
 		@Override
-		public boolean methodNameIs(MethodNode node, String name) {
-			return node.name.equals(name);
+		public boolean methodNameIs(String name1, String name2) {
+			return name1.equals(name2);
 		}
 
 		@Override
@@ -29,15 +31,18 @@ public enum AsmTypeComparator {
 	repackageComparator() {
 
 		public boolean isClass(Type type1, Type type2) {
-			return classname(type1).equals(classname(type2));
+			return stripPackage(type1).equals(stripPackage(type2));
 		}
 
 		@Override
-		public boolean methodNameIs(MethodNode node, String name) {
-			return node.name.equals(name);
+		public boolean methodNameIs(String name1, String name2) {
+			return name1.equals(name2);
 		}
 
-		private String classname(Type type) {
+		private String stripPackage(Type type) {
+			// TODO if type is java/javax: do NOT ignore package names but then classes can
+			// be hidden (a class foo/Bar.class could have been renamed to
+			// java/Something.class)
 			String internalName = type.getInternalName();
 			int lastIndexOf = internalName.lastIndexOf('/');
 			return lastIndexOf > 0 ? internalName.substring(lastIndexOf + 1) : internalName;
@@ -53,12 +58,15 @@ public enum AsmTypeComparator {
 
 	obfuscatorComparator {
 
+		// TODO if type is java/javax: do NOT ignore package names but then classes can
+		// be hidden (a class foo/Bar.class could have been renamed to
+		// java/Something.class)
 		public boolean isClass(Type type1, Type type2) {
 			return true;
 		}
 
 		@Override
-		public boolean methodNameIs(MethodNode node, String name) {
+		public boolean methodNameIs(String name1, String name2) {
 			return true;
 		}
 
@@ -86,9 +94,17 @@ public enum AsmTypeComparator {
 		tl.set(typeComparator);
 	}
 
+	public boolean isClass(ClassNode classNode, Type type2) {
+		return isClass(classType(classNode), type2);
+	}
+
 	public abstract boolean isClass(Type type1, Type type2);
 
-	public abstract boolean methodNameIs(MethodNode node, String name);
+	public boolean methodNameIs(MethodNode node, String name) {
+		return methodNameIs(node.name, name);
+	}
+
+	public abstract boolean methodNameIs(String name1, String name2);
 
 	public abstract boolean annotationIs(AnnotationNode annotationNode, Map<Object, Object> expected);
 

@@ -9,7 +9,6 @@ import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.throws
 
 import java.nio.file.Path;
 
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 /**
@@ -20,9 +19,9 @@ public class DirContextLookupsCallsFromJndiManager extends AbstractDetector {
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
-		if (typeComparator().isClass(Type.getObjectType(classNode.name), JNDI_MANAGER_TYPE)) {
-			methodInsnNodes(classNode, throwsNamingException.and(n -> typeComparator().methodNameIs(n, LOOKUP_NAME)))
-					.filter(dirContextLookup).forEach(n -> addDetection(filename, classNode, referenceTo(n)));
+		if (typeComparator().isClass(classNode, JNDI_MANAGER_TYPE)) {
+			methodInsnNodes(classNode, throwsNamingException().and(n -> typeComparator().methodNameIs(n, LOOKUP_NAME)))
+					.filter(dirContextLookup()).forEach(n -> addDetection(filename, classNode, referenceTo(n)));
 		}
 	}
 

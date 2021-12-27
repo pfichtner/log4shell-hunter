@@ -8,7 +8,6 @@ import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.naming
 
 import java.nio.file.Path;
 
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 /**
@@ -19,8 +18,8 @@ public class NamingContextLookupCallsFromJndiLookup extends AbstractDetector {
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
-		if (typeComparator().isClass(Type.getObjectType(classNode.name), JNDI_LOOKUP_TYPE)) {
-			methodInsnNodes(classNode, n -> typeComparator().methodNameIs(n, LOOKUP_NAME)).filter(namingContextLookup)
+		if (typeComparator().isClass(classNode, JNDI_LOOKUP_TYPE)) {
+			methodInsnNodes(classNode, n -> typeComparator().methodNameIs(n, LOOKUP_NAME)).filter(namingContextLookup())
 					.forEach(n -> addDetection(filename, classNode, referenceTo(n)));
 		}
 	}

@@ -24,38 +24,38 @@ public final class LookupConstants {
 		super();
 	}
 
-	public static final Predicate<MethodNode> throwsNamingException = methodNode -> Arrays
-			.asList("javax/naming/NamingException").equals(methodNode.exceptions);
+	public static Predicate<MethodNode> throwsNamingException() {
+		return n -> Arrays.asList("javax/naming/NamingException").equals(n.exceptions);
+	}
 
-	public static final Predicate<MethodInsnNode> jndiManagerLookup = node -> //
-	"(Ljava/lang/String;)Ljava/lang/Object;".equals(node.desc) //
-//			&& ownerIs(node, "org/apache/logging/log4j/core/net/JndiManager") //
-			&& (node.owner.endsWith("/JndiManager") || node.owner.equals("JndiManager")) //
-			&& nameIs(node, LOOKUP_NAME) //
-			&& opcodeIs(node, INVOKEVIRTUAL) //
-	;
+	public static Predicate<MethodInsnNode> isJndiManagerLookup(AsmTypeComparator typeComparator) {
+		return n -> "(Ljava/lang/String;)Ljava/lang/Object;".equals(n.desc) //
+				&& typeComparator.isClass(Type.getObjectType(n.owner), JNDI_MANAGER_TYPE)
+				&& typeComparator.methodNameIs(n.name, LOOKUP_NAME) //
+				&& opcodeIs(n, INVOKEVIRTUAL);
+	}
 
-	public static final Predicate<MethodInsnNode> namingContextLookup = node -> //
-	"(Ljava/lang/String;)Ljava/lang/Object;".equals(node.desc) //
-			&& ownerIs(node, "javax/naming/Context") //
-			&& nameIs(node, LOOKUP_NAME) //
-			&& opcodeIs(node, INVOKEINTERFACE) //
-	;
+	public static Predicate<MethodInsnNode> namingContextLookup() {
+		return n -> "(Ljava/lang/String;)Ljava/lang/Object;".equals(n.desc) //
+				&& ownerIs(n, "javax/naming/Context") //
+				&& nameIs(n, LOOKUP_NAME) //
+				&& opcodeIs(n, INVOKEINTERFACE); //
+	}
 
-	public static final Predicate<MethodInsnNode> initialContextLookup = node -> //
-	"(Ljava/lang/String;)Ljava/lang/Object;".equals(node.desc) //
-			&& ownerIs(node, "javax/naming/InitialContext") //
-			&& nameIs(node, LOOKUP_NAME) //
-			&& opcodeIs(node, INVOKEVIRTUAL) //
-	;
+	public static Predicate<MethodInsnNode> initialContextLookup() {
+		return n -> "(Ljava/lang/String;)Ljava/lang/Object;".equals(n.desc) //
+				&& ownerIs(n, "javax/naming/InitialContext") //
+				&& nameIs(n, LOOKUP_NAME) //
+				&& opcodeIs(n, INVOKEVIRTUAL); //
+	}
 
-	public static final Predicate<MethodInsnNode> dirContextLookup = node -> //
-	("(Ljava/lang/String;)Ljava/lang/Object;".equals(node.desc)
-			|| "(Ljava/lang/String;)Ljavax/naming/directory/Attributes;".equals(node.desc)) //
-			&& ownerIs(node, "javax/naming/directory/DirContext") //
-			&& nameIs(node, LOOKUP_NAME) //
-			&& opcodeIs(node, INVOKEINTERFACE) //
-	;
+	public static Predicate<MethodInsnNode> dirContextLookup() {
+		return n -> ("(Ljava/lang/String;)Ljava/lang/Object;".equals(n.desc)
+				|| "(Ljava/lang/String;)Ljavax/naming/directory/Attributes;".equals(n.desc)) //
+				&& ownerIs(n, "javax/naming/directory/DirContext") //
+				&& nameIs(n, LOOKUP_NAME) //
+				&& opcodeIs(n, INVOKEINTERFACE);
+	}
 
 	private static boolean nameIs(MethodInsnNode node, String name) {
 		return name.equals(node.name);

@@ -17,7 +17,7 @@ public class InitialContextLookupsCalls extends AbstractDetector {
 
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
-		methodInsnNodes(classNode, n -> typeComparator().methodNameIs(n, LOOKUP_NAME)).filter(initialContextLookup)
+		methodInsnNodes(classNode, n -> typeComparator().methodNameIs(n, LOOKUP_NAME)).filter(initialContextLookup())
 				.forEach(n -> addDetection(filename, classNode, referenceTo(n)));
 	}
 
