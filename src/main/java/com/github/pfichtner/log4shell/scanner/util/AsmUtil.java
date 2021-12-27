@@ -5,6 +5,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 import static org.objectweb.asm.Opcodes.ACC_ANNOTATION;
+import static org.objectweb.asm.Type.VOID_TYPE;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +27,8 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public final class AsmUtil {
+
+	private static final String voidNoArgs = Type.getMethodDescriptor(VOID_TYPE);
 
 	private AsmUtil() {
 		super();
@@ -91,7 +94,7 @@ public final class AsmUtil {
 	}
 
 	public static Predicate<MethodNode> voidNoArgs() {
-		return n -> n.desc.equals("()V");
+		return n -> voidNoArgs.equals(n.desc);
 	}
 
 }
