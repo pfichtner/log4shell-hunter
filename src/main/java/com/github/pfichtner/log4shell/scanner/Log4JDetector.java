@@ -70,10 +70,10 @@ public class Log4JDetector extends AbstractDetector {
 				} else {
 					List<String> allRefs = methodCallOwners(detection.getIn());
 					if (dirContextLookupsCallsFromJndiManager.getDetections().stream().map(Detection::getIn)
-							.map(n -> n.name).anyMatch(l -> allRefs.contains(l))) {
+							.map(n -> n.name).anyMatch(allRefs::contains)) {
 						reAdd(detection, "2.15, 2.16");
 					} else if (namingContextLookupCallsFromJndiManager.getDetections().stream().map(Detection::getIn)
-							.map(n -> n.name).anyMatch(l -> allRefs.contains(l))) {
+							.map(n -> n.name).anyMatch(allRefs::contains)) {
 						reAdd(detection, "2.1+");
 					}
 				}
