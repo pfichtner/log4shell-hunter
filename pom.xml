@@ -85,6 +85,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven.surefire.version}</version>
 				<configuration>
+					<argLine>-Duser.language=en -Duser.region=US</argLine>
 					<useSystemClassLoader>false</useSystemClassLoader>
 					<includes>
 						<include>**/Test*.java</include>
