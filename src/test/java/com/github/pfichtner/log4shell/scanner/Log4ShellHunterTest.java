@@ -21,6 +21,7 @@ import java.util.Map;
 import org.approvaltests.core.Options;
 import org.approvaltests.core.Options.FileOptions;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.DefaultLocale;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
@@ -29,6 +30,7 @@ import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
+@DefaultLocale(language = "en")
 class Log4ShellHunterTest {
 
 	private static final String STDERR = "STDERR";

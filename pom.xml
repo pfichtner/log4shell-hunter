@@ -46,6 +46,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+		    <groupId>org.junit-pioneer</groupId>
+		    <artifactId>junit-pioneer</artifactId>
+		    <version>1.5.0</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 			<version>3.21.0</version>
@@ -85,7 +91,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven.surefire.version}</version>
 				<configuration>
-					<argLine>-Duser.language=en -Duser.region=US</argLine>
 					<useSystemClassLoader>false</useSystemClassLoader>
 					<includes>
 						<include>**/Test*.java</include>
