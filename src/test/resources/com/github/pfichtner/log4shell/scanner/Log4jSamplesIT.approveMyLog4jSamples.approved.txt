@@ -6,5 +6,5 @@ my-log4j-samples/true-hits/dummylog4j-0.0.1-SNAPSHOT.jar
 
 *** using obfuscatorComparator
 my-log4j-samples/true-hits/dummylog4j-0.0.1-SNAPSHOT.jar
-> Possible 2.0-beta9, 2.0-rc1 match found in class dummylog4j.JnXXXXdiLXXXooXXXkuXXXXXXXXXp in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/my-log4j-samples/true-hits/dummylog4j-0.0.1-SNAPSHOT.jar
+> Possible 2.0-beta9, 2.0-rc1 match found in class dummylog4j.JnXXXXdiLXXXooXXXkuXXXXXXXXXp in resource [BASEDIR]/my-log4j-samples/true-hits/dummylog4j-0.0.1-SNAPSHOT.jar
 

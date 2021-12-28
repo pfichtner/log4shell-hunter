@@ -4,11 +4,14 @@ import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.nio.file.Files.walk;
 import static java.util.Arrays.asList;
+import static java.util.regex.Pattern.quote;
 import static java.util.stream.Collectors.toList;
 import static org.approvaltests.Approvals.verify;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +20,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.approvaltests.core.Options;
+import org.approvaltests.scrubbers.RegExScrubber;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -28,12 +33,21 @@ public class Log4jSamplesIT {
 	void approveLog4jSamples() throws Exception {
 		List<String> filenames = filenames("log4j-samples");
 		assumeFalse(filenames.isEmpty(), "git submodule empty, please clone recursivly");
-		verify(executeTapSysOut(allModesCheck(filenames)));
+		verify(executeTapSysOut(allModesCheck(filenames)), options());
 	}
 
 	@Test
 	void approveMyLog4jSamples() throws Exception {
-		verify(executeTapSysOut(allModesCheck(filenames("my-log4j-samples"))));
+		verify(executeTapSysOut(allModesCheck(filenames("my-log4j-samples"))), options());
+	}
+
+	private static Options options() throws MalformedURLException {
+		return new Options(scrubber());
+	}
+
+	private static RegExScrubber scrubber() throws MalformedURLException {
+		File userDirectory = new File("").getAbsoluteFile();
+		return new RegExScrubber(quote(userDirectory.toURI().toURL().toString()), "[BASEDIR]/");
 	}
 
 	private static Stream<Executable> allModesCheck(List<String> filenames) {
