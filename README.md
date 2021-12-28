@@ -26,12 +26,12 @@ The scanner analyzes jars and tries to detect:
 
 ### Usage
 Example usage
-```
+```console
 find \( -name "*.jar" -o -name "*.zip" -o -name "*.ear" -o -name "*.war" \) -exec java -jar log4shell-hunter-0.0.2.jar -m obfuscatorComparator {} \;
 ```
 
 Example output
-```
+```console
 ./log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.war
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
 ```
@@ -42,10 +42,12 @@ Mode can be se to one of ```defaultComparator```, ```repackageComparator```, ```
 - obfuscatorComparator: log4shell-hunter does not depend on any class or method names but tries to detect log4 classes by some criteria. This mode will find even repackaged log4js even if the jar has been obfuscated
 
 ### Build from source
-```
+```console
 git clone https://github.com/pfichtner/log4shell-hunter.git
 cd log4shell-hunter/
-./mvnw package # of course you can use your locally installed "mvn" instead of the maven wrapper "./mvnw"
+# build using included maven wrapper 
+# of course you can use your locally installed "mvn" instead of the maven wrapper "./mvnw"
+./mvnw package 
 java -jar target/log4shell-hunter-0.0.2.jar
 ```
 
