@@ -1,5 +1,4 @@
-exclude:
-- /utils/.*
-- /\.mvn/.*
-
 component_depth: 11
+default_excludes: true
+languages:
+- java
