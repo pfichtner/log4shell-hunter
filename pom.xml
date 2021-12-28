@@ -84,6 +84,18 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven.surefire.version}</version>
+				<configuration>
+					<useSystemClassLoader>false</useSystemClassLoader>
+					<includes>
+						<include>**/Test*.java</include>
+						<include>**/*Test.java</include>
+						<include>**/*IT.java</include>
+					</includes>
+					<groups>!in-progress</groups>
+					<systemPropertyVariables>
+						<junit.jupiter.execution.timeout.default>5m</junit.jupiter.execution.timeout.default>
+					</systemPropertyVariables>
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
