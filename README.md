@@ -3,6 +3,7 @@
 [![Java CI with Maven](https://github.com/pfichtner/log4shell-hunter/actions/workflows/maven.yml/badge.svg)](https://github.com/pfichtner/log4shell-hunter/actions/workflows/maven.yml)
 [![GitLicense](https://gitlicense.com/badge/pfichtner/log4shell-hunter)](https://gitlicense.com/license/pfichtner/log4shell-hunter)
 [![Known Vulnerabilities](https://snyk.io/test/github/pfichtner/log4shell-hunter/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/pfichtner/log4shell-hunter?targetFile=pom.xml)
+[![codecov](https://codecov.io/gh/pfichtner/log4shell-hunter/branch/main/graph/badge.svg?token=9KPRQO35RS)](https://codecov.io/gh/pfichtner/log4shell-hunter)
 [![BCH compliance](https://bettercodehub.com/edge/badge/pfichtner/log4shell-hunter?branch=main)](https://bettercodehub.com/)
 
 Are you afraid of having JARs where a vulnerable version of log4j was included (shaded) or that coders did copy vulnerable log4j classes into the project. This is where most scanners will have false negatives because they rely on metadata like pom.xml describing the log4j version. 
