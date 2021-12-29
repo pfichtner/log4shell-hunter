@@ -1,7 +1,6 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
-import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectorsWithLog4JDetector;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
@@ -14,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +104,7 @@ class Log4ShellHunterTest {
 		String[] out = tapSystemOut(() -> Log4ShellHunter.main(zip.getAbsolutePath())).split("\n");
 		assertThat(out).containsSequence(asList( //
 				zip.toString(), //
-				"> Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.16.0.jar", //
+				"> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.16.0.jar", //
 				"> Possible 2.0-beta9, 2.0-rc1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar" //
 		));
 	}
@@ -141,15 +141,28 @@ class Log4ShellHunterTest {
 
 	@Test
 	void approveAll() throws IOException {
-		Multiplexer multiplexer = new Multiplexer(allDetectorsWithLog4JDetector());
+		Multiplexer multiplexer = new Multiplexer(allDetectors());
 		verify(toBeApproved(new DetectionCollector(multiplexer), multiplexer.getMultiplexed()), options());
+	}
+
+	@Test
+	void approveLog4jDetector() throws IOException {
+		Log4JDetector log4jDetector = new Log4JDetector();
+		DetectionCollector collector = new DetectionCollector(log4jDetector);
+		StringBuilder sb = new StringBuilder();
+		for (File file : log4jJars) {
+			String detected = collector.analyze(file.getAbsolutePath()).stream().map(Detection::format)
+					.collect(joining(SEPARATOR));
+			sb.append(file.getAbsoluteFile().getName() + ": " + (detected.isEmpty() ? "-" : detected)).append("\n");
+		}
+		verify(sb.toString(), options());
 	}
 
 	private static Options options() {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
 	}
 
-	private String toBeApproved(DetectionCollector collector, List<AbstractDetector> detectors) throws IOException {
+	private String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(header(collector, detectors)).append("\n");
 		for (File file : log4jJars) {
@@ -158,12 +171,12 @@ class Log4ShellHunterTest {
 		return sb.toString();
 	}
 
-	private String header(DetectionCollector collector, List<AbstractDetector> detectors) {
+	private String header(DetectionCollector collector, Collection<AbstractDetector> detectors) {
 		return "File" + SEPARATOR + //
 				detectors.stream().map(AbstractDetector::getName).collect(joining(SEPARATOR));
 	}
 
-	private String content(DetectionCollector collector, List<AbstractDetector> detectors, File jar)
+	private String content(DetectionCollector collector, Collection<AbstractDetector> detectors, File jar)
 			throws IOException {
 		List<Detection> detections = collector.analyze(jar.getAbsolutePath());
 		return jar.getAbsoluteFile().getName() + SEPARATOR //

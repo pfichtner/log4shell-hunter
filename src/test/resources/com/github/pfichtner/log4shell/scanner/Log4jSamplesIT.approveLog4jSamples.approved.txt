@@ -14,7 +14,7 @@ log4j-samples/false-hits/log4j-1.2-api-2.12.1.jar
 log4j-samples/false-hits/log4j-core-2.12.2.jar
 
 log4j-samples/false-hits/log4j-core-2.16.0.jar
-> Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/false-hits/log4j-core-2.16.0.jar
+> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/false-hits/log4j-core-2.16.0.jar
 
 log4j-samples/false-hits/log4j-slf4j-impl-2.13.2.jar
 
@@ -30,7 +30,7 @@ log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
 
 log4j-samples/true-hits/log4j-core-2.15.0.jar
-> Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/log4j-core-2.15.0.jar
+> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/log4j-core-2.15.0.jar
 
 log4j-samples/true-hits/log4j-core-2.10.0.jar
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/log4j-core-2.10.0.jar
@@ -72,7 +72,7 @@ log4j-samples/false-hits/log4j-1.2-api-2.12.1.jar
 log4j-samples/false-hits/log4j-core-2.12.2.jar
 
 log4j-samples/false-hits/log4j-core-2.16.0.jar
-> Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/false-hits/log4j-core-2.16.0.jar
+> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/false-hits/log4j-core-2.16.0.jar
 
 log4j-samples/false-hits/log4j-slf4j-impl-2.13.2.jar
 
@@ -89,7 +89,7 @@ log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
 
 log4j-samples/true-hits/log4j-core-2.15.0.jar
-> Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/log4j-core-2.15.0.jar
+> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/log4j-core-2.15.0.jar
 
 log4j-samples/true-hits/log4j-core-2.10.0.jar
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/log4j-core-2.10.0.jar
@@ -131,7 +131,7 @@ log4j-samples/false-hits/log4j-1.2-api-2.12.1.jar
 log4j-samples/false-hits/log4j-core-2.12.2.jar
 
 log4j-samples/false-hits/log4j-core-2.16.0.jar
-> Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/false-hits/log4j-core-2.16.0.jar
+> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/false-hits/log4j-core-2.16.0.jar
 
 log4j-samples/false-hits/log4j-slf4j-impl-2.13.2.jar
 
@@ -148,7 +148,7 @@ log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
 
 log4j-samples/true-hits/log4j-core-2.15.0.jar
-> Possible 2.15, 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/log4j-core-2.15.0.jar
+> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/log4j-core-2.15.0.jar
 
 log4j-samples/true-hits/log4j-core-2.10.0.jar
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/log4j-core-2.10.0.jar

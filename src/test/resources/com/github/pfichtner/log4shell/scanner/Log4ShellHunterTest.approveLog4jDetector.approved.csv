@@ -1,0 +1,49 @@
+log4j-core-2.0-alpha1.jar: -
+log4j-core-2.0-alpha2.jar: -
+log4j-core-2.0-beta1.jar: -
+log4j-core-2.0-beta2.jar: -
+log4j-core-2.0-beta3.jar: -
+log4j-core-2.0-beta4.jar: -
+log4j-core-2.0-beta5.jar: -
+log4j-core-2.0-beta6.jar: -
+log4j-core-2.0-beta7.jar: -
+log4j-core-2.0-beta8.jar: -
+log4j-core-2.0-beta9.jar: Possible 2.0-beta9, 2.0-rc1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.0-beta9.jar
+log4j-core-2.0-rc1.jar: Possible 2.0-beta9, 2.0-rc1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.0-rc1.jar
+log4j-core-2.0-rc2.jar: Possible 2.0-rc2, 2.0.1, 2.0.2, 2.0 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.0-rc2.jar
+log4j-core-2.0.jar: Possible 2.0-rc2, 2.0.1, 2.0.2, 2.0 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.0.jar
+log4j-core-2.0.1.jar: Possible 2.0-rc2, 2.0.1, 2.0.2, 2.0 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.0.1.jar
+log4j-core-2.0.2.jar: Possible 2.0-rc2, 2.0.1, 2.0.2, 2.0 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.0.2.jar
+log4j-core-2.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.1.jar
+log4j-core-2.2.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.2.jar
+log4j-core-2.3.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.3.jar
+log4j-core-2.4.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.4.jar
+log4j-core-2.4.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.4.1.jar
+log4j-core-2.5.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.5.jar
+log4j-core-2.6.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.6.jar
+log4j-core-2.6.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.6.1.jar
+log4j-core-2.6.2.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.6.2.jar
+log4j-core-2.7.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.7.jar
+log4j-core-2.8.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.8.jar
+log4j-core-2.8.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.8.1.jar
+log4j-core-2.8.2.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.8.2.jar
+log4j-core-2.9.0.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.9.0.jar
+log4j-core-2.9.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.9.1.jar
+log4j-core-2.10.0.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.10.0.jar
+log4j-core-2.11.0.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.11.0.jar
+log4j-core-2.11.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.11.1.jar
+log4j-core-2.11.2.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.11.2.jar
+log4j-core-2.12.0.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.12.0.jar
+log4j-core-2.12.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.12.1.jar
+log4j-core-2.12.2.jar: -
+log4j-core-2.12.3.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.12.3.jar
+log4j-core-2.13.0.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.13.0.jar
+log4j-core-2.13.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.13.1.jar
+log4j-core-2.13.2.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.13.2.jar
+log4j-core-2.13.3.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.13.3.jar
+log4j-core-2.14.0.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.14.0.jar
+log4j-core-2.14.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.14.1.jar
+log4j-core-2.15.0.jar: Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.15.0.jar
+log4j-core-2.16.0.jar: Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource file:/home/nonroot/workspaces/ase/log4shell-bytecode-scanner/target/test-classes/log4jars/log4j-core-2.16.0.jar
+log4j-core-2.17.0.jar: -
+log4j-core-2.17.1.jar: -

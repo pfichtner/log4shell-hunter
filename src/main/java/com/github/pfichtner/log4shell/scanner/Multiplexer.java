@@ -1,7 +1,7 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Collection;
 
 import org.objectweb.asm.tree.ClassNode;
 
@@ -9,13 +9,13 @@ import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 
 public class Multiplexer extends AbstractDetector {
 
-	private final List<AbstractDetector> detectors;
+	private final Collection<AbstractDetector> detectors;
 
-	public Multiplexer(List<AbstractDetector> detectors) {
+	public Multiplexer(Collection<AbstractDetector> detectors) {
 		this.detectors = detectors;
 	}
 
-	public List<AbstractDetector> getMultiplexed() {
+	public Collection<AbstractDetector> getMultiplexed() {
 		return detectors;
 	}
 

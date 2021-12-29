@@ -13,13 +13,14 @@ import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.DirContextLookupsCallsFromJndiManager;
 import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCalls;
+import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccessWithJdbcPrefix;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupConstructorWithISException;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiManager;
 
 public class Log4JDetector extends AbstractDetector {
-
+	
 	/**
 	 * <pre>
 	 * 2.0-beta9, 2.0-rc1 -> Plugin direct calls (InitialContextLookupsCalls)
@@ -35,10 +36,12 @@ public class Log4JDetector extends AbstractDetector {
 	private final DirContextLookupsCallsFromJndiManager dirContextLookupsCallsFromJndiManager = new DirContextLookupsCallsFromJndiManager();
 
 	private final JndiLookupConstructorWithISException jndiLookupConstructorWithISException = new JndiLookupConstructorWithISException();
+	private final IsJndiEnabledPropertyAccessWithJdbcPrefix isJndiEnabledPropertyAccessWithJdbcPrefix = new IsJndiEnabledPropertyAccessWithJdbcPrefix();
 
-	private final Multiplexer multiplexer = new Multiplexer(asList(plugins, initialContextLookupsCalls,
-			namingContextLookupCallsFromJndiLookup, namingContextLookupCallsFromJndiManager,
-			dirContextLookupsCallsFromJndiManager, jndiLookupConstructorWithISException));
+	private final Multiplexer multiplexer = new Multiplexer(
+			asList(plugins, initialContextLookupsCalls, namingContextLookupCallsFromJndiLookup,
+					namingContextLookupCallsFromJndiManager, dirContextLookupsCallsFromJndiManager,
+					jndiLookupConstructorWithISException, isJndiEnabledPropertyAccessWithJdbcPrefix));
 
 	@Override
 	public void visit(String resource) {
@@ -61,7 +64,7 @@ public class Log4JDetector extends AbstractDetector {
 	@Override
 	public void visitEnd() {
 		multiplexer.visitEnd();
-		if (!isLog4j217OrGreater()) {
+		if (!isLog4j2171rGreater()) {
 			for (Detection detection : plugins.getDetections()) {
 				if (detectionsOfContains(initialContextLookupsCalls, detection.getIn())) {
 					reAdd(detection, "2.0-beta9, 2.0-rc1");
@@ -71,7 +74,7 @@ public class Log4JDetector extends AbstractDetector {
 					List<String> allRefs = methodCallOwners(detection.getIn());
 					if (dirContextLookupsCallsFromJndiManager.getDetections().stream().map(Detection::getIn)
 							.map(n -> n.name).anyMatch(allRefs::contains)) {
-						reAdd(detection, "2.15, 2.16");
+						reAdd(detection, "2.15 <= x <2.17.1");
 					} else if (namingContextLookupCallsFromJndiManager.getDetections().stream().map(Detection::getIn)
 							.map(n -> n.name).anyMatch(allRefs::contains)) {
 						reAdd(detection, "2.1+");
@@ -86,8 +89,8 @@ public class Log4JDetector extends AbstractDetector {
 		addDetection(detection.getFilename(), detection.getIn(), "Possible " + version + " match");
 	}
 
-	private boolean isLog4j217OrGreater() {
-		return !jndiLookupConstructorWithISException.getDetections().isEmpty();
+	private boolean isLog4j2171rGreater() {
+		return !isJndiEnabledPropertyAccessWithJdbcPrefix.getDetections().isEmpty();
 	}
 
 	private static List<String> methodCallOwners(ClassNode classNode) {
