@@ -5,6 +5,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 import static org.objectweb.asm.Opcodes.ACC_ANNOTATION;
+import static org.objectweb.asm.Opcodes.ACC_STATIC;
 import static org.objectweb.asm.Type.VOID_TYPE;
 
 import java.util.Arrays;
@@ -83,6 +84,10 @@ public final class AsmUtil {
 
 	public static boolean isAnno(ClassNode classNode) {
 		return (classNode.access & ACC_ANNOTATION) != 0;
+	}
+
+	public static boolean isStatic(MethodNode classNode) {
+		return (classNode.access & ACC_STATIC) != 0;
 	}
 
 	public static Predicate<LdcInsnNode> constantPoolLoadOf(Predicate<Object> predicate) {

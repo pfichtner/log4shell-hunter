@@ -9,6 +9,7 @@ import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.DirContextLookupsCallsFromJndiManager;
 import com.github.pfichtner.log4shell.scanner.detectors.InitialContextLookupsCalls;
 import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccess;
+import com.github.pfichtner.log4shell.scanner.detectors.IsJndiEnabledPropertyAccessWithJdbcPrefix;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupConstructorWithISException;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
@@ -27,7 +28,8 @@ public final class Detectors {
 			new Log4jPluginAnnotation(), //
 			new InitialContextLookupsCalls(), //
 			new IsJndiEnabledPropertyAccess(), //
-			new JndiLookupConstructorWithISException() //
+			new JndiLookupConstructorWithISException(), //
+			new IsJndiEnabledPropertyAccessWithJdbcPrefix() //
 	);
 
 	private Detectors() {

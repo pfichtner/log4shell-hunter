@@ -6,7 +6,6 @@ import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.File;
 
@@ -15,29 +14,24 @@ import org.junit.jupiter.api.Test;
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-public class JndiLookupConstructorWithISExceptionTest {
+public class IsJndiEnabledPropertyAccessWithJdbcPrefixTest {
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
-	JndiLookupConstructorWithISException sut = new JndiLookupConstructorWithISException();
+	IsJndiEnabledPropertyAccessWithJdbcPrefix sut = new IsJndiEnabledPropertyAccessWithJdbcPrefix();
 
 	@Test
-	void throwingISEinJndiLookupConstructorWasIntroducedWIthLog4J217() throws Exception {
+	void propertyAccessWasIntroducedLog4J2171() throws Exception {
 		DetectionCollector detector = new DetectionCollector(sut);
-		String expected = "JNDI must be enabled by setting log4j2.enableJndiLookup=true access "
-				+ "found in class org.apache.logging.log4j.core.lookup.JndiLookup";
-		assertAll(
-				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.12.3").getAbsolutePath())))
-						.singleElement(as(STRING)).startsWith(expected), //
-				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.17.0").getAbsolutePath())))
-						.singleElement(as(STRING)).startsWith(expected) //
-		);
+		assertThat(getFormatted(detector.analyze(log4jJars.version("2.17.1").getAbsolutePath())))
+				.singleElement(as(STRING))
+				.startsWith("log4j2.enableJndiJdbc access found in class org.apache.logging.log4j.core.net.JndiManager");
 	}
 
 	@Test
 	void canDetectAccess() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.versions("2.12.3", "2.17.0", "2.17.1").toArray(File[]::new));
+				.containsOnlyKeys(log4jJars.versions("2.17.1").toArray(File[]::new));
 	}
 
 }

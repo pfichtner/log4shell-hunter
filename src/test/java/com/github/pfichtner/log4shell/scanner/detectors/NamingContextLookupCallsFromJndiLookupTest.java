@@ -3,7 +3,9 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 
 import java.io.File;
 import java.util.List;
@@ -30,7 +32,7 @@ class NamingContextLookupCallsFromJndiLookupTest {
 	void log4j202HasJndiManagerWithContextLookups() throws Exception {
 		DetectionCollector detector = new DetectionCollector(sut);
 		assertThat(getFormatted(detector.analyze(log4jJars.version("2.0.2").getAbsolutePath())))
-				.hasOnlyOneElementSatisfying(s -> s.startsWith(refTo("javax.naming.Context#lookup(java.lang.String)")));
+				.singleElement(as(STRING)).startsWith(refTo("javax.naming.Context#lookup(java.lang.String)"));
 	}
 
 	private static String refTo(String ref) {

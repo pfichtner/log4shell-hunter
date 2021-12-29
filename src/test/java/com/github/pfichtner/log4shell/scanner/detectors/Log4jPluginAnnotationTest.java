@@ -3,7 +3,9 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.File;
@@ -40,9 +42,9 @@ public class Log4jPluginAnnotationTest {
 		String expected = "@Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup";
 		assertAll( //
 				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath())))
-						.hasOnlyOneElementSatisfying(s -> s.startsWith(expected)), //
+						.singleElement(as(STRING)).startsWith(expected), //
 				() -> assertThat(getFormatted(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath())))
-						.hasOnlyOneElementSatisfying(s -> s.startsWith(expected)) //
+						.singleElement(as(STRING)).startsWith(expected) //
 
 		);
 	}

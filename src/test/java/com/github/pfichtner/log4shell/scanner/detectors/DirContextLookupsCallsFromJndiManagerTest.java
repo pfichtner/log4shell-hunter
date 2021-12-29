@@ -3,7 +3,9 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 
 import java.io.File;
 import java.util.List;
@@ -29,8 +31,8 @@ class DirContextLookupsCallsFromJndiManagerTest {
 	void log4j16HasJndiManagerWithDirContextLookups() throws Exception {
 		DetectionCollector detector = new DetectionCollector(sut);
 		List<Detection> detections = detector.analyze(log4jJars.version("2.16.0").getAbsolutePath());
-		assertThat(getFormatted(detections)).hasOnlyOneElementSatisfying(
-				s -> s.startsWith(refTo("javax.naming.directory.DirContext#lookup(java.lang.String)")));
+		assertThat(getFormatted(detections)).singleElement(as(STRING))
+				.startsWith(refTo("javax.naming.directory.DirContext#lookup(java.lang.String)"));
 	}
 
 	private static String refTo(String ref) {
