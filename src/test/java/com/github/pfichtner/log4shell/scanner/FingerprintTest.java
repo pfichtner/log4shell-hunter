@@ -1,7 +1,7 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
-import static com.github.pfichtner.log4shell.scanner.FingerPrint.getFingerprint;
+import static com.github.pfichtner.log4shell.scanner.Fingerprint.getFingerprint;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
@@ -37,7 +37,7 @@ class FingerprintTest {
 	}
 
 	private Entry<File, Set<Class<? extends AbstractDetector>>> toDetectors(Entry<File, List<Detection>> e) {
-		return Map.entry(e.getKey(), getFingerprint(e.getValue()).stream().map(FingerPrint::getDetectors)
+		return Map.entry(e.getKey(), getFingerprint(e.getValue()).stream().map(Fingerprint::getDetectors)
 				.flatMap(Collection::stream).collect(toSet()));
 	}
 
