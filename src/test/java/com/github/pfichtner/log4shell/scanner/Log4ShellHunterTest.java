@@ -1,6 +1,7 @@
 package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
+import static com.github.pfichtner.log4shell.scanner.Scrubbers.basedirScrubber;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
@@ -13,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -142,7 +144,7 @@ class Log4ShellHunterTest {
 	@Test
 	void approveAll() throws IOException {
 		Multiplexer multiplexer = new Multiplexer(allDetectors());
-		verify(toBeApproved(new DetectionCollector(multiplexer), multiplexer.getMultiplexed()), options());
+		verify(toBeApproved(new DetectionCollector(multiplexer), multiplexer.getMultiplexed()), csv());
 	}
 
 	@Test
@@ -157,8 +159,12 @@ class Log4ShellHunterTest {
 		}
 		verify(sb.toString(), options());
 	}
+	
+	private static Options options() throws MalformedURLException {
+		return new Options(basedirScrubber());
+	}
 
-	private static Options options() {
+	private static Options csv() {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
 	}
 

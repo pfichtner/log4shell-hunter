@@ -1,15 +1,14 @@
 package com.github.pfichtner.log4shell.scanner;
 
+import static com.github.pfichtner.log4shell.scanner.Scrubbers.basedirScrubber;
 import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.nio.file.Files.walk;
 import static java.util.Arrays.asList;
-import static java.util.regex.Pattern.quote;
 import static java.util.stream.Collectors.toList;
 import static org.approvaltests.Approvals.verify;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.approvaltests.core.Options;
-import org.approvaltests.scrubbers.RegExScrubber;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -42,12 +40,7 @@ public class Log4jSamplesIT {
 	}
 
 	private static Options options() throws MalformedURLException {
-		return new Options(scrubber());
-	}
-
-	private static RegExScrubber scrubber() throws MalformedURLException {
-		File userDirectory = new File("").getAbsoluteFile();
-		return new RegExScrubber(quote(userDirectory.toURI().toURL().toString()), "[BASEDIR]/");
+		return new Options(basedirScrubber());
 	}
 
 	private static Stream<Executable> allModesCheck(List<String> filenames) {

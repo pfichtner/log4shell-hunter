@@ -52,7 +52,7 @@ class FingerprintTest {
 		StringBuilder sb = new StringBuilder();
 		for (File file : log4jJars) {
 			List<String> fingerprint = getFingerprint(collector.analyze(file.getAbsolutePath()));
-			sb.append(file.getAbsoluteFile().getName() + ":\t" + fingerprint.stream().collect(joining(",")))
+			sb.append(file.getAbsoluteFile().getName() + ":\t" + fingerprint.stream().sorted().collect(joining(",")))
 					.append("\n");
 		}
 		return sb.toString();
