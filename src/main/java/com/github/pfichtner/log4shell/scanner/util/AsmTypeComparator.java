@@ -1,7 +1,7 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.classType;
-import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.toMap;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.extractValues;
 
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public enum AsmTypeComparator {
 
 		@Override
 		public boolean annotationIs(AnnotationNode annotationNode, Map<Object, Object> expected) {
-			return expected.equals(toMap(annotationNode));
+			return expected.equals(extractValues(annotationNode));
 		}
 	},
 
@@ -51,7 +51,7 @@ public enum AsmTypeComparator {
 		@Override
 		public boolean annotationIs(AnnotationNode annotationNode, Map<Object, Object> expected) {
 			// TODO values are of type classes we should ignore package names
-			return expected.equals(toMap(annotationNode));
+			return expected.equals(extractValues(annotationNode));
 		}
 
 	},
@@ -74,7 +74,7 @@ public enum AsmTypeComparator {
 		public boolean annotationIs(AnnotationNode annotationNode, Map<Object, Object> expected) {
 			// keys could be renamed (obfuscated) so we just check the values
 			// TODO when values' types are classes we should ignore package names
-			return toMap(annotationNode).values().containsAll(expected.values());
+			return extractValues(annotationNode).values().containsAll(expected.values());
 		}
 
 	};
