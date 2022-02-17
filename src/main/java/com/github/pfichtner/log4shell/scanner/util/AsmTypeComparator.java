@@ -31,7 +31,7 @@ public enum AsmTypeComparator {
 	repackageComparator() {
 
 		public boolean isClass(Type type1, Type type2) {
-			return stripPackage(type1).equals(stripPackage(type2));
+			return simpleName(type1).equals(simpleName(type2));
 		}
 
 		@Override
@@ -39,11 +39,14 @@ public enum AsmTypeComparator {
 			return name1.equals(name2);
 		}
 
-		private String stripPackage(Type type) {
-			// TODO if type is java/javax: do NOT ignore package names but then classes can
-			// be hidden (a class foo/Bar.class could have been renamed to
+		private String simpleName(Type type) {
+			return simpleName(type.getInternalName());
+		}
+
+		private String simpleName(String internalName) {
+			// TODO if package is java/javax: do NOT ignore package names but then classes
+			// could be hidden (a class foo/Bar.class could have been renamed to
 			// java/Something.class)
-			String internalName = type.getInternalName();
 			int lastIndexOf = internalName.lastIndexOf('/');
 			return lastIndexOf > 0 ? internalName.substring(lastIndexOf + 1) : internalName;
 		}
@@ -58,8 +61,8 @@ public enum AsmTypeComparator {
 
 	obfuscatorComparator {
 
-		// TODO if type is java/javax: do NOT ignore package names but then classes can
-		// be hidden (a class foo/Bar.class could have been renamed to
+		// TODO if type is java/javax: do NOT ignore package names but then classes
+		// could be hidden (a class foo/Bar.class could have been renamed to
 		// java/Something.class)
 		public boolean isClass(Type type1, Type type2) {
 			return true;
