@@ -31,9 +31,9 @@ class FingerprintTest {
 	void onlyVersionsPrevioisBeta209AreAllowedToHaveNoFingerprints() throws Exception {
 		assertThat(analyse(log4jJars, new Multiplexer(allDetectors())).entrySet().stream().map(e -> toDetectors(e))
 				.filter(e -> e.getValue().isEmpty()).collect(toMap(Entry::getKey, Entry::getValue)))
-						.containsOnlyKeys(log4jJars.versions("2.0-alpha1", "2.0-alpha2", "2.0-beta1", "2.0-beta2", //
-								"2.0-beta3", "2.0-beta4", "2.0-beta5", "2.0-beta6", "2.0-beta7", "2.0-beta8")
-								.toArray(File[]::new));
+				.containsOnlyKeys(log4jJars.versions("2.0-alpha1", "2.0-alpha2", "2.0-beta1", "2.0-beta2", //
+						"2.0-beta3", "2.0-beta4", "2.0-beta5", "2.0-beta6", "2.0-beta7", "2.0-beta8")
+						.toArray(File[]::new));
 	}
 
 	private Entry<File, Set<Class<? extends AbstractDetector>>> toDetectors(Entry<File, List<Detection>> e) {
@@ -50,9 +50,9 @@ class FingerprintTest {
 	private String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors)
 			throws IOException {
 		StringBuilder sb = new StringBuilder();
-		for (File file : log4jJars) {
-			List<String> fingerprint = getFingerprint(collector.analyze(file.getAbsolutePath()));
-			sb.append(file.getAbsoluteFile().getName() + ":\t" + fingerprint.stream().sorted().collect(joining(",")))
+		for (File jar : log4jJars) {
+			List<String> fingerprint = getFingerprint(collector.analyze(jar.getAbsolutePath()));
+			sb.append(jar.getAbsoluteFile().getName() + ":\t" + fingerprint.stream().sorted().collect(joining(",")))
 					.append("\n");
 		}
 		return sb.toString();
