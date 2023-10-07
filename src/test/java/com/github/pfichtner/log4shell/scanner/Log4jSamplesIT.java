@@ -67,7 +67,12 @@ public class Log4jSamplesIT {
 
 	private static void doCheck(List<String> filenames, AsmTypeComparator typeComparator) throws IOException {
 		System.out.println("*** using " + typeComparator);
-		Log4ShellHunter.main(args(filenames, typeComparator));
+		AsmTypeComparator old = AsmTypeComparator.typeComparator();
+		try {
+			Log4ShellHunter.main(args(filenames, typeComparator));
+		} finally {
+			AsmTypeComparator.useTypeComparator(old);
+		}
 	}
 
 	private static String[] args(List<String> filenames, AsmTypeComparator typeComparator) {

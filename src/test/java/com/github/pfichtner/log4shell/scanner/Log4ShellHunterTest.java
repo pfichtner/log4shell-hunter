@@ -32,6 +32,7 @@ import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
+import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 @DefaultLocale(language = "en")
@@ -105,7 +106,13 @@ class Log4ShellHunterTest {
 		File zip = new File(getClass().getClassLoader()
 				.getResource("log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip")
 				.toURI());
-		String[] out = tapSystemOut(() -> Log4ShellHunter.main(zip.getAbsolutePath())).split("\n");
+		AsmTypeComparator old = AsmTypeComparator.typeComparator();
+		String[] out;
+		try {
+			out = tapSystemOut(() -> Log4ShellHunter.main(zip.getAbsolutePath())).split("\n");
+		} finally {
+			AsmTypeComparator.useTypeComparator(old);
+		}
 		assertThat(out).containsSequence(asList( //
 				zip.toString(), //
 				"> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.16.0.jar", //
@@ -134,8 +141,13 @@ class Log4ShellHunterTest {
 
 	private String execMain(String... args) throws Exception {
 		Map<String, String> values = new HashMap<>();
-		values.put(STDERR, tapSystemErr(() -> values.put(STDOUT, tapSystemOut(
-				() -> values.put(RC, String.valueOf(catchSystemExit(() -> Log4ShellHunter.main(args))))))));
+		AsmTypeComparator old = AsmTypeComparator.typeComparator();
+		try {
+			values.put(STDERR, tapSystemErr(() -> values.put(STDOUT, tapSystemOut(
+					() -> values.put(RC, String.valueOf(catchSystemExit(() -> Log4ShellHunter.main(args))))))));
+		} finally {
+			AsmTypeComparator.useTypeComparator(old);
+		}
 		List<String> elements = asList( //
 				"stdout", values.getOrDefault(STDOUT, ""), //
 				"stderr", values.getOrDefault(STDERR, ""), //
