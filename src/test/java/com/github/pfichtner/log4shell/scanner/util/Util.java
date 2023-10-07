@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
 import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
+import com.github.stefanbirkner.systemlambda.Statement;
 
 public final class Util {
 
@@ -51,6 +52,15 @@ public final class Util {
 			results.put(log4j, detector.analyze(log4j.getAbsolutePath()));
 		}
 		return results;
+	}
+
+	public static void captureAndRestoreAsmTypeComparator(Statement statement) throws Exception {
+		AsmTypeComparator old = AsmTypeComparator.typeComparator();
+		try {
+			statement.execute();
+		} finally {
+			AsmTypeComparator.useTypeComparator(old);
+		}
 	}
 
 }

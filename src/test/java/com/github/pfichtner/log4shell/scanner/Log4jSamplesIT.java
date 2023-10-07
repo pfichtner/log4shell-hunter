@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Scrubbers.basedirScrubber;
 import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
+import static com.github.pfichtner.log4shell.scanner.util.Util.captureAndRestoreAsmTypeComparator;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.nio.file.Files.walk;
 import static java.util.Arrays.asList;
@@ -65,14 +66,9 @@ public class Log4jSamplesIT {
 		return EnumSet.allOf(AsmTypeComparator.class).stream();
 	}
 
-	private static void doCheck(List<String> filenames, AsmTypeComparator typeComparator) throws IOException {
+	private static void doCheck(List<String> filenames, AsmTypeComparator typeComparator) throws Exception {
 		System.out.println("*** using " + typeComparator);
-		AsmTypeComparator old = AsmTypeComparator.typeComparator();
-		try {
-			Log4ShellHunter.main(args(filenames, typeComparator));
-		} finally {
-			AsmTypeComparator.useTypeComparator(old);
-		}
+		captureAndRestoreAsmTypeComparator(() -> Log4ShellHunter.main(args(filenames, typeComparator)));
 	}
 
 	private static String[] args(List<String> filenames, AsmTypeComparator typeComparator) {

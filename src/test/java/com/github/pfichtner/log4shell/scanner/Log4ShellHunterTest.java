@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
 import static com.github.pfichtner.log4shell.scanner.Scrubbers.basedirScrubber;
+import static com.github.pfichtner.log4shell.scanner.util.Util.captureAndRestoreAsmTypeComparator;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
@@ -141,13 +142,8 @@ class Log4ShellHunterTest {
 
 	private String execMain(String... args) throws Exception {
 		Map<String, String> values = new HashMap<>();
-		AsmTypeComparator old = AsmTypeComparator.typeComparator();
-		try {
-			values.put(STDERR, tapSystemErr(() -> values.put(STDOUT, tapSystemOut(
-					() -> values.put(RC, String.valueOf(catchSystemExit(() -> Log4ShellHunter.main(args))))))));
-		} finally {
-			AsmTypeComparator.useTypeComparator(old);
-		}
+		captureAndRestoreAsmTypeComparator(() -> values.put(STDERR, tapSystemErr(() -> values.put(STDOUT, tapSystemOut(
+				() -> values.put(RC, String.valueOf(catchSystemExit(() -> Log4ShellHunter.main(args)))))))));
 		List<String> elements = asList( //
 				"stdout", values.getOrDefault(STDOUT, ""), //
 				"stderr", values.getOrDefault(STDERR, ""), //
