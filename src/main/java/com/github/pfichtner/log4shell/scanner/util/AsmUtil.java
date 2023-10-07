@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
@@ -9,7 +10,6 @@ import static org.objectweb.asm.Type.VOID_TYPE;
 import static org.objectweb.asm.Type.getReturnType;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -66,7 +66,7 @@ public final class AsmUtil {
 	}
 
 	public static <T> List<T> nullSafety(List<T> list) {
-		return list == null ? Collections.emptyList() : list;
+		return list == null ? emptyList() : list;
 	}
 
 	public static String methodName(MethodInsnNode node) {
