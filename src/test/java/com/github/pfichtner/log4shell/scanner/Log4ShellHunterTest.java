@@ -7,6 +7,7 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.IntStream.range;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -19,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.approvaltests.core.Options;
 import org.approvaltests.core.Options.FileOptions;
@@ -134,11 +136,17 @@ class Log4ShellHunterTest {
 		Map<String, String> values = new HashMap<>();
 		values.put(STDERR, tapSystemErr(() -> values.put(STDOUT, tapSystemOut(
 				() -> values.put(RC, String.valueOf(catchSystemExit(() -> Log4ShellHunter.main(args))))))));
-		return asList( //
-				"stdout: " + values.getOrDefault(STDOUT, ""), //
-				"stderr: " + values.getOrDefault(STDERR, ""), //
-				"rc: " + values.getOrDefault(RC, "") //
-		).stream().collect(joining("\n"));
+		List<String> elements = asList( //
+				"stdout", values.getOrDefault(STDOUT, ""), //
+				"stderr", values.getOrDefault(STDERR, ""), //
+				"rc", values.getOrDefault(RC, "") //
+		);
+		return range(0, elements.size() / 2).mapToObj(i -> line(elements, i)).collect(joining("\n"));
+	}
+
+	private String line(List<String> lines, int lineIndex) {
+		String header = lines.get(lineIndex * 2);
+		return Stream.of(header, "-".repeat(header.length()), lines.get(lineIndex * 2 + 1)).collect(joining("\n"));
 	}
 
 	@Test
@@ -159,7 +167,7 @@ class Log4ShellHunterTest {
 		}
 		verify(sb.toString(), options());
 	}
-	
+
 	private static Options options() throws MalformedURLException {
 		return new Options(basedirScrubber());
 	}
@@ -168,7 +176,8 @@ class Log4ShellHunterTest {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
 	}
 
-	private String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors) throws IOException {
+	private String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors)
+			throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(header(collector, detectors)).append("\n");
 		for (File file : log4jJars) {

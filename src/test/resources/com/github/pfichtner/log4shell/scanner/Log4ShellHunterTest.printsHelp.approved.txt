@@ -1,6 +1,12 @@
-stdout:  VAL                                                              : archives to analyze
+stdout
+------
+ VAL                                                              : archives to analyze
  -m [defaultComparator | repackageComparator |                    : mode to compare class/method names (default: repackageComparator)
  obfuscatorComparator]                                               
 
-stderr: 
-rc: 0
+stderr
+------
+
+rc
+--
+0
