@@ -7,6 +7,7 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.IntStream.range;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -19,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.approvaltests.core.Options;
 import org.approvaltests.core.Options.FileOptions;
@@ -30,6 +32,7 @@ import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
+import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 @DefaultLocale(language = "en")
@@ -103,7 +106,13 @@ class Log4ShellHunterTest {
 		File zip = new File(getClass().getClassLoader()
 				.getResource("log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip")
 				.toURI());
-		String[] out = tapSystemOut(() -> Log4ShellHunter.main(zip.getAbsolutePath())).split("\n");
+		AsmTypeComparator old = AsmTypeComparator.typeComparator();
+		String[] out;
+		try {
+			out = tapSystemOut(() -> Log4ShellHunter.main(zip.getAbsolutePath())).split("\n");
+		} finally {
+			AsmTypeComparator.useTypeComparator(old);
+		}
 		assertThat(out).containsSequence(asList( //
 				zip.toString(), //
 				"> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.16.0.jar", //
@@ -132,13 +141,24 @@ class Log4ShellHunterTest {
 
 	private String execMain(String... args) throws Exception {
 		Map<String, String> values = new HashMap<>();
-		values.put(STDERR, tapSystemErr(() -> values.put(STDOUT, tapSystemOut(
-				() -> values.put(RC, String.valueOf(catchSystemExit(() -> Log4ShellHunter.main(args))))))));
-		return asList( //
-				"stdout: " + values.getOrDefault(STDOUT, ""), //
-				"stderr: " + values.getOrDefault(STDERR, ""), //
-				"rc: " + values.getOrDefault(RC, "") //
-		).stream().collect(joining("\n"));
+		AsmTypeComparator old = AsmTypeComparator.typeComparator();
+		try {
+			values.put(STDERR, tapSystemErr(() -> values.put(STDOUT, tapSystemOut(
+					() -> values.put(RC, String.valueOf(catchSystemExit(() -> Log4ShellHunter.main(args))))))));
+		} finally {
+			AsmTypeComparator.useTypeComparator(old);
+		}
+		List<String> elements = asList( //
+				"stdout", values.getOrDefault(STDOUT, ""), //
+				"stderr", values.getOrDefault(STDERR, ""), //
+				"rc", values.getOrDefault(RC, "") //
+		);
+		return range(0, elements.size() / 2).mapToObj(i -> line(elements, i)).collect(joining("\n"));
+	}
+
+	private String line(List<String> lines, int lineIndex) {
+		String header = lines.get(lineIndex * 2);
+		return Stream.of(header, "-".repeat(header.length()), lines.get(lineIndex * 2 + 1)).collect(joining("\n"));
 	}
 
 	@Test
@@ -159,7 +179,7 @@ class Log4ShellHunterTest {
 		}
 		verify(sb.toString(), options());
 	}
-	
+
 	private static Options options() throws MalformedURLException {
 		return new Options(basedirScrubber());
 	}
@@ -168,7 +188,8 @@ class Log4ShellHunterTest {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
 	}
 
-	private String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors) throws IOException {
+	private String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors)
+			throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(header(collector, detectors)).append("\n");
 		for (File file : log4jJars) {
