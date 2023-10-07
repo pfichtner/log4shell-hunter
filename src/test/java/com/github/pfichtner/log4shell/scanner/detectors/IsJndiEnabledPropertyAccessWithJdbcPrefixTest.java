@@ -24,14 +24,14 @@ public class IsJndiEnabledPropertyAccessWithJdbcPrefixTest {
 	void propertyAccessWasIntroducedLog4J2171() throws Exception {
 		DetectionCollector detector = new DetectionCollector(sut);
 		assertThat(getFormatted(detector.analyze(log4jJars.version("2.17.1").getAbsolutePath())))
-				.singleElement(as(STRING))
-				.startsWith("log4j2.enableJndiJdbc access found in class org.apache.logging.log4j.core.net.JndiManager");
+				.singleElement(as(STRING)).startsWith(
+						"log4j2.enableJndiJdbc access found in class org.apache.logging.log4j.core.net.JndiManager");
 	}
 
 	@Test
 	void canDetectAccess() throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.versions("2.17.1").toArray(File[]::new));
+		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(
+				log4jJars.versions("2.17.1", "2.17.2", "2.18.0", "2.19.0", "2.20.0").toArray(File[]::new));
 	}
 
 }

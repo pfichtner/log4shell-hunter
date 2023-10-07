@@ -46,8 +46,11 @@ class NamingContextLookupCallsFromJndiManagerTest {
 			"2.15.0", //
 			"2.16.0", //
 			"2.17.0", //
-			"2.17.1" //
-
+			"2.17.1", //
+			"2.17.2", //
+			"2.18.0", //
+			"2.19.0", //
+			"2.20.0" //
 	);
 
 	NamingContextLookupCallsFromJndiManager sut = new NamingContextLookupCallsFromJndiManager();

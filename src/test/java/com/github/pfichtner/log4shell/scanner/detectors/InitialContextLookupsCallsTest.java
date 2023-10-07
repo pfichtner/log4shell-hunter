@@ -24,7 +24,11 @@ public class InitialContextLookupsCallsTest {
 			"2.0-beta9", //
 			"2.0-rc1", //
 			"2.17.0", //
-			"2.17.1" //
+			"2.17.1", //
+			"2.17.2", //
+			"2.18.0", //
+			"2.19.0", //
+			"2.20.0" //
 	);
 
 	InitialContextLookupsCalls sut = new InitialContextLookupsCalls();
