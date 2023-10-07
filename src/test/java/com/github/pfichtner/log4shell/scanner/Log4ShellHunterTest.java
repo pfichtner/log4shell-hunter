@@ -8,7 +8,6 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.IntStream.range;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -39,9 +38,9 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 @DefaultLocale(language = "en")
 class Log4ShellHunterTest {
 
-	private static final String STDERR = "STDERR";
-	private static final String STDOUT = "STDOUT";
-	private static final String RC = "RC";
+	private static final String STDERR = "stderr";
+	private static final String STDOUT = "stdout";
+	private static final String RC = "rc";
 
 	private static final String SEPARATOR = ",";
 
@@ -142,19 +141,16 @@ class Log4ShellHunterTest {
 
 	private String execMain(String... args) throws Exception {
 		Map<String, String> values = new HashMap<>();
-		captureAndRestoreAsmTypeComparator(() -> values.put(STDERR, tapSystemErr(() -> values.put(STDOUT, tapSystemOut(
-				() -> values.put(RC, String.valueOf(catchSystemExit(() -> Log4ShellHunter.main(args)))))))));
-		List<String> elements = asList( //
-				"stdout", values.getOrDefault(STDOUT, ""), //
-				"stderr", values.getOrDefault(STDERR, ""), //
-				"rc", values.getOrDefault(RC, "") //
-		);
-		return range(0, elements.size() / 2).mapToObj(i -> line(elements, i)).collect(joining("\n"));
-	}
-
-	private String line(List<String> lines, int lineIndex) {
-		String header = lines.get(lineIndex * 2);
-		return Stream.of(header, "-".repeat(header.length()), lines.get(lineIndex * 2 + 1)).collect(joining("\n"));
+		captureAndRestoreAsmTypeComparator( //
+				() -> //
+				values.put(STDERR, tapSystemErr(() -> //
+				values.put(STDOUT, tapSystemOut(() -> //
+				values.put(RC, String.valueOf(catchSystemExit( //
+						() -> Log4ShellHunter.main(args)))) //
+				)))));
+		return asList(STDOUT, STDERR, RC).stream()
+				.map(h -> Stream.of(h, "-".repeat(h.length()), values.getOrDefault(h, "")).collect(joining("\n")))
+				.collect(joining("\n"));
 	}
 
 	@Test
