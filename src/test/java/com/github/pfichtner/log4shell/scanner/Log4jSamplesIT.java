@@ -26,7 +26,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 
-public class Log4jSamplesIT {
+class Log4jSamplesIT {
 
 	@Test
 	void approveLog4jSamples() throws Exception {
@@ -77,9 +77,9 @@ public class Log4jSamplesIT {
 		return args.toArray(String[]::new);
 	}
 
-	private List<String> filenames(String base) throws IOException {
+	private static List<String> filenames(String base) throws IOException {
 		try (Stream<Path> fileStream = walk(Paths.get(base))) {
-			return fileStream.filter(Files::isRegularFile).map(Path::toString).collect(toList());
+			return fileStream.filter(Files::isRegularFile).map(Path::toString).sorted().collect(toList());
 		}
 	}
 
