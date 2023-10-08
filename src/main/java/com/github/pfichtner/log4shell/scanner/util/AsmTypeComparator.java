@@ -13,6 +13,7 @@ import org.objectweb.asm.tree.MethodNode;
 public enum AsmTypeComparator {
 
 	defaultComparator() {
+
 		public boolean isClass(Type type1, Type type2) {
 			return type1.equals(type2);
 		}

@@ -28,7 +28,7 @@ class FingerprintTest {
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
 	@Test
-	void onlyVersionsPrevioisBeta209AreAllowedToHaveNoFingerprints() throws Exception {
+	void onlyVersionsPreviousBeta209AreAllowedToHaveNoFingerprints() throws Exception {
 		assertThat(analyse(log4jJars, new Multiplexer(allDetectors())).entrySet().stream().map(e -> toDetectors(e))
 				.filter(e -> e.getValue().isEmpty()).collect(toMap(Entry::getKey, Entry::getValue)))
 				.containsOnlyKeys(log4jJars.versions("2.0-alpha1", "2.0-alpha2", "2.0-beta1", "2.0-beta2", //
@@ -36,8 +36,8 @@ class FingerprintTest {
 						.toArray(File[]::new));
 	}
 
-	private Entry<File, Set<Class<? extends AbstractDetector>>> toDetectors(Entry<File, List<Detection>> e) {
-		return Map.entry(e.getKey(), getFingerprint(e.getValue()).stream().map(Fingerprint::getDetectors)
+	private Entry<File, Set<Class<? extends AbstractDetector>>> toDetectors(Entry<File, List<Detection>> entry) {
+		return Map.entry(entry.getKey(), getFingerprint(entry.getValue()).stream().map(Fingerprint::getDetectors)
 				.flatMap(Collection::stream).collect(toSet()));
 	}
 
