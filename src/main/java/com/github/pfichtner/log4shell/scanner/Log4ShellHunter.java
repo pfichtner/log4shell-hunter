@@ -29,7 +29,7 @@ public class Log4ShellHunter {
 		private AsmTypeComparator typeComparator = AsmTypeComparator.repackageComparator;
 
 		@Argument(required = true, usage = "archives to analyze")
-		private List<String> files = new ArrayList<String>();
+		private List<String> files = new ArrayList<>();
 	}
 
 	public static void main(String... args) throws IOException {

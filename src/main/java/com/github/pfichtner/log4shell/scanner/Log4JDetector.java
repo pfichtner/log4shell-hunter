@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.objectweb.asm.tree.ClassNode;
 
@@ -20,7 +21,7 @@ import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCalls
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiManager;
 
 public class Log4JDetector extends AbstractDetector {
-	
+
 	/**
 	 * <pre>
 	 * 2.0-beta9, 2.0-rc1 -> Plugin direct calls (InitialContextLookupsCalls)
@@ -64,19 +65,19 @@ public class Log4JDetector extends AbstractDetector {
 	@Override
 	public void visitEnd() {
 		multiplexer.visitEnd();
-		if (!isLog4j2171rGreater()) {
+		if (!isLog4j2171orGreater()) {
 			for (Detection detection : plugins.getDetections()) {
-				if (detectionsOfContains(initialContextLookupsCalls, detection.getIn())) {
+				ClassNode detectionInClass = detection.getIn();
+				if (detectionsOfContains(initialContextLookupsCalls, detectionInClass)) {
 					reAdd(detection, "2.0-beta9, 2.0-rc1");
-				} else if (detectionsOfContains(namingContextLookupCallsFromJndiLookup, detection.getIn())) {
+				} else if (detectionsOfContains(namingContextLookupCallsFromJndiLookup, detectionInClass)) {
 					reAdd(detection, "2.0-rc2, 2.0.1, 2.0.2, 2.0");
 				} else {
-					List<String> allRefs = methodCallOwners(detection.getIn());
-					if (dirContextLookupsCallsFromJndiManager.getDetections().stream().map(Detection::getIn)
-							.map(n -> n.name).anyMatch(allRefs::contains)) {
+					List<String> allRefs = methodCallOwners(detectionInClass);
+					if (detectionClassnames(dirContextLookupsCallsFromJndiManager).anyMatch(allRefs::contains)) {
 						reAdd(detection, "2.15 <= x <2.17.1");
-					} else if (namingContextLookupCallsFromJndiManager.getDetections().stream().map(Detection::getIn)
-							.map(n -> n.name).anyMatch(allRefs::contains)) {
+					} else if (detectionClassnames(namingContextLookupCallsFromJndiManager)
+							.anyMatch(allRefs::contains)) {
 						reAdd(detection, "2.1+");
 					}
 				}
@@ -85,11 +86,15 @@ public class Log4JDetector extends AbstractDetector {
 		super.visitEnd();
 	}
 
+	private static Stream<String> detectionClassnames(AbstractDetector detector) {
+		return detector.getDetections().stream().map(Detection::getIn).map(n -> n.name);
+	}
+
 	private void reAdd(Detection detection, String version) {
 		addDetection(detection.getFilename(), detection.getIn(), "Possible " + version + " match");
 	}
 
-	private boolean isLog4j2171rGreater() {
+	private boolean isLog4j2171orGreater() {
 		return !isJndiEnabledPropertyAccessWithJdbcPrefix.getDetections().isEmpty();
 	}
 
@@ -104,4 +109,5 @@ public class Log4JDetector extends AbstractDetector {
 	private static boolean detectionsContains(List<Detection> detections, ClassNode classNode) {
 		return detections.stream().map(Detection::getIn).anyMatch(classNode::equals);
 	}
+
 }
