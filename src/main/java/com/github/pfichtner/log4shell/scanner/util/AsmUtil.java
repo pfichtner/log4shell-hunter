@@ -9,6 +9,7 @@ import static org.objectweb.asm.Opcodes.ACC_STATIC;
 import static org.objectweb.asm.Type.VOID_TYPE;
 import static org.objectweb.asm.Type.getReturnType;
 
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -119,6 +120,14 @@ public final class AsmUtil {
 
 	public static Predicate<MethodNode> voidNoArgs() {
 		return n -> voidNoArgs.equals(n.desc);
+	}
+
+	public static boolean hasRetentionPolicy(ClassNode classNode, RetentionPolicy retentionPolicy) {
+		return nullSafety(classNode.visibleAnnotations).stream()
+				.anyMatch(a -> a.desc.equals("Ljava/lang/annotation/Retention;") && a.values.size() == 2
+						&& a.values.get(0).equals("value") && a.values.get(1) instanceof String[]
+						&& Arrays.equals((String[]) a.values.get(1),
+								new String[] { "Ljava/lang/annotation/RetentionPolicy;", retentionPolicy.name() }));
 	}
 
 }

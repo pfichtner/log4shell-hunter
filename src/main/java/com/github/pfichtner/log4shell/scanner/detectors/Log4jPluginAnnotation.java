@@ -3,14 +3,15 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.obfuscatorComparator;
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.typeComparator;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.STRING_TYPE;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.hasRetentionPolicy;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.isAnno;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.nullSafety;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.returnTypeIs;
 import static com.github.pfichtner.log4shell.scanner.util.LookupConstants.PLUGIN_TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.stream.Collectors.toList;
 
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -65,7 +66,7 @@ public class Log4jPluginAnnotation extends AbstractDetector {
 	// ----------------------------------------------------------------------------------------------------------
 
 	private static boolean couldBeLog4jPlugin(ClassNode classNode) {
-		if (!isAnno(classNode) || !hasRetentionPolicy(classNode, "RUNTIME")) {
+		if (!isAnno(classNode) || !hasRetentionPolicy(classNode, RUNTIME)) {
 			return false;
 		}
 		// String name(), String category(), String elementType() default EMPTY
@@ -77,14 +78,6 @@ public class Log4jPluginAnnotation extends AbstractDetector {
 
 	private static long methodsWithEmptyStringAsDefault(List<MethodNode> methods) {
 		return methods.stream().filter(n -> "".equals(n.annotationDefault)).count();
-	}
-
-	private static boolean hasRetentionPolicy(ClassNode classNode, String policy) {
-		return nullSafety(classNode.visibleAnnotations).stream()
-				.anyMatch(a -> a.desc.equals("Ljava/lang/annotation/Retention;") && a.values.size() == 2
-						&& a.values.get(0).equals("value") && a.values.get(1) instanceof String[]
-						&& Arrays.equals((String[]) a.values.get(1),
-								new String[] { "Ljava/lang/annotation/RetentionPolicy;", policy }));
 	}
 
 }

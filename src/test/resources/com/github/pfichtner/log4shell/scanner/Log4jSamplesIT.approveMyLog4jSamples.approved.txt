@@ -1,10 +1,16 @@
 *** using defaultComparator
 my-log4j-samples/true-hits/dummylog4j-0.0.1-SNAPSHOT.jar
 
+my-log4j-samples/true-hits/somethingLikeLog4jPlugin.jar
+
 *** using repackageComparator
 my-log4j-samples/true-hits/dummylog4j-0.0.1-SNAPSHOT.jar
+
+my-log4j-samples/true-hits/somethingLikeLog4jPlugin.jar
 
 *** using obfuscatorComparator
 my-log4j-samples/true-hits/dummylog4j-0.0.1-SNAPSHOT.jar
 > Possible 2.0-beta9, 2.0-rc1 match found in class dummylog4j.JnXXXXdiLXXXooXXXkuXXXXXXXXXp in resource [BASEDIR]/my-log4j-samples/true-hits/dummylog4j-0.0.1-SNAPSHOT.jar
+
+my-log4j-samples/true-hits/somethingLikeLog4jPlugin.jar
 

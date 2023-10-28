@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
 import static com.github.pfichtner.log4shell.scanner.Scrubbers.basedirScrubber;
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparatorUtil.restoreAsmTypeComparator;
 import static com.github.pfichtner.log4shell.scanner.util.Util.captureAndRestoreAsmTypeComparator;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
@@ -32,7 +33,6 @@ import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 import com.github.pfichtner.log4shell.scanner.detectors.JndiManagerLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.io.Detector;
-import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 @DefaultLocale(language = "en")
@@ -80,7 +80,7 @@ class Log4ShellHunterTest {
 				.getResource("log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip")
 				.toURI());
 		String[] out = runCheck(new DetectionCollector(new Multiplexer(allDetectors())), zip).split("\n");
-		assertThat(out).containsSequence(asList( //
+		assertThat(out).containsExactly( //
 				zip.toString(), //
 				"> Reference to javax.naming.Context#lookup(java.lang.String) found in class org.apache.logging.log4j.core.net.JndiManager in resource /log4j-core-2.12.2.jar", //
 				"> @Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.12.2.jar", //
@@ -91,14 +91,14 @@ class Log4ShellHunterTest {
 				"> log4j2.enableJndi access found in class org.apache.logging.log4j.core.net.JndiManager in resource /log4j-core-2.16.0.jar", //
 				"> @Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar", //
 				"> Reference to javax.naming.InitialContext#lookup(java.lang.String) found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar" //
-		));
+		);
 	}
 
 	@Test
 	void throwsExceptionIfFileCannotBeRead() throws Exception {
 		String zip = "XXXXsomeNonExistentFileXXX.jar";
 		RuntimeException rte = assertThrows(RuntimeException.class, () -> new Log4ShellHunter().check(new File(zip)));
-		assertThat(rte).hasMessageContaining(zip).hasMessageContaining("not readable");
+		assertThat(rte).hasMessageContainingAll(zip, "not readable");
 	}
 
 	@Test
@@ -106,18 +106,14 @@ class Log4ShellHunterTest {
 		File zip = new File(getClass().getClassLoader()
 				.getResource("log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip")
 				.toURI());
-		AsmTypeComparator old = AsmTypeComparator.typeComparator();
-		String[] out;
-		try {
-			out = tapSystemOut(() -> Log4ShellHunter.main(zip.getAbsolutePath())).split("\n");
-		} finally {
-			AsmTypeComparator.useTypeComparator(old);
-		}
-		assertThat(out).containsSequence(asList( //
+
+		String out = tapSystemOut(() -> restoreAsmTypeComparator(() -> Log4ShellHunter.main(zip.getAbsolutePath())));
+
+		assertThat(out.split("\n")).containsExactly( //
 				zip.toString(), //
 				"> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.16.0.jar", //
 				"> Possible 2.0-beta9, 2.0-rc1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar" //
-		));
+		);
 	}
 
 	@Test

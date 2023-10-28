@@ -1,6 +1,9 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.obfuscatorComparator;
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.useTypeComparator;
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparatorUtil.restoreAsmTypeComparator;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.as;
@@ -53,6 +56,16 @@ public class Log4jPluginAnnotationTest {
 	void canDetectPluginClass() throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
 				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutPluginAnnotation));
+	}
+
+	@Test
+	void canDetectObfuscatedPluginClass() {
+		restoreAsmTypeComparator(() -> {
+			useTypeComparator(obfuscatorComparator);
+			assertThat(new DetectionCollector(sut).analyze("my-log4j-samples/true-hits/somethingLikeLog4jPlugin.jar"))
+					.singleElement().satisfies(d -> assertThat(d.format()).startsWith(
+							"@Plugin(name = \"jndi\", category = \"Lookup\") found in class foo.SomethingThatCouldBeLog4PluginAnno"));
+		});
 	}
 
 }
