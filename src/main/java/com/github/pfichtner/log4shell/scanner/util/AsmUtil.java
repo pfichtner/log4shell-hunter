@@ -9,7 +9,9 @@ import static org.objectweb.asm.Opcodes.ACC_STATIC;
 import static org.objectweb.asm.Type.VOID_TYPE;
 import static org.objectweb.asm.Type.getReturnType;
 
+import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,8 +36,20 @@ public final class AsmUtil {
 
 	private static final String voidNoArgs = Type.getMethodDescriptor(VOID_TYPE);
 
+	private static final Type RETENTION_TYPE = Type.getType(Retention.class);
+	private static final Type RETENTIONPOLICY_TYPE = Type.getType(RetentionPolicy.class);
+	private static final Method RETENTION_VALUE_METHOD = loadMethod(Retention.class, "value");
+
 	private AsmUtil() {
 		super();
+	}
+
+	private static Method loadMethod(Class<?> clazz, String methodName) {
+		try {
+			return clazz.getMethod(methodName);
+		} catch (NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static ClassNode readClass(byte[] bytes, int options) {
@@ -94,6 +108,10 @@ public final class AsmUtil {
 		return Streams.itToStream(instructions.iterator());
 	}
 
+	public static Stream<AbstractInsnNode> instructionsStream(AbstractInsnNode node) {
+		return Stream.iterate(node, AbstractInsnNode::getNext);
+	}
+
 	public static boolean isAnno(ClassNode classNode) {
 		return bitSetContains(classNode.access, ACC_ANNOTATION);
 	}
@@ -123,11 +141,17 @@ public final class AsmUtil {
 	}
 
 	public static boolean hasRetentionPolicy(ClassNode classNode, RetentionPolicy retentionPolicy) {
+
 		return nullSafety(classNode.visibleAnnotations).stream()
-				.anyMatch(a -> a.desc.equals("Ljava/lang/annotation/Retention;") && a.values.size() == 2
-						&& a.values.get(0).equals("value") && a.values.get(1) instanceof String[]
-						&& Arrays.equals((String[]) a.values.get(1),
-								new String[] { "Ljava/lang/annotation/RetentionPolicy;", retentionPolicy.name() }));
+				.anyMatch(a -> a.desc.equals(RETENTION_TYPE.getDescriptor()) //
+						&& a.values.size() == 2 //
+						&& a.values.get(0).equals(RETENTION_VALUE_METHOD.getName()) //
+						&& isStringArrayEqualTo(a.values.get(1), RETENTIONPOLICY_TYPE.getDescriptor(),
+								retentionPolicy.name()));
+	}
+
+	private static boolean isStringArrayEqualTo(Object object, String... strings) {
+		return object instanceof String[] && Arrays.equals((String[]) object, strings);
 	}
 
 }
