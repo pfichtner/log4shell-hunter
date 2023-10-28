@@ -15,16 +15,15 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
 import java.util.Map;
 
 public class JarReader {
 
 	private final String resource;
-	private FileSystem fileSystem;
+	private final FileSystem fileSystem;
 
 	public static interface JarReaderVisitor {
-		
+
 		default void visit(String resource) {
 			// noop
 		}
@@ -48,13 +47,16 @@ public class JarReader {
 	}
 
 	public JarReader(URI jar) throws IOException {
-		this.resource = jar.toString();
-		this.fileSystem = newFileSystem(URI.create("jar:file:" + jar.getPath()), zipProperties());
+		this(jar.toString(), newFileSystem(URI.create("jar:file:" + jar.getPath()), zipProperties()));
 	}
 
-	public JarReader(Path path) throws IOException {
-		this.resource = path.toString();
-		this.fileSystem = newFileSystem(path, null);
+	public JarReader(Path file) throws IOException {
+		this(file.toString(), newFileSystem(file, null));
+	}
+
+	private JarReader(String resource, FileSystem fileSystem) throws IOException {
+		this.resource = resource;
+		this.fileSystem = fileSystem;
 	}
 
 	public FileSystem getFileSystem() {
@@ -82,20 +84,24 @@ public class JarReader {
 
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				visitor.visitFile(file, readBytes(file));
+				return CONTINUE;
+			}
+
+			private byte[] readBytes(Path file) throws IOException {
 				ByteArrayOutputStream content = new ByteArrayOutputStream();
 				copy(file, content);
-				visitor.visitFile(file, content.toByteArray());
-				return CONTINUE;
+				return content.toByteArray();
 			}
 
 		};
 	}
 
 	private static Map<String, String> zipProperties() {
-		Map<String, String> zipProperties = new HashMap<>();
-		zipProperties.put("create", "false");
-		zipProperties.put("encoding", "UTF-8");
-		return zipProperties;
+		return Map.of( //
+				"create", "false", //
+				"encoding", "UTF-8" //
+		);
 	}
 
 }

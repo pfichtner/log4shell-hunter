@@ -15,13 +15,13 @@ import com.github.pfichtner.log4shell.scanner.io.Detector;
 
 public abstract class AbstractDetector implements Detector {
 
-	private Stack<String> resources = new Stack<>();
+	private final Stack<String> resources = new Stack<>();
 	private List<Detection> detections;
 
 	@Override
 	public void visit(String resource) {
-		this.detections = new ArrayList<>();
-		this.resources.push(resource);
+		detections = new ArrayList<>();
+		resources.push(resource);
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public abstract class AbstractDetector implements Detector {
 
 	@Override
 	public void visitEnd() {
-		this.resources.pop();
+		resources.pop();
 	}
 
 	public String getResource() {

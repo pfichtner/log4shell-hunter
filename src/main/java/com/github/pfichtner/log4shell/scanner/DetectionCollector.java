@@ -23,7 +23,7 @@ import com.github.pfichtner.log4shell.scanner.io.JarReader.JarReaderVisitor;
 
 public class DetectionCollector {
 
-	private AbstractDetector detector;
+	private final AbstractDetector detector;
 
 	public static class Detection {
 
