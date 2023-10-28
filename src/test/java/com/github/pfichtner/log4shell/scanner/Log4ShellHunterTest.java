@@ -96,9 +96,9 @@ class Log4ShellHunterTest {
 
 	@Test
 	void throwsExceptionIfFileCannotBeRead() {
-		String zip = "XXXXsomeNonExistentFileXXX.jar";
-		assertThatRuntimeException().isThrownBy(() -> new Log4ShellHunter().check(new File(zip)))
-				.withMessageContainingAll(zip, "not readable");
+		String jar = "XXXXsomeNonExistentFileXXX.jar";
+		assertThatRuntimeException().isThrownBy(() -> new Log4ShellHunter().check(new File(jar)))
+				.withMessageContainingAll(jar, "not readable");
 	}
 
 	@Test
