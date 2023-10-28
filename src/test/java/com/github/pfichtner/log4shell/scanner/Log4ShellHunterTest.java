@@ -11,8 +11,8 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatRuntimeException;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,10 +95,10 @@ class Log4ShellHunterTest {
 	}
 
 	@Test
-	void throwsExceptionIfFileCannotBeRead() throws Exception {
+	void throwsExceptionIfFileCannotBeRead() {
 		String zip = "XXXXsomeNonExistentFileXXX.jar";
-		RuntimeException rte = assertThrows(RuntimeException.class, () -> new Log4ShellHunter().check(new File(zip)));
-		assertThat(rte).hasMessageContainingAll(zip, "not readable");
+		assertThatRuntimeException().isThrownBy(() -> new Log4ShellHunter().check(new File(zip)))
+				.withMessageContainingAll(zip, "not readable");
 	}
 
 	@Test
