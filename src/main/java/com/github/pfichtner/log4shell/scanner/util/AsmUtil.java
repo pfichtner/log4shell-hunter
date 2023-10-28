@@ -101,15 +101,19 @@ public final class AsmUtil {
 	}
 
 	public static Stream<AbstractInsnNode> instructionsStream(MethodNode methodNode) {
-		return Streams.itToStream(methodNode.instructions.iterator());
+		return instructionsStream(methodNode.instructions);
 	}
 
 	public static Stream<AbstractInsnNode> instructionsStream(InsnList instructions) {
 		return Streams.itToStream(instructions.iterator());
 	}
 
-	public static Stream<AbstractInsnNode> instructionsStream(AbstractInsnNode node) {
+	public static Stream<AbstractInsnNode> nexts(AbstractInsnNode node) {
 		return Stream.iterate(node, AbstractInsnNode::getNext);
+	}
+
+	public static Stream<AbstractInsnNode> prevs(AbstractInsnNode node) {
+		return Stream.iterate(node, AbstractInsnNode::getPrevious);
 	}
 
 	public static boolean isAnno(ClassNode classNode) {
@@ -141,7 +145,6 @@ public final class AsmUtil {
 	}
 
 	public static boolean hasRetentionPolicy(ClassNode classNode, RetentionPolicy retentionPolicy) {
-
 		return nullSafety(classNode.visibleAnnotations).stream()
 				.anyMatch(a -> a.desc.equals(RETENTION_TYPE.getDescriptor()) //
 						&& a.values.size() == 2 //

@@ -30,10 +30,10 @@ public class JndiLookupConstructorWithISException extends AbstractDetector {
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
 		if (typeComparator().isClass(classNode, JNDI_LOOKUP_TYPE)) {
-			classNode.methods.stream().filter(isConstructor().and(voidNoArgs())).findFirst().ifPresent(c -> {
+			classNode.methods.stream().filter(isConstructor().and(voidNoArgs())).forEach(c -> {
 				filter(instructionsStream(c), LdcInsnNode.class)
 						.filter(constantPoolLoadOf(JNDI_MUST_BE_ENABLED_BY_SETTING::equals))
-						.forEach(_i -> addDetection(filename, classNode, JNDI_MUST_BE_ENABLED_BY_SETTING + " access"));
+						.forEach(__ -> addDetection(filename, classNode, JNDI_MUST_BE_ENABLED_BY_SETTING + " access"));
 			});
 		}
 	}

@@ -69,7 +69,7 @@ public class Log4jPluginAnnotation extends AbstractDetector {
 		if (!isAnno(classNode) || !hasRetentionPolicy(classNode, RUNTIME)) {
 			return false;
 		}
-		// String name(), String category(), String elementType() default EMPTY
+		// String name(); String category(); String elementType() default ""
 		List<MethodNode> methodsThatReturnsStrings = classNode.methods.stream()
 				.filter(n -> returnTypeIs(n, STRING_TYPE)).collect(toList());
 		return methodsThatReturnsStrings.size() == 3 //

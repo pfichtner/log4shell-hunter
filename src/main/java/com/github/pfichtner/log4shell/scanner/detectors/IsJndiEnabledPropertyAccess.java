@@ -1,7 +1,7 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.constantPoolLoadOf;
-import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.instructionsStream;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.nexts;
 import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
 import static java.util.function.Function.identity;
 import static org.objectweb.asm.Opcodes.ICONST_0;
@@ -51,7 +51,7 @@ public class IsJndiEnabledPropertyAccess extends AbstractDetector {
 	}
 
 	private static boolean nextsContainAny(AbstractInsnNode node, int opcode) {
-		return instructionsStream(node).anyMatch(n -> n.getOpcode() == opcode);
+		return nexts(node).anyMatch(n -> n.getOpcode() == opcode);
 	}
 
 }
