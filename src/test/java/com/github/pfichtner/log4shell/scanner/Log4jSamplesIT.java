@@ -40,19 +40,19 @@ class Log4jSamplesIT {
 		verify(executeTapSysOut(allModesCheck(filenames("my-log4j-samples"))), options());
 	}
 
-	private static Options options() throws MalformedURLException {
+	static Options options() throws MalformedURLException {
 		return new Options(basedirScrubber());
 	}
 
-	private static Stream<Executable> allModesCheck(List<String> filenames) {
+	static Stream<Executable> allModesCheck(List<String> filenames) {
 		return allModes().map(m -> () -> doCheck(filenames, m));
 	}
 
-	private static String executeTapSysOut(Stream<Executable> executables) throws Exception {
+	static String executeTapSysOut(Stream<Executable> executables) throws Exception {
 		return tapSystemOut(() -> execute(executables));
 	}
 
-	private static void execute(Stream<Executable> executables) {
+	static void execute(Stream<Executable> executables) {
 		executables.forEach(e -> {
 			try {
 				e.execute();
@@ -62,22 +62,22 @@ class Log4jSamplesIT {
 		});
 	}
 
-	private static Stream<AsmTypeComparator> allModes() {
+	static Stream<AsmTypeComparator> allModes() {
 		return EnumSet.allOf(AsmTypeComparator.class).stream();
 	}
 
-	private static void doCheck(List<String> filenames, AsmTypeComparator typeComparator) throws Exception {
+	static void doCheck(List<String> filenames, AsmTypeComparator typeComparator) throws Exception {
 		System.out.println("*** using " + typeComparator);
 		captureAndRestoreAsmTypeComparator(() -> Log4ShellHunter.main(args(filenames, typeComparator)));
 	}
 
-	private static String[] args(List<String> filenames, AsmTypeComparator typeComparator) {
+	static String[] args(List<String> filenames, AsmTypeComparator typeComparator) {
 		List<String> args = new ArrayList<>(asList("-m", String.valueOf(typeComparator)));
 		filenames.stream().filter(f -> isArchive(f)).forEach(args::add);
 		return args.toArray(String[]::new);
 	}
 
-	private static List<String> filenames(String base) throws IOException {
+	static List<String> filenames(String base) throws IOException {
 		try (Stream<Path> fileStream = walk(Paths.get(base))) {
 			return fileStream.filter(Files::isRegularFile).map(Path::toString).sorted().collect(toList());
 		}

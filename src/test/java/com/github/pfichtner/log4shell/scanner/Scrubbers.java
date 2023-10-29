@@ -8,14 +8,17 @@ import java.net.MalformedURLException;
 import org.approvaltests.scrubbers.RegExScrubber;
 
 public final class Scrubbers {
-	
+
 	private Scrubbers() {
 		super();
 	}
 
 	public static RegExScrubber basedirScrubber() throws MalformedURLException {
-		File userDirectory = new File("").getAbsoluteFile();
-		return new RegExScrubber(quote(userDirectory.toURI().toURL().toString()), "[BASEDIR]/");
+		return new RegExScrubber(quote(baseDir()), "[BASEDIR]/");
+	}
+
+	private static String baseDir() throws MalformedURLException {
+		return new File("").getAbsoluteFile().toURI().toURL().toString();
 	}
 
 }
