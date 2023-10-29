@@ -37,11 +37,11 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 @DefaultLocale(language = "en")
 class Log4ShellHunterTest {
 
-	private static final String STDERR = "stderr";
-	private static final String STDOUT = "stdout";
-	private static final String RC = "rc";
+	static final String STDERR = "stderr";
+	static final String STDOUT = "stdout";
+	static final String RC = "rc";
 
-	private static final String SEPARATOR = ",";
+	static final String SEPARATOR = ",";
 
 	Log4jJars log4jJars = Log4jJars.getInstance();
 
@@ -79,18 +79,23 @@ class Log4ShellHunterTest {
 				.getResource("log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip")
 				.toURI());
 		String[] out = runCheck(new DetectionCollector(new Multiplexer(allDetectors())), zip).split("\n");
+		String refToContext = "> Reference to javax.naming.Context#lookup(java.lang.String) found in class org.apache.logging.log4j.core.net.JndiManager in resource ";
+		String plugin = "> @Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource ";
+		String constantPoolString = "> log4j2.enableJndi access found in class org.apache.logging.log4j.core.net.JndiManager in resource ";
+		String refToJndiManager = "> Reference to org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String) found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource ";
+		String refToDirContext = "> Reference to javax.naming.directory.DirContext#lookup(java.lang.String) found in class org.apache.logging.log4j.core.net.JndiManager in resource ";
+		String refToInitialContext = "> Reference to javax.naming.InitialContext#lookup(java.lang.String) found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource ";
 		assertThat(out).containsExactly( //
 				zip.toString(), //
-				"> Reference to javax.naming.Context#lookup(java.lang.String) found in class org.apache.logging.log4j.core.net.JndiManager in resource /log4j-core-2.12.2.jar", //
-				"> @Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.12.2.jar", //
-				"> log4j2.enableJndi access found in class org.apache.logging.log4j.core.net.JndiManager in resource /log4j-core-2.12.2.jar", //
-				"> Reference to org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String) found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.16.0.jar", //
-				"> Reference to javax.naming.directory.DirContext#lookup(java.lang.String) found in class org.apache.logging.log4j.core.net.JndiManager in resource /log4j-core-2.16.0.jar", //
-				"> @Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.16.0.jar", //
-				"> log4j2.enableJndi access found in class org.apache.logging.log4j.core.net.JndiManager in resource /log4j-core-2.16.0.jar", //
-				"> @Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar", //
-				"> Reference to javax.naming.InitialContext#lookup(java.lang.String) found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar" //
-		);
+				refToContext + nested(zip, "/log4j-core-2.12.2.jar"), //
+				plugin + nested(zip, "/log4j-core-2.12.2.jar"), //
+				constantPoolString + nested(zip, "/log4j-core-2.12.2.jar"), //
+				refToJndiManager + nested(zip, "/log4j-core-2.16.0.jar"), //
+				refToDirContext + nested(zip, "/log4j-core-2.16.0.jar"), //
+				plugin + nested(zip, "/log4j-core-2.16.0.jar"), //
+				constantPoolString + nested(zip, "/log4j-core-2.16.0.jar"), //
+				plugin + nested(zip, "/log4j-core-2.0-beta9.jar"), //
+				refToInitialContext + nested(zip, "/log4j-core-2.0-beta9.jar"));
 	}
 
 	@Test
@@ -111,9 +116,14 @@ class Log4ShellHunterTest {
 
 		assertThat(out.split("\n")).containsExactly( //
 				zip.toString(), //
-				"> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.16.0.jar", //
-				"> Possible 2.0-beta9, 2.0-rc1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /log4j-core-2.0-beta9.jar" //
-		);
+				"> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource "
+						+ nested(zip, "/log4j-core-2.16.0.jar"), //
+				"> Possible 2.0-beta9, 2.0-rc1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource "
+						+ nested(zip, "/log4j-core-2.0-beta9.jar"));
+	}
+
+	static String nested(File zip, String string) {
+		return zip.toURI() + "$" + string;
 	}
 
 	@Test
@@ -131,11 +141,11 @@ class Log4ShellHunterTest {
 		verifyMain("-m", "XXX-INVALID-MODE-XXX");
 	}
 
-	private void verifyMain(String... args) throws Exception {
+	void verifyMain(String... args) throws Exception {
 		verify(execMain(args));
 	}
 
-	private String execMain(String... args) throws Exception {
+	String execMain(String... args) throws Exception {
 		Map<String, String> values = new HashMap<>();
 		captureAndRestoreAsmTypeComparator( //
 				() -> //
@@ -168,16 +178,15 @@ class Log4ShellHunterTest {
 		verify(sb.toString(), options());
 	}
 
-	private static Options options() throws MalformedURLException {
+	static Options options() throws MalformedURLException {
 		return new Options(basedirScrubber());
 	}
 
-	private static Options csv() {
+	static Options csv() {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
 	}
 
-	private String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors)
-			throws IOException {
+	String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(header(collector, detectors)).append("\n");
 		for (File file : log4jJars) {
@@ -186,27 +195,26 @@ class Log4ShellHunterTest {
 		return sb.toString();
 	}
 
-	private String header(DetectionCollector collector, Collection<AbstractDetector> detectors) {
+	String header(DetectionCollector collector, Collection<AbstractDetector> detectors) {
 		return "File" + SEPARATOR + //
 				detectors.stream().map(AbstractDetector::getName).collect(joining(SEPARATOR));
 	}
 
-	private String content(DetectionCollector collector, Collection<AbstractDetector> detectors, File jar)
-			throws IOException {
+	String content(DetectionCollector collector, Collection<AbstractDetector> detectors, File jar) throws IOException {
 		List<Detection> detections = collector.analyze(jar.getAbsolutePath());
 		return jar.getAbsoluteFile().getName() + SEPARATOR //
 				+ detectors.stream().map(d -> contains(detections, d) ? "X" : "").collect(joining(SEPARATOR));
 	}
 
-	private boolean contains(List<Detection> detections, Detector detector) {
+	boolean contains(List<Detection> detections, Detector detector) {
 		return detections.stream().map(Detection::getDetector).anyMatch(detector::equals);
 	}
 
-	private String runCheck(DetectionCollector collector, File file) throws Exception {
+	String runCheck(DetectionCollector collector, File file) throws Exception {
 		return runCheck(new Log4ShellHunter(collector), file);
 	}
 
-	private String runCheck(Log4ShellHunter log4jHunter, File file) throws Exception {
+	String runCheck(Log4ShellHunter log4jHunter, File file) throws Exception {
 		return tapSystemOut(() -> log4jHunter.check(file));
 	}
 

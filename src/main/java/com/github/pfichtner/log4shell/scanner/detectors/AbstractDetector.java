@@ -1,11 +1,13 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodName;
+import static java.util.stream.Collectors.joining;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -40,7 +42,7 @@ public abstract class AbstractDetector implements Detector {
 	}
 
 	public String getResource() {
-		return resources.peek();
+		return resources.stream().collect(joining("$"));
 	}
 
 	public List<Detection> getDetections() {

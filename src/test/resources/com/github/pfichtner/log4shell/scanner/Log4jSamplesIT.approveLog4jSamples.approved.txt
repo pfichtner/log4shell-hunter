@@ -42,16 +42,16 @@ log4j-samples/true-hits/log4j-core-2.9.1.jar
 log4j-samples/true-hits/shaded/clt-1.0-SNAPSHOT.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.ear
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.ear$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.jar
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.jar$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.war
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.war$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.zip
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.zip$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
@@ -101,16 +101,16 @@ log4j-samples/true-hits/shaded/clt-1.0-SNAPSHOT.jar
 > Possible 2.1+ match found in class clt.shaded.l.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/shaded/clt-1.0-SNAPSHOT.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.ear
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.ear$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.jar
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.jar$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.war
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.war$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.zip
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.zip$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
@@ -160,16 +160,16 @@ log4j-samples/true-hits/shaded/clt-1.0-SNAPSHOT.jar
 > Possible 2.1+ match found in class clt.shaded.l.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/shaded/clt-1.0-SNAPSHOT.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.ear
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.ear$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.jar
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.jar$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.war
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.war$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.zip
-> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource /WEB-INF/lib/log4j-core-2.10.0.jar
+> Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/springboot-executable/spiff-0.0.1-SNAPSHOT.zip$/WEB-INF/lib/log4j-core-2.10.0.jar
 
 log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
 > Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/log4j-samples/true-hits/uber/infinispan-embedded-query-8.2.12.Final.jar
