@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.constantPoolLoadOf;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.instructionsStream;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.opCodeIs;
 import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
 import static java.util.stream.Collectors.toList;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
@@ -33,8 +34,9 @@ public class IsJndiEnabledPropertyAccessWithJdbcPrefix extends AbstractDetector 
 
 		// no need to deep dive into it if we don't have any methods to match
 		if (!methodsWithPossibleCallsToGetBooleanProperty.isEmpty()) {
-			if (classNode.methods.stream().filter(AsmUtil::isStatic).anyMatch(m -> filter(instructionsStream(
-					m), LdcInsnNode.class).anyMatch(constantPoolLoadOf(JDBC_SUFFIX::equals)
+			if (classNode.methods.stream().filter(AsmUtil::isStatic)
+					.anyMatch(m -> filter(instructionsStream(m), LdcInsnNode.class).anyMatch(constantPoolLoadOf(
+							JDBC_SUFFIX::equals)
 							.and(n -> methodHasCallTo(m, classNode, methodsWithPossibleCallsToGetBooleanProperty))))) {
 				addDetection(filename, classNode, PREFIX + JDBC_SUFFIX + " access");
 			}
@@ -49,7 +51,7 @@ public class IsJndiEnabledPropertyAccessWithJdbcPrefix extends AbstractDetector 
 
 	private boolean isCallTo(ClassNode classNode, MethodInsnNode node,
 			List<MethodNode> methodsWithPossibleCallsToGetBooleanProperty) {
-		return node.getOpcode() == INVOKESTATIC && calledMethodIsInClass(classNode, node)
+		return opCodeIs(node, INVOKESTATIC) && calledMethodIsInClass(classNode, node)
 				&& methodsWithPossibleCallsToGetBooleanProperty.stream()
 						.anyMatch(m -> m.name.equals(node.name) && m.desc.equals(node.desc));
 	}

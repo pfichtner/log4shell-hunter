@@ -138,7 +138,15 @@ public final class AsmUtil {
 	}
 
 	public static boolean returnTypeIs(MethodNode methodNode, Type type) {
-		return type.equals(getReturnType(methodNode.desc));
+		return returnTypeIs(type, methodNode.desc);
+	}
+
+	public static boolean returnTypeIs(MethodInsnNode methodInsnNode, Type type) {
+		return returnTypeIs(type, methodInsnNode.desc);
+	}
+
+	private static boolean returnTypeIs(Type type, String desc) {
+		return type.equals(getReturnType(desc));
 	}
 
 	public static Predicate<MethodNode> voidNoArgs() {
@@ -156,6 +164,14 @@ public final class AsmUtil {
 
 	private static boolean isStringArrayEqualTo(Object object, String... strings) {
 		return object instanceof String[] && Arrays.equals((String[]) object, strings);
+	}
+
+	public static Predicate<AbstractInsnNode> hasOpCode(int opCode) {
+		return n -> opCodeIs(n, opCode);
+	}
+
+	public static boolean opCodeIs(AbstractInsnNode node, int opCode) {
+		return node.getOpcode() == opCode;
 	}
 
 }

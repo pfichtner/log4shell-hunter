@@ -1,19 +1,21 @@
 package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.constantPoolLoadOf;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.hasOpCode;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.instructionsStream;
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.nexts;
+import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.returnTypeIs;
 import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
-import static java.util.function.Function.identity;
 import static org.objectweb.asm.Opcodes.ICONST_0;
+import static org.objectweb.asm.Type.BOOLEAN_TYPE;
 
 import java.nio.file.Path;
-import java.util.stream.Stream;
+import java.util.function.Predicate;
 
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.LdcInsnNode;
-
-import com.github.pfichtner.log4shell.scanner.util.AsmUtil;
+import org.objectweb.asm.tree.MethodInsnNode;
 
 /**
  * Searches for methods that loads {@value #LOG4J2_ENABLE_JNDI} from the
@@ -36,22 +38,27 @@ public class IsJndiEnabledPropertyAccess extends AbstractDetector {
 
 	public static final String LOG4J2_ENABLE_JNDI = "log4j2.enableJndi";
 
+	// mv.visitInsn(ICONST_0);
+	// mv.visitMethodInsn(INVOKEVIRTUAL,
+	// "org/apache/logging/log4j/util/PropertiesUtil", "getBooleanProperty",
+	// "(Ljava/lang/String;Z)Z", false);
+	private static final Predicate<AbstractInsnNode> callGetBooleanPropertyWithFalse = hasOpCode(ICONST_0)
+			.and(n -> isCallToMethodThatReturnsBoolean(n.getNext()));
+
+	private static boolean isCallToMethodThatReturnsBoolean(AbstractInsnNode node) {
+		return node instanceof MethodInsnNode && returnTypeIs((MethodInsnNode) node, BOOLEAN_TYPE);
+	}
+
 	@Override
 	public void visitClass(Path filename, ClassNode classNode) {
 		// LdcInsn("log4j2.enableJndi");
-		// Insn(ICONST_0);
-		filter(instructions(classNode), LdcInsnNode.class) //
-				.filter(constantPoolLoadOf(LOG4J2_ENABLE_JNDI::equals)) //
-				.filter(n -> nextsContainAny(n, ICONST_0)) //
-				.forEach(__ -> addDetection(filename, classNode, LOG4J2_ENABLE_JNDI + " access"));
-	}
+		classNode.methods.stream().forEach(m -> {
+			filter(instructionsStream(m), LdcInsnNode.class) //
+					.filter(constantPoolLoadOf(LOG4J2_ENABLE_JNDI::equals)) //
+					.filter(i -> nexts(i).anyMatch(callGetBooleanPropertyWithFalse)) //
+					.forEach(__ -> addDetection(filename, classNode, LOG4J2_ENABLE_JNDI + " access"));
+		});
 
-	private static Stream<AbstractInsnNode> instructions(ClassNode classNode) {
-		return classNode.methods.stream().map(AsmUtil::instructionsStream).flatMap(identity());
-	}
-
-	private static boolean nextsContainAny(AbstractInsnNode node, int opcode) {
-		return nexts(node).anyMatch(n -> n.getOpcode() == opcode);
 	}
 
 }
