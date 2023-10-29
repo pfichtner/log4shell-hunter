@@ -12,6 +12,11 @@ import org.objectweb.asm.tree.MethodNode;
 
 public enum AsmTypeComparator {
 
+	/**
+	 * Class names must match exactly.<br>
+	 * foo.Name == bar.Name -> false <br>
+	 * foo.Name == foo.OtherName -> false <br>
+	 */
 	defaultComparator() {
 
 		public boolean isClass(Type type1, Type type2) {
@@ -29,6 +34,11 @@ public enum AsmTypeComparator {
 		}
 	},
 
+	/**
+	 * Simple class names must match exactly but packages not.<br>
+	 * foo.Name == bar.Name -> true <br>
+	 * foo.Name == foo.OtherName -> false <br>
+	 */
 	repackageComparator() {
 
 		public boolean isClass(Type type1, Type type2) {
@@ -60,6 +70,11 @@ public enum AsmTypeComparator {
 
 	},
 
+	/**
+	 * Nothing has to match, ever time true.<br>
+	 * foo.Name == bar.Name -> true <br>
+	 * foo.Name == foo.OtherName -> true <br>
+	 */
 	obfuscatorComparator {
 
 		// TODO if type is java/javax: do NOT ignore package names but then classes
