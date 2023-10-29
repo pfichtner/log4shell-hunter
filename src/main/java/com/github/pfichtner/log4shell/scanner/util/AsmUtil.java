@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -109,11 +110,11 @@ public final class AsmUtil {
 	}
 
 	public static Stream<AbstractInsnNode> nexts(AbstractInsnNode node) {
-		return Stream.iterate(node, AbstractInsnNode::getNext);
+		return Stream.iterate(node, Objects::nonNull, AbstractInsnNode::getNext);
 	}
 
 	public static Stream<AbstractInsnNode> prevs(AbstractInsnNode node) {
-		return Stream.iterate(node, AbstractInsnNode::getPrevious);
+		return Stream.iterate(node, Objects::nonNull, AbstractInsnNode::getPrevious);
 	}
 
 	public static boolean isAnno(ClassNode classNode) {
