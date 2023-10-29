@@ -1,5 +1,7 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.typeComparator;
+import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.useTypeComparator;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -55,11 +57,11 @@ public final class Util {
 	}
 
 	public static void captureAndRestoreAsmTypeComparator(Statement statement) throws Exception {
-		AsmTypeComparator old = AsmTypeComparator.typeComparator();
+		AsmTypeComparator oldComparator = typeComparator();
 		try {
 			statement.execute();
 		} finally {
-			AsmTypeComparator.useTypeComparator(old);
+			useTypeComparator(oldComparator);
 		}
 	}
 

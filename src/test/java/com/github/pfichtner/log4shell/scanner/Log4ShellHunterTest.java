@@ -2,7 +2,6 @@ package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.Detectors.allDetectors;
 import static com.github.pfichtner.log4shell.scanner.Scrubbers.basedirScrubber;
-import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparatorUtil.restoreAsmTypeComparator;
 import static com.github.pfichtner.log4shell.scanner.util.Util.captureAndRestoreAsmTypeComparator;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErr;
@@ -107,7 +106,8 @@ class Log4ShellHunterTest {
 				.getResource("log4j-core-2.0-beta8---log4j-core-2.0-beta9---log4j-core-2.16.0---log4j-core-2.12.2.zip")
 				.toURI());
 
-		String out = tapSystemOut(() -> restoreAsmTypeComparator(() -> Log4ShellHunter.main(zip.getAbsolutePath())));
+		String out = tapSystemOut(
+				() -> captureAndRestoreAsmTypeComparator(() -> Log4ShellHunter.main(zip.getAbsolutePath())));
 
 		assertThat(out.split("\n")).containsExactly( //
 				zip.toString(), //

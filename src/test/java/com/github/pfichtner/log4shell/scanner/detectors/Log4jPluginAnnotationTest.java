@@ -3,8 +3,8 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.obfuscatorComparator;
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.useTypeComparator;
-import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparatorUtil.restoreAsmTypeComparator;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
+import static com.github.pfichtner.log4shell.scanner.util.Util.captureAndRestoreAsmTypeComparator;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,8 +59,8 @@ public class Log4jPluginAnnotationTest {
 	}
 
 	@Test
-	void canDetectObfuscatedPluginClass() {
-		restoreAsmTypeComparator(() -> {
+	void canDetectObfuscatedPluginClass() throws Exception {
+		captureAndRestoreAsmTypeComparator(() -> {
 			useTypeComparator(obfuscatorComparator);
 			assertThat(new DetectionCollector(sut).analyze("my-log4j-samples/true-hits/somethingLikeLog4jPlugin.jar"))
 					.singleElement().satisfies(d -> assertThat(d.format()).startsWith(
