@@ -9,7 +9,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<junit.jupiter.version>5.10.1</junit.jupiter.version>
 		<org.ow2.asm.version>9.6</org.ow2.asm.version>
-		<maven.surefire.version>3.2.1</maven.surefire.version>
+		<maven.surefire.version>3.2.2</maven.surefire.version>
 		<org.ow2.asm.version>9.2</org.ow2.asm.version>
 	</properties>
 
