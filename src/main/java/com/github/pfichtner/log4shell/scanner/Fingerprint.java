@@ -1,5 +1,6 @@
 package com.github.pfichtner.log4shell.scanner;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toUnmodifiableSet;
@@ -8,7 +9,7 @@ import static java.util.stream.IntStream.range;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -23,41 +24,37 @@ import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 
 public class Fingerprint {
 
-	private static final Charset utf8 = Charset.forName("UTF-8");
 	private static final Pattern log4jPattern = Pattern.compile("log4j-core-(.+)\\.jar");
 	private static final Map<String, Set<Class<? extends AbstractDetector>>> mapping = mapping();
 
 	private static Map<String, Set<Class<? extends AbstractDetector>>> mapping() {
 		Map<String, Set<Class<? extends AbstractDetector>>> map = new HashMap<>();
-		Class<AbstractDetector>[] classes = null;
+		List<Class<AbstractDetector>> classes = null;
 		for (String csvLine : readCsv()) {
-			String[] columns = csvLine.split("\\,");
+			List<String> columns = Arrays.asList(csvLine.split("\\,"));
+			String key = columns.get(0);
+			List<String> values = columns.subList(1, columns.size());
 			if (classes == null) {
-				classes = createClassesFromHeader(columns);
+				classes = createClassesFromHeader(values);
 			} else {
-				map.put(cutLog4Jcore(columns[0]), column(columns, classes));
+				map.put(cutLog4Jcore(key), column(values, classes));
 			}
 		}
 		return map;
 	}
 
-	private static Set<Class<? extends AbstractDetector>> column(String[] columns,
-			Class<AbstractDetector>[] detectors) {
-		return range(1, columns.length).filter(i -> "X".equals(columns[i])).mapToObj(i -> detectors[i])
+	private static Set<Class<? extends AbstractDetector>> column(List<String> columns,
+			List<Class<AbstractDetector>> classes) {
+		return range(0, columns.size()).filter(i -> "X".equals(columns.get(i))).mapToObj(i -> classes.get(i))
 				.collect(toSet());
 	}
 
-	@SuppressWarnings("unchecked")
-	private static Class<AbstractDetector>[] createClassesFromHeader(String[] string) {
-		Class<AbstractDetector>[] header = new Class[string.length];
-		for (int i = 1; i < string.length; i++) {
-			header[i] = loadClass(string[i]);
-		}
-		return header;
+	private static List<Class<AbstractDetector>> createClassesFromHeader(List<String> columns) {
+		return columns.stream().map(Fingerprint::loadClass).collect(toList());
 	}
 
 	private static List<String> readCsv() {
-		return new BufferedReader(new InputStreamReader(fingerprints(), utf8)).lines().collect(toList());
+		return new BufferedReader(new InputStreamReader(fingerprints(), UTF_8)).lines().collect(toList());
 	}
 
 	private static InputStream fingerprints() {
