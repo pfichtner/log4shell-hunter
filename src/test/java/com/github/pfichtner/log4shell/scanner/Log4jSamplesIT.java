@@ -52,13 +52,15 @@ class Log4jSamplesIT {
 	}
 
 	static void execute(Stream<Executable> executables) {
-		executables.forEach(e -> {
-			try {
-				e.execute();
-			} catch (Throwable t) {
-				throw new RuntimeException(t);
-			}
-		});
+		executables.forEach(Log4jSamplesIT::tryExecute);
+	}
+
+	static void tryExecute(Executable executable) {
+		try {
+			executable.execute();
+		} catch (Throwable throwable) {
+			throw new RuntimeException(throwable);
+		}
 	}
 
 	static Stream<AsmTypeComparator> allModes() {
