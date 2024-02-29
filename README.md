@@ -27,7 +27,7 @@ The scanner analyzes jars and tries to detect:
 ### Usage
 Example usage
 ```console
-find \( -name "*.jar" -o -name "*.zip" -o -name "*.ear" -o -name "*.war" \) -exec java -jar log4shell-hunter-0.0.2.jar -m obfuscatorComparator {} \;
+find \( -name "*.jar" -o -name "*.zip" -o -name "*.ear" -o -name "*.war" \) -exec java -jar log4shell-hunter-0.0.3.jar -m obfuscatorComparator {} \;
 ```
 
 Example output
@@ -48,7 +48,7 @@ cd log4shell-hunter/
 # build using included maven wrapper 
 # of course you can use your locally installed "mvn" instead of the maven wrapper "./mvnw"
 ./mvnw package 
-java -jar target/log4shell-hunter-0.0.2.jar
+java -jar target/log4shell-hunter-0.0.3.jar
 ```
 
 ### License
