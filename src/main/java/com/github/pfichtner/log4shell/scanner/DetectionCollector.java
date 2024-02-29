@@ -116,7 +116,7 @@ public class DetectionCollector {
 					}
 				} else {
 					detector.visitFile(file, bytes);
-					if (isArchive(file.toString())) {
+					if (isArchive(file)) {
 						try {
 							new JarReader(file).accept(this);
 						} catch (IOException e) {

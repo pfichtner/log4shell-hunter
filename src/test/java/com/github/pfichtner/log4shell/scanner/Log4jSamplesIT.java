@@ -5,8 +5,8 @@ import static com.github.pfichtner.log4shell.scanner.io.Files.isArchive;
 import static com.github.pfichtner.log4shell.scanner.util.Util.captureAndRestoreAsmTypeComparator;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.nio.file.Files.walk;
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.concat;
 import static org.approvaltests.Approvals.verify;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
@@ -15,7 +15,6 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Stream;
@@ -72,9 +71,9 @@ class Log4jSamplesIT {
 	}
 
 	static String[] args(List<String> filenames, AsmTypeComparator typeComparator) {
-		List<String> args = new ArrayList<>(asList("-m", String.valueOf(typeComparator)));
-		filenames.stream().filter(f -> isArchive(f)).forEach(args::add);
-		return args.toArray(String[]::new);
+		Stream<String> modeArg = Stream.of("-m", String.valueOf(typeComparator));
+		Stream<String> filesArg = filenames.stream().filter(f -> isArchive(f));
+		return concat(modeArg, filesArg).toArray(String[]::new);
 	}
 
 	static List<String> filenames(String base) throws IOException {
