@@ -16,24 +16,22 @@ import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCalls
 
 public final class Detectors {
 
-	private static final Collection<AbstractDetector> detectors = List.of( //
-			new JndiManagerLookupCallsFromJndiLookup(), //
-			new NamingContextLookupCallsFromJndiManager(), //
-			new NamingContextLookupCallsFromJndiLookup(), //
-			new DirContextLookupsCallsFromJndiManager(), //
-			new Log4jPluginAnnotation(), //
-			new InitialContextLookupsCalls(), //
-			new IsJndiEnabledPropertyAccess(), //
-			new JndiLookupConstructorWithISException(), //
-			new IsJndiEnabledPropertyAccessWithJdbcPrefix() //
-	);
-
 	private Detectors() {
 		super();
 	}
 
 	public static Collection<AbstractDetector> allDetectors() {
-		return detectors;
+		return List.of( //
+				new JndiManagerLookupCallsFromJndiLookup(), //
+				new NamingContextLookupCallsFromJndiManager(), //
+				new NamingContextLookupCallsFromJndiLookup(), //
+				new DirContextLookupsCallsFromJndiManager(), //
+				new Log4jPluginAnnotation(), //
+				new InitialContextLookupsCalls(), //
+				new IsJndiEnabledPropertyAccess(), //
+				new JndiLookupConstructorWithISException(), //
+				new IsJndiEnabledPropertyAccessWithJdbcPrefix() //
+		);
 	}
 
 }

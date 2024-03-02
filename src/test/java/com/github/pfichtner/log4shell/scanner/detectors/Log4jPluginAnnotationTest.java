@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
+import com.github.pfichtner.log4shell.scanner.util.Util.AltersComparatorMode;
 
 class Log4jPluginAnnotationTest {
 
@@ -40,6 +41,7 @@ class Log4jPluginAnnotationTest {
 	}
 
 	@Test
+	@AltersComparatorMode
 	void canDetectObfuscatedPluginClass() throws Exception {
 		captureAndRestoreAsmTypeComparator(() -> {
 			useTypeComparator(obfuscatorComparator);

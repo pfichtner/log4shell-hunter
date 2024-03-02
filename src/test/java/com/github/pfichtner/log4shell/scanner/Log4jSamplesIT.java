@@ -24,10 +24,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator;
+import com.github.pfichtner.log4shell.scanner.util.Util.AltersComparatorMode;
 
 class Log4jSamplesIT {
 
 	@Test
+	@AltersComparatorMode
 	void approveLog4jSamples() throws Exception {
 		List<String> filenames = filenames("log4j-samples");
 		assumeFalse(filenames.isEmpty(), "git submodule empty, please clone recursivly");
@@ -35,6 +37,7 @@ class Log4jSamplesIT {
 	}
 
 	@Test
+	@AltersComparatorMode
 	void approveMyLog4jSamples() throws Exception {
 		verify(executeTapSysOut(allModesCheck(filenames("my-log4j-samples"))), options());
 	}
