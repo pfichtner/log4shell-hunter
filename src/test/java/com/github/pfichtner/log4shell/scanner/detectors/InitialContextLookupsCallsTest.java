@@ -17,7 +17,7 @@ import com.github.pfichtner.log4shell.scanner.DetectionCollector;
 import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-public class InitialContextLookupsCallsTest {
+class InitialContextLookupsCallsTest {
 
 	InitialContextLookupsCalls sut = new InitialContextLookupsCalls();
 	List<File> versionsWithInitialContextLookups;

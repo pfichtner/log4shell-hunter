@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
-public class IsJndiEnabledPropertyAccessWithJdbcPrefixTest {
+class IsJndiEnabledPropertyAccessWithJdbcPrefixTest {
 
 	IsJndiEnabledPropertyAccessWithJdbcPrefix sut = new IsJndiEnabledPropertyAccessWithJdbcPrefix();
 
