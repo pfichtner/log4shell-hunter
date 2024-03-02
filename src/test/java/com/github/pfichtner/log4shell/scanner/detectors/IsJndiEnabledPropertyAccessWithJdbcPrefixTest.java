@@ -7,8 +7,6 @@ import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 
-import java.io.File;
-
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;

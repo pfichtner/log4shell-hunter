@@ -11,7 +11,6 @@ import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 import java.io.File;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
@@ -20,17 +19,6 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 class NamingContextLookupCallsFromJndiLookupTest {
 
 	NamingContextLookupCallsFromJndiLookup sut = new NamingContextLookupCallsFromJndiLookup();
-	List<File> versionsWithJndiLookups;
-
-	@BeforeEach
-	void setup(Log4jJars log4jJars) {
-		versionsWithJndiLookups = log4jJars.versions( //
-				"2.0-rc2", //
-				"2.0", //
-				"2.0.1", //
-				"2.0.2" //
-		);
-	}
 
 	@Test
 	void log4j202HasJndiManagerWithContextLookups(Log4jJars log4jJars) throws Exception {
@@ -41,11 +29,18 @@ class NamingContextLookupCallsFromJndiLookupTest {
 
 	@Test
 	void canDetectLookupMethods(Log4jJars log4jJars) throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithJndiLookups);
+		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithJndiLookups(log4jJars));
 	}
 
 	static String refTo(String ref) {
 		return format("Reference to %s found in class org.apache.logging.log4j.core.lookup.JndiLookup", ref);
+	}
+
+	static List<File> versionsWithJndiLookups(Log4jJars log4jJars) {
+		return log4jJars.versions( //
+				"2.0-rc2", //
+				"2.0", "2.0.1", "2.0.2" //
+		);
 	}
 
 }

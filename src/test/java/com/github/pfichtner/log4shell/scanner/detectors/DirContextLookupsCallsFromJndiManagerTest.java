@@ -11,7 +11,6 @@ import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 import java.io.File;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
@@ -21,15 +20,6 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 class DirContextLookupsCallsFromJndiManagerTest {
 
 	DirContextLookupsCallsFromJndiManager sut = new DirContextLookupsCallsFromJndiManager();
-	List<File> versionsWithDirContextLookups;
-
-	@BeforeEach
-	void setup(Log4jJars log4jJars) {
-		versionsWithDirContextLookups = log4jJars.versions( //
-				"2.15.0", //
-				"2.16.0" //
-		);
-	}
 
 	@Test
 	void log4j16HasJndiManagerWithDirContextLookups(Log4jJars log4jJars) throws Exception {
@@ -41,7 +31,14 @@ class DirContextLookupsCallsFromJndiManagerTest {
 
 	@Test
 	void canDetectLookupMethods(Log4jJars log4jJars) throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithDirContextLookups);
+		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithDirContextLookups(log4jJars));
+	}
+
+	static List<File> versionsWithDirContextLookups(Log4jJars log4jJars) {
+		return log4jJars.versions( //
+				"2.15.0", //
+				"2.16.0" //
+		);
 	}
 
 	static String refTo(String ref) {

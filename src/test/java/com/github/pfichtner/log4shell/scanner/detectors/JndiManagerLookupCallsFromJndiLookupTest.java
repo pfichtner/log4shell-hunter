@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
@@ -15,11 +14,15 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 class JndiManagerLookupCallsFromJndiLookupTest {
 
 	JndiManagerLookupCallsFromJndiLookup sut = new JndiManagerLookupCallsFromJndiLookup();
-	List<File> versionsWithoutJndiLookups;
 
-	@BeforeEach
-	void setup(Log4jJars log4jJars) {
-		versionsWithoutJndiLookups = log4jJars.versions( //
+	@Test
+	void canDetectLookupCalls(Log4jJars log4jJars) throws Exception {
+		assertThat(withDetections(analyse(log4jJars, sut)))
+				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups(log4jJars)));
+	}
+
+	static List<File> versionsWithoutJndiLookups(Log4jJars log4jJars) {
+		return log4jJars.versions( //
 				"2.0-alpha1", //
 				"2.0-alpha2", //
 
@@ -67,12 +70,6 @@ class JndiManagerLookupCallsFromJndiLookupTest {
 				"2.12.2" //
 
 		);
-	}
-
-	@Test
-	void canDetectLookupCalls(Log4jJars log4jJars) throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups));
 	}
 
 }

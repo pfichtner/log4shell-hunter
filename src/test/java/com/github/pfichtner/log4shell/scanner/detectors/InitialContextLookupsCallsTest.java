@@ -10,7 +10,6 @@ import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 import java.io.File;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
@@ -20,26 +19,6 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 class InitialContextLookupsCallsTest {
 
 	InitialContextLookupsCalls sut = new InitialContextLookupsCalls();
-	List<File> versionsWithInitialContextLookups;
-
-	@BeforeEach
-	void setup(Log4jJars log4jJars) {
-		versionsWithInitialContextLookups = log4jJars.versions( //
-				"2.0-beta9", //
-				"2.0-rc1", //
-				"2.17.0", //
-				"2.17.1", //
-				"2.17.2", //
-				"2.18.0", //
-				"2.19.0", //
-				"2.20.0", //
-				"2.21.0", //
-				"2.21.1", //
-				"2.22.0", //
-				"2.22.1", //
-				"2.23.0" //
-		);
-	}
 
 	@Test
 	void log4j20beta9HasPluginWithDirectContextAccess(Log4jJars log4jJars) throws Exception {
@@ -51,7 +30,21 @@ class InitialContextLookupsCallsTest {
 
 	@Test
 	void canDetectPluginClass(Log4jJars log4jJars) throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithInitialContextLookups);
+		assertThat(withDetections(analyse(log4jJars, sut)))
+				.containsOnlyKeys(versionsWithInitialContextLookups(log4jJars));
+	}
+
+	static List<File> versionsWithInitialContextLookups(Log4jJars log4jJars) {
+		return log4jJars.versions( //
+				"2.0-beta9", "2.0-rc1", //
+				"2.17.0", "2.17.1", "2.17.2", //
+				"2.18.0", //
+				"2.19.0", //
+				"2.20.0", //
+				"2.21.0", "2.21.1", //
+				"2.22.0", "2.22.1", //
+				"2.23.0" //
+		);
 	}
 
 }

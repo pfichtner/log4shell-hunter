@@ -11,7 +11,6 @@ import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 import java.io.File;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
@@ -20,49 +19,6 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 class NamingContextLookupCallsFromJndiManagerTest {
 
 	NamingContextLookupCallsFromJndiManager sut = new NamingContextLookupCallsFromJndiManager();
-	List<File> versionsWithoutJndiLookups;
-
-	@BeforeEach
-	void setup(Log4jJars log4jJars) {
-		versionsWithoutJndiLookups = log4jJars.versions( //
-				"2.0-alpha1", //
-				"2.0-alpha2", //
-
-				"2.0-beta1", //
-				"2.0-beta2", //
-				"2.0-beta3", //
-				"2.0-beta4", //
-				"2.0-beta5", //
-				"2.0-beta6", //
-				"2.0-beta7", //
-				"2.0-beta8", //
-				"2.0-beta9", //
-
-				"2.0-rc1", //
-				"2.0-rc2", //
-
-				"2.0", //
-				"2.0.1", //
-				"2.0.2", //
-
-				/**
-				 * Starting with 2.15. DirContext lookups are made
-				 */
-				"2.15.0", //
-				"2.16.0", //
-				"2.17.0", //
-				"2.17.1", //
-				"2.17.2", //
-				"2.18.0", //
-				"2.19.0", //
-				"2.20.0", //
-				"2.21.0", //
-				"2.21.1", //
-				"2.22.0", //
-				"2.22.1", //
-				"2.23.0" //
-		);
-	}
 
 	@Test
 	void log4j14HasJndiManagerWithContextLookups(Log4jJars log4jJars) throws Exception {
@@ -74,11 +30,34 @@ class NamingContextLookupCallsFromJndiManagerTest {
 	@Test
 	void canDetectLookupMethods(Log4jJars log4jJars) throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups));
+				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups(log4jJars)));
 	}
 
 	static String refTo(String ref) {
 		return format("Reference to %s found in class org.apache.logging.log4j.core.net.JndiManager", ref);
+	}
+
+	static List<File> versionsWithoutJndiLookups(Log4jJars log4jJars) {
+		return log4jJars.versions( //
+				"2.0-alpha1", "2.0-alpha2", //
+				"2.0-beta1", "2.0-beta2", "2.0-beta3", "2.0-beta4", "2.0-beta5", "2.0-beta6", "2.0-beta7", "2.0-beta8",
+				"2.0-beta9", //
+				"2.0-rc1", "2.0-rc2", //
+				"2.0", "2.0.1", "2.0.2", //
+
+				/**
+				 * Starting with 2.15. DirContext lookups are made
+				 */
+				"2.15.0", //
+				"2.16.0", //
+				"2.17.0", "2.17.1", "2.17.2", //
+				"2.18.0", //
+				"2.19.0", //
+				"2.20.0", //
+				"2.21.0", "2.21.1", //
+				"2.22.0", "2.22.1", //
+				"2.23.0" //
+		);
 	}
 
 }
