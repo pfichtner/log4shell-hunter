@@ -30,8 +30,7 @@ class FingerprintTest {
 		assertThat(analyse(log4jJars, new Multiplexer(allDetectors())).entrySet().stream().map(e -> toDetectors(e))
 				.filter(e -> e.getValue().isEmpty()).collect(toMap(Entry::getKey, Entry::getValue)))
 				.containsOnlyKeys(log4jJars.versions("2.0-alpha1", "2.0-alpha2", "2.0-beta1", "2.0-beta2", //
-						"2.0-beta3", "2.0-beta4", "2.0-beta5", "2.0-beta6", "2.0-beta7", "2.0-beta8")
-						.toArray(File[]::new));
+						"2.0-beta3", "2.0-beta4", "2.0-beta5", "2.0-beta6", "2.0-beta7", "2.0-beta8"));
 	}
 
 	private Entry<File, Set<Class<? extends AbstractDetector>>> toDetectors(Entry<File, List<Detection>> entry) {

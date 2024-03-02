@@ -41,8 +41,7 @@ class NamingContextLookupCallsFromJndiLookupTest {
 
 	@Test
 	void canDetectLookupMethods(Log4jJars log4jJars) throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(versionsWithJndiLookups.toArray(File[]::new));
+		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithJndiLookups);
 	}
 
 	static String refTo(String ref) {

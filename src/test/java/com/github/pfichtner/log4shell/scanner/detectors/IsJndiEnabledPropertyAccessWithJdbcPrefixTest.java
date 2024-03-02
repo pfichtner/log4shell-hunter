@@ -29,7 +29,7 @@ class IsJndiEnabledPropertyAccessWithJdbcPrefixTest {
 	@Test
 	void canDetectAccess(Log4jJars log4jJars) throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(log4jJars.versions("2.17.1", "2.17.2",
-				"2.18.0", "2.19.0", "2.20.0", "2.21.0", "2.21.1", "2.22.0", "2.22.1", "2.23.0").toArray(File[]::new));
+				"2.18.0", "2.19.0", "2.20.0", "2.21.0", "2.21.1", "2.22.0", "2.22.1", "2.23.0"));
 	}
 
 }

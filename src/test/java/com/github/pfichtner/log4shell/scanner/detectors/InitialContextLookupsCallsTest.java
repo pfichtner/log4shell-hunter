@@ -51,8 +51,7 @@ class InitialContextLookupsCallsTest {
 
 	@Test
 	void canDetectPluginClass(Log4jJars log4jJars) throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(versionsWithInitialContextLookups.toArray(File[]::new));
+		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithInitialContextLookups);
 	}
 
 }
