@@ -17,8 +17,8 @@ public final class Streams {
 		return StreamSupport.stream(spliteratorUnknownSize(sourceIterator, ORDERED), false);
 	}
 
-	public static <T> Stream<T> filter(Stream<? super T> instructions, Class<T> type) {
-		return instructions.filter(type::isInstance).map(type::cast);
+	public static <T> Stream<T> filter(Stream<? super T> stream, Class<T> type) {
+		return stream.filter(type::isInstance).map(type::cast);
 	}
 
 }

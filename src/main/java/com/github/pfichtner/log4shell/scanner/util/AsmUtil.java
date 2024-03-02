@@ -1,13 +1,21 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
+import static com.github.pfichtner.log4shell.scanner.util.Streams.filter;
+import static com.github.pfichtner.log4shell.scanner.util.Streams.itToStream;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Stream.iterate;
 import static org.objectweb.asm.Opcodes.ACC_ANNOTATION;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 import static org.objectweb.asm.Type.VOID_TYPE;
+import static org.objectweb.asm.Type.getMethodDescriptor;
+import static org.objectweb.asm.Type.getMethodType;
+import static org.objectweb.asm.Type.getObjectType;
 import static org.objectweb.asm.Type.getReturnType;
+import static org.objectweb.asm.Type.getType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,12 +41,12 @@ import org.objectweb.asm.tree.MethodNode;
 
 public final class AsmUtil {
 
-	public static final Type STRING_TYPE = Type.getType(String.class);
+	public static final Type STRING_TYPE = getType(String.class);
 
-	private static final String voidNoArgs = Type.getMethodDescriptor(VOID_TYPE);
+	private static final String VOID_NO_ARGS = getMethodDescriptor(VOID_TYPE);
 
-	private static final Type RETENTION_TYPE = Type.getType(Retention.class);
-	private static final Type RETENTIONPOLICY_TYPE = Type.getType(RetentionPolicy.class);
+	private static final Type RETENTION_TYPE = getType(Retention.class);
+	private static final Type RETENTIONPOLICY_TYPE = getType(RetentionPolicy.class);
 	private static final Method RETENTION_VALUE_METHOD = loadMethod(Retention.class, "value");
 
 	private AsmUtil() {
@@ -60,7 +68,7 @@ public final class AsmUtil {
 	}
 
 	public static Type classType(ClassNode classNode) {
-		return Type.getObjectType(classNode.name);
+		return getObjectType(classNode.name);
 	}
 
 	public static Map<Object, Object> extractValues(AnnotationNode annotationNode) {
@@ -86,9 +94,9 @@ public final class AsmUtil {
 	}
 
 	public static String methodName(MethodInsnNode node) {
-		Type methodType = Type.getMethodType(node.desc);
-		String className = Type.getObjectType(node.owner).getClassName();
-		String args = Arrays.stream(methodType.getArgumentTypes()).map(Type::getClassName).collect(joining(","));
+		Type methodType = getMethodType(node.desc);
+		String className = getObjectType(node.owner).getClassName();
+		String args = stream(methodType.getArgumentTypes()).map(Type::getClassName).collect(joining(","));
 		return className + "#" + node.name + "(" + args + ")";
 	}
 
@@ -98,7 +106,7 @@ public final class AsmUtil {
 	}
 
 	public static Stream<MethodInsnNode> methodInsnNode(Stream<AbstractInsnNode> instructions) {
-		return Streams.filter(instructions, MethodInsnNode.class);
+		return filter(instructions, MethodInsnNode.class);
 	}
 
 	public static Stream<AbstractInsnNode> instructionsStream(MethodNode methodNode) {
@@ -106,15 +114,15 @@ public final class AsmUtil {
 	}
 
 	public static Stream<AbstractInsnNode> instructionsStream(InsnList instructions) {
-		return Streams.itToStream(instructions.iterator());
+		return itToStream(instructions.iterator());
 	}
 
 	public static Stream<AbstractInsnNode> nexts(AbstractInsnNode node) {
-		return Stream.iterate(node, Objects::nonNull, AbstractInsnNode::getNext);
+		return iterate(node, Objects::nonNull, AbstractInsnNode::getNext);
 	}
 
 	public static Stream<AbstractInsnNode> prevs(AbstractInsnNode node) {
-		return Stream.iterate(node, Objects::nonNull, AbstractInsnNode::getPrevious);
+		return iterate(node, Objects::nonNull, AbstractInsnNode::getPrevious);
 	}
 
 	public static boolean isAnno(ClassNode classNode) {
@@ -150,7 +158,7 @@ public final class AsmUtil {
 	}
 
 	public static Predicate<MethodNode> voidNoArgs() {
-		return n -> voidNoArgs.equals(n.desc);
+		return n -> VOID_NO_ARGS.equals(n.desc);
 	}
 
 	public static boolean hasRetentionPolicy(ClassNode classNode, RetentionPolicy retentionPolicy) {
