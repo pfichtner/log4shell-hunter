@@ -83,11 +83,11 @@ public final class Log4jJars implements Iterable<File> {
 		return filename.substring(0, filename.lastIndexOf('.'));
 	}
 
-	public List<File> getLog4jJarsWithout(List<File> ignore) {
+	public List<File> notVersions(List<File> ignore) {
 		return Util.ignore(log4jJars, ignore);
 	}
 
-	public List<File> getLog4jJarsVersionFrom(String version) {
+	public List<File> versionsHigherOrEqualTo(String version) {
 		Semver thisOrHigher = new Semver(version, LOOSE);
 		return log4jJars.stream().filter(f -> comparableVersion(f).isGreaterThanOrEqualTo(thisOrHigher))
 				.collect(toList());

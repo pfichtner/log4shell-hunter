@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
+import static com.github.pfichtner.log4shell.scanner.util.Util.combine;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,16 +36,10 @@ class InitialContextLookupsCallsTest {
 	}
 
 	static List<File> versionsWithInitialContextLookups(Log4jJars log4jJars) {
-		return log4jJars.versions( //
-				"2.0-beta9", "2.0-rc1", //
-				"2.17.0", "2.17.1", "2.17.2", //
-				"2.18.0", //
-				"2.19.0", //
-				"2.20.0", //
-				"2.21.0", "2.21.1", //
-				"2.22.0", "2.22.1", //
-				"2.23.0" //
-		);
+		return combine(log4jJars.versions( //
+				"2.0-beta9", //
+				"2.0-rc1" //
+		), log4jJars.versionsHigherOrEqualTo("2.17.0"));
 	}
 
 }

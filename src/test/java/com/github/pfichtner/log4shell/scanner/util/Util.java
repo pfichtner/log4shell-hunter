@@ -8,6 +8,7 @@ import static java.util.stream.Collectors.toMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,11 @@ public final class Util {
 		return stream.filter(contains(ignore).negate()).collect(toList());
 	}
 
+	@SafeVarargs
+	public static <T> List<T> combine(List<T>... lists) {
+		return Stream.of(lists).flatMap(Collection::stream).collect(toList());
+	}
+
 	private static <T> Predicate<T> contains(List<T> elements) {
 		return elements::contains;
 	}
@@ -47,7 +53,8 @@ public final class Util {
 				.collect(toMap(Entry::getKey, Entry::getValue));
 	}
 
-	public static Map<File, List<Detection>> analyse(Iterable<File> log4jJars, AbstractDetector sut) throws IOException {
+	public static Map<File, List<Detection>> analyse(Iterable<File> log4jJars, AbstractDetector sut)
+			throws IOException {
 		DetectionCollector detector = new DetectionCollector(sut);
 		Map<File, List<Detection>> results = new HashMap<>();
 		for (File log4j : log4jJars) {

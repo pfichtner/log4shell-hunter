@@ -29,15 +29,18 @@ class NamingContextLookupCallsFromJndiManagerTest {
 
 	@Test
 	void canDetectLookupMethods(Log4jJars log4jJars) throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups(log4jJars)));
+		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithJndiLookups(log4jJars));
 	}
 
 	static String refTo(String ref) {
 		return format("Reference to %s found in class org.apache.logging.log4j.core.net.JndiManager", ref);
 	}
 
-	static List<File> versionsWithoutJndiLookups(Log4jJars log4jJars) {
+	static List<File> versionsWithJndiLookups(Log4jJars log4jJars) {
+		return log4jJars.notVersions(withoutJndiLookups(log4jJars));
+	}
+
+	static List<File> withoutJndiLookups(Log4jJars log4jJars) {
 		return log4jJars.versions( //
 				"2.0-alpha1", "2.0-alpha2", //
 				"2.0-beta1", "2.0-beta2", "2.0-beta3", "2.0-beta4", "2.0-beta5", "2.0-beta6", "2.0-beta7", "2.0-beta8",

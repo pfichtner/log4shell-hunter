@@ -17,59 +17,39 @@ class JndiManagerLookupCallsFromJndiLookupTest {
 
 	@Test
 	void canDetectLookupCalls(Log4jJars log4jJars) throws Exception {
-		assertThat(withDetections(analyse(log4jJars, sut)))
-				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutJndiLookups(log4jJars)));
+		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithJndiLookups(log4jJars));
 	}
 
-	static List<File> versionsWithoutJndiLookups(Log4jJars log4jJars) {
-		return log4jJars.versions( //
-				"2.0-alpha1", //
-				"2.0-alpha2", //
+	static List<File> versionsWithJndiLookups(Log4jJars log4jJars) {
+		// 2.0, 2.0.1, 2.0.2
+		// @Override
+		// public String lookup(LogEvent event, String key) {
+		// if (key == null) {
+		// return null;
+		// }
+		//
+		// Context ctx = null;
+		// try {
+		// ctx = new InitialContext();
+		// return (String) ctx.lookup(convertJndiName(key));
+		// } catch (NamingException e) {
+		// return null;
+		// } finally {
+		// Closer.closeSilently(ctx);
+		// }
+		// }
 
-				"2.0-beta1", //
-				"2.0-beta2", //
-				"2.0-beta3", //
-				"2.0-beta4", //
-				"2.0-beta5", //
-				"2.0-beta6", //
-				"2.0-beta7", //
-				"2.0-beta8", //
-				"2.0-beta9", //
+		// JndiManager#lookup(String) calls introduces with version 2.1
+		List<File> versionsWithJndiLookups = log4jJars.versionsHigherOrEqualTo("2.1");
 
-				"2.0-rc1", //
-				"2.0-rc2", //
-
-				// 2.0, 2.0.1, 2.0.2 (JndiManager#lookup(String) calls introduces with version
-				// 2.1)
-				// @Override
-				// public String lookup(LogEvent event, String key) {
-				// if (key == null) {
-				// return null;
-				// }
-				//
-				// Context ctx = null;
-				// try {
-				// ctx = new InitialContext();
-				// return (String) ctx.lookup(convertJndiName(key));
-				// } catch (NamingException e) {
-				// return null;
-				// } finally {
-				// Closer.closeSilently(ctx);
-				// }
-				// }
-				"2.0", //
-				"2.0.1", //
-				"2.0.2", //
-
-				// 2.12.2
-				// @Override
-				// public String lookup(LogEvent event, String key) {
-				// LOGGER.warn("Attempt to use JNDI Lookup");
-				// return RESULT;
-				// }
-				"2.12.2" //
-
-		);
+		// 2.12.2 (Quickfix)
+		// @Override
+		// public String lookup(LogEvent event, String key) {
+		// LOGGER.warn("Attempt to use JNDI Lookup");
+		// return RESULT;
+		// }
+		versionsWithJndiLookups.remove(log4jJars.version("2.12.2"));
+		return versionsWithJndiLookups;
 	}
 
 }
