@@ -2,7 +2,6 @@ package com.github.pfichtner.log4shell.scanner.detectors;
 
 import static com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection.getFormatted;
 import static com.github.pfichtner.log4shell.scanner.util.Util.analyse;
-import static com.github.pfichtner.log4shell.scanner.util.Util.combine;
 import static com.github.pfichtner.log4shell.scanner.util.Util.withDetections;
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +27,7 @@ class IsJndiEnabledPropertyAccessTest {
 	@Test
 	void canDetectAccess(Log4jJars log4jJars) throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(
-				combine(log4jJars.versions("2.12.2", "2.12.3"), log4jJars.versionsHigherOrEqualTo("2.16.0")));
+				log4jJars.versions("2.12.2", "2.12.3").and(log4jJars.versionsHigherOrEqualTo("2.16.0")));
 	}
 
 }

@@ -9,7 +9,7 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 public class Log4jJarsExtension implements ParameterResolver {
 
-	private static final Log4jJars log4jJars = Log4jJars.getInstance();
+	private static final Log4jJars log4jJars = new Log4jJars();
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)

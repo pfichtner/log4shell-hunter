@@ -2,19 +2,14 @@ package com.github.pfichtner.log4shell.scanner.util;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.typeComparator;
 import static com.github.pfichtner.log4shell.scanner.util.AsmTypeComparator.useTypeComparator;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
 import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
@@ -25,27 +20,6 @@ public final class Util {
 
 	private Util() {
 		super();
-	}
-
-	public static <T> List<T> ignore(T[] elements, List<T> ignore) {
-		return ignore(ignore, Arrays.stream(elements));
-	}
-
-	public static <T> List<T> ignore(List<T> elements, List<T> ignore) {
-		return ignore(ignore, elements.stream());
-	}
-
-	public static <T> List<T> ignore(List<T> ignore, Stream<T> stream) {
-		return stream.filter(contains(ignore).negate()).collect(toList());
-	}
-
-	@SafeVarargs
-	public static <T> List<T> combine(List<T>... lists) {
-		return Stream.of(lists).flatMap(Collection::stream).collect(toList());
-	}
-
-	private static <T> Predicate<T> contains(List<T> elements) {
-		return elements::contains;
 	}
 
 	public static Map<File, List<Detection>> withDetections(Map<File, List<Detection>> results) {

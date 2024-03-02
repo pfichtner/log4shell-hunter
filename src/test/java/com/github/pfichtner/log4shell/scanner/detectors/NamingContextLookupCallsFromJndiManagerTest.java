@@ -8,9 +8,6 @@ import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 
-import java.io.File;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
@@ -36,11 +33,11 @@ class NamingContextLookupCallsFromJndiManagerTest {
 		return format("Reference to %s found in class org.apache.logging.log4j.core.net.JndiManager", ref);
 	}
 
-	static List<File> versionsWithJndiLookups(Log4jJars log4jJars) {
-		return log4jJars.notVersions(withoutJndiLookups(log4jJars));
+	static Log4jJars versionsWithJndiLookups(Log4jJars log4jJars) {
+		return log4jJars.not(withoutJndiLookups(log4jJars));
 	}
 
-	static List<File> withoutJndiLookups(Log4jJars log4jJars) {
+	static Log4jJars withoutJndiLookups(Log4jJars log4jJars) {
 		return log4jJars.versions( //
 				"2.0-alpha1", "2.0-alpha2", //
 				"2.0-beta1", "2.0-beta2", "2.0-beta3", "2.0-beta4", "2.0-beta5", "2.0-beta6", "2.0-beta7", "2.0-beta8",

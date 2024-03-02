@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 
-import java.io.File;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ class DirContextLookupsCallsFromJndiManagerTest {
 		assertThat(withDetections(analyse(log4jJars, sut))).containsOnlyKeys(versionsWithDirContextLookups(log4jJars));
 	}
 
-	static List<File> versionsWithDirContextLookups(Log4jJars log4jJars) {
+	static Log4jJars versionsWithDirContextLookups(Log4jJars log4jJars) {
 		return log4jJars.versions( //
 				"2.15.0", //
 				"2.16.0" //

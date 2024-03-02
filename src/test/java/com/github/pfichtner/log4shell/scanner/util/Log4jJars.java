@@ -1,13 +1,14 @@
 package com.github.pfichtner.log4shell.scanner.util;
 
 import static com.vdurmont.semver4j.Semver.SemverType.LOOSE;
+import static java.util.Arrays.stream;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -18,31 +19,22 @@ import com.vdurmont.semver4j.Semver;
 
 public final class Log4jJars implements Iterable<File> {
 
-	private final File dir;
 	private final List<File> log4jJars;
 
-	private static final Log4jJars instance = new Log4jJars();
+	public Log4jJars() {
+		this(stream(baseDirectory().list()).map(f -> new File(baseDirectory(), f)).collect(toUnmodifiableList()));
+	}
 
-	private Log4jJars() {
+	private Log4jJars(List<File> log4jJars) {
+		this.log4jJars = log4jJars;
+	}
+
+	private static File baseDirectory() {
 		try {
-			this.dir = new File(getClass().getClassLoader().getResource("log4jars").toURI());
+			return new File(Log4jJars.class.getClassLoader().getResource("log4jars").toURI());
 		} catch (URISyntaxException e) {
 			throw new RuntimeException();
 		}
-		this.log4jJars = Arrays.stream(dir.list()).map(f -> new File(dir, f)).collect(toUnmodifiableList());
-	}
-
-	public static Log4jJars getInstance() {
-		return instance;
-
-	}
-
-	public File getDir() {
-		return dir;
-	}
-
-	public List<File> getLog4jJars() {
-		return log4jJars;
 	}
 
 	public File version(String version) {
@@ -51,8 +43,8 @@ public final class Log4jJars implements Iterable<File> {
 				.orElseThrow(() -> new NoSuchElementException(filename));
 	}
 
-	public List<File> versions(String... versions) {
-		return sortedList(Arrays.stream(versions).map(this::version));
+	public Log4jJars versions(String... versions) {
+		return new Log4jJars(sortedList(stream(versions).map(this::version)));
 	}
 
 	private static Predicate<File> hasFilename(String filename) {
@@ -83,14 +75,22 @@ public final class Log4jJars implements Iterable<File> {
 		return filename.substring(0, filename.lastIndexOf('.'));
 	}
 
-	public List<File> notVersions(List<File> ignore) {
-		return Util.ignore(log4jJars, ignore);
+	public Log4jJars not(Log4jJars remove) {
+		return new Log4jJars(log4jJars.stream().filter(contains(remove.log4jJars).negate()).collect(toList()));
 	}
 
-	public List<File> versionsHigherOrEqualTo(String version) {
+	private static <T> Predicate<T> contains(List<T> elements) {
+		return elements::contains;
+	}
+
+	public Log4jJars and(Log4jJars others) {
+		return new Log4jJars(Stream.of(log4jJars, others.log4jJars).flatMap(Collection::stream).collect(toList()));
+	}
+
+	public Log4jJars versionsHigherOrEqualTo(String version) {
 		Semver thisOrHigher = new Semver(version, LOOSE);
-		return log4jJars.stream().filter(f -> comparableVersion(f).isGreaterThanOrEqualTo(thisOrHigher))
-				.collect(toList());
+		return new Log4jJars(log4jJars.stream().filter(f -> comparableVersion(f).isGreaterThanOrEqualTo(thisOrHigher))
+				.collect(toList()));
 	}
 
 }
