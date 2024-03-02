@@ -25,10 +25,8 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 class FingerprintTest {
 
-	Log4jJars log4jJars = Log4jJars.getInstance();
-
 	@Test
-	void onlyVersionsPreviousBeta209AreAllowedToHaveNoFingerprints() throws Exception {
+	void onlyVersionsPreviousBeta209AreAllowedToHaveNoFingerprints(Log4jJars log4jJars) throws Exception {
 		assertThat(analyse(log4jJars, new Multiplexer(allDetectors())).entrySet().stream().map(e -> toDetectors(e))
 				.filter(e -> e.getValue().isEmpty()).collect(toMap(Entry::getKey, Entry::getValue)))
 				.containsOnlyKeys(log4jJars.versions("2.0-alpha1", "2.0-alpha2", "2.0-beta1", "2.0-beta2", //
@@ -42,13 +40,13 @@ class FingerprintTest {
 	}
 
 	@Test
-	void approveAll() throws IOException {
+	void approveAll(Log4jJars log4jJars) throws IOException {
 		Multiplexer multiplexer = new Multiplexer(allDetectors());
-		verify(toBeApproved(new DetectionCollector(multiplexer), multiplexer.getMultiplexed()));
+		verify(toBeApproved(new DetectionCollector(multiplexer), multiplexer.getMultiplexed(), log4jJars));
 	}
 
-	private String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors)
-			throws IOException {
+	private String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors,
+			Iterable<File> log4jJars) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		for (File jar : log4jJars) {
 			List<String> fingerprint = getFingerprint(collector.analyze(jar.getAbsolutePath()));

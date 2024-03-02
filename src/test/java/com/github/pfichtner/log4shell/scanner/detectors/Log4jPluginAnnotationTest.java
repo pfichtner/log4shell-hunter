@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.io.File;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
@@ -21,26 +22,28 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 public class Log4jPluginAnnotationTest {
 
-	Log4jJars log4jJars = Log4jJars.getInstance();
-
-	List<File> versionsWithoutPluginAnnotation = log4jJars.versions( //
-			"2.0-alpha1", //
-			"2.0-alpha2", //
-
-			"2.0-beta1", //
-			"2.0-beta2", //
-			"2.0-beta3", //
-			"2.0-beta4", //
-			"2.0-beta5", //
-			"2.0-beta6", //
-			"2.0-beta7", //
-			"2.0-beta8" //
-	);
-
 	AbstractDetector sut = new Log4jPluginAnnotation();
+	List<File> versionsWithoutPluginAnnotation;
+
+	@BeforeEach
+	void setup(Log4jJars log4jJars) {
+		versionsWithoutPluginAnnotation = log4jJars.versions( //
+				"2.0-alpha1", //
+				"2.0-alpha2", //
+
+				"2.0-beta1", //
+				"2.0-beta2", //
+				"2.0-beta3", //
+				"2.0-beta4", //
+				"2.0-beta5", //
+				"2.0-beta6", //
+				"2.0-beta7", //
+				"2.0-beta8" //
+		);
+	}
 
 	@Test
-	void log4j20beta9HasPluginWithDirectContextAccess() throws Exception {
+	void log4j20beta9HasPluginWithDirectContextAccess(Log4jJars log4jJars) throws Exception {
 		DetectionCollector detector = new DetectionCollector(sut);
 		String expected = "@Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup";
 		assertAll( //
@@ -53,7 +56,7 @@ public class Log4jPluginAnnotationTest {
 	}
 
 	@Test
-	void canDetectPluginClass() throws Exception {
+	void canDetectPluginClass(Log4jJars log4jJars) throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
 				.containsOnlyKeys(log4jJars.getLog4jJarsWithout(versionsWithoutPluginAnnotation));
 	}

@@ -47,7 +47,7 @@ public final class Util {
 				.collect(toMap(Entry::getKey, Entry::getValue));
 	}
 
-	public static Map<File, List<Detection>> analyse(Log4jJars log4jJars, AbstractDetector sut) throws IOException {
+	public static Map<File, List<Detection>> analyse(Iterable<File> log4jJars, AbstractDetector sut) throws IOException {
 		DetectionCollector detector = new DetectionCollector(sut);
 		Map<File, List<Detection>> results = new HashMap<>();
 		for (File log4j : log4jJars) {

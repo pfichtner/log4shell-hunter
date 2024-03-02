@@ -22,7 +22,15 @@ import java.util.regex.Pattern;
 import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
 import com.github.pfichtner.log4shell.scanner.detectors.AbstractDetector;
 
+/**
+ * This class reads the {@value #FINGERPRINTS_CSV} file. For each known
+ * log4-jars the csv describes which detector had a detection on which jar.
+ * 
+ * @author <a href="https://github.com/pfichtner">Peter Fichtner</a>
+ */
 public class Fingerprint {
+
+	private static final String FINGERPRINTS_CSV = "fingerprints.csv";
 
 	private static final Pattern log4jPattern = Pattern.compile("log4j-core-(.+)\\.jar");
 	private static final Map<String, Set<Class<? extends AbstractDetector>>> mapping = mapping();
@@ -58,7 +66,7 @@ public class Fingerprint {
 	}
 
 	private static InputStream fingerprints() {
-		return Fingerprint.class.getResourceAsStream("fingerprints.csv");
+		return Fingerprint.class.getResourceAsStream(FINGERPRINTS_CSV);
 	}
 
 	private static String cutLog4Jcore(String name) {

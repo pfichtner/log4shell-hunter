@@ -43,10 +43,8 @@ class Log4ShellHunterTest {
 
 	static final String SEPARATOR = ",";
 
-	Log4jJars log4jJars = Log4jJars.getInstance();
-
 	@Test
-	void detectsAndPrintsViaPluginDetection() {
+	void detectsAndPrintsViaPluginDetection(Log4jJars log4jJars) {
 		DetectionCollector collector = new DetectionCollector(new Log4jPluginAnnotation());
 		String expected = "> @Plugin(name = \"jndi\", category = \"Lookup\") found in class org.apache.logging.log4j.core.lookup.JndiLookup";
 		assertAll( //
@@ -60,7 +58,7 @@ class Log4ShellHunterTest {
 	}
 
 	@Test
-	void detectsAndPrintsViaCheckForCalls() {
+	void detectsAndPrintsViaCheckForCalls(Log4jJars log4jJars) {
 		DetectionCollector collector = new DetectionCollector(new JndiManagerLookupCallsFromJndiLookup());
 		String expected = "> Reference to org.apache.logging.log4j.core.net.JndiManager#lookup(java.lang.String) found in class org.apache.logging.log4j.core.lookup.JndiLookup";
 		assertAll( //
@@ -160,13 +158,13 @@ class Log4ShellHunterTest {
 	}
 
 	@Test
-	void approveAll() throws IOException {
+	void approveAll(Log4jJars log4jJars) throws IOException {
 		Multiplexer multiplexer = new Multiplexer(allDetectors());
-		verify(toBeApproved(new DetectionCollector(multiplexer), multiplexer.getMultiplexed()), csv());
+		verify(toBeApproved(new DetectionCollector(multiplexer), multiplexer.getMultiplexed(), log4jJars), csv());
 	}
 
 	@Test
-	void approveLog4jDetector() throws IOException {
+	void approveLog4jDetector(Log4jJars log4jJars) throws IOException {
 		Log4JDetector log4jDetector = new Log4JDetector();
 		DetectionCollector collector = new DetectionCollector(log4jDetector);
 		StringBuilder sb = new StringBuilder();
@@ -186,7 +184,8 @@ class Log4ShellHunterTest {
 		return new FileOptions(new HashMap<>()).withExtension(".csv");
 	}
 
-	String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors) throws IOException {
+	String toBeApproved(DetectionCollector collector, Collection<AbstractDetector> detectors, Iterable<File> log4jJars)
+			throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(header(collector, detectors)).append("\n");
 		for (File file : log4jJars) {

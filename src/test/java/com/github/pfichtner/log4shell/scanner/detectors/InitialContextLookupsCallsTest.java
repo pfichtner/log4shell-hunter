@@ -10,6 +10,7 @@ import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
 import java.io.File;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector;
@@ -18,28 +19,30 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 public class InitialContextLookupsCallsTest {
 
-	Log4jJars log4jJars = Log4jJars.getInstance();
-
-	List<File> versionsWithInitialContextLookups = log4jJars.versions( //
-			"2.0-beta9", //
-			"2.0-rc1", //
-			"2.17.0", //
-			"2.17.1", //
-			"2.17.2", //
-			"2.18.0", //
-			"2.19.0", //
-			"2.20.0", //
-			"2.21.0", //
-			"2.21.1", //
-			"2.22.0", //
-			"2.22.1", //
-			"2.23.0" //
-	);
-
 	InitialContextLookupsCalls sut = new InitialContextLookupsCalls();
+	List<File> versionsWithInitialContextLookups;
+
+	@BeforeEach
+	void setup(Log4jJars log4jJars) {
+		versionsWithInitialContextLookups = log4jJars.versions( //
+				"2.0-beta9", //
+				"2.0-rc1", //
+				"2.17.0", //
+				"2.17.1", //
+				"2.17.2", //
+				"2.18.0", //
+				"2.19.0", //
+				"2.20.0", //
+				"2.21.0", //
+				"2.21.1", //
+				"2.22.0", //
+				"2.22.1", //
+				"2.23.0" //
+		);
+	}
 
 	@Test
-	void log4j20beta9HasPluginWithDirectContextAccess() throws Exception {
+	void log4j20beta9HasPluginWithDirectContextAccess(Log4jJars log4jJars) throws Exception {
 		DetectionCollector detector = new DetectionCollector(sut);
 		List<Detection> detections = detector.analyze(log4jJars.version("2.0-beta9").getAbsolutePath());
 		assertThat(getFormatted(detections)).singleElement(as(STRING)).startsWith(
@@ -47,7 +50,7 @@ public class InitialContextLookupsCallsTest {
 	}
 
 	@Test
-	void canDetectPluginClass() throws Exception {
+	void canDetectPluginClass(Log4jJars log4jJars) throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
 				.containsOnlyKeys(versionsWithInitialContextLookups.toArray(File[]::new));
 	}

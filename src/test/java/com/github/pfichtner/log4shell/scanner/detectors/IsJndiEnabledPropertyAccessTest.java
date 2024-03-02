@@ -16,12 +16,10 @@ import com.github.pfichtner.log4shell.scanner.util.Log4jJars;
 
 public class IsJndiEnabledPropertyAccessTest {
 
-	Log4jJars log4jJars = Log4jJars.getInstance();
-
 	IsJndiEnabledPropertyAccess sut = new IsJndiEnabledPropertyAccess();
 
 	@Test
-	void propertyAccessWasIntroducedLog4J216() throws Exception {
+	void propertyAccessWasIntroducedLog4J216(Log4jJars log4jJars) throws Exception {
 		DetectionCollector detector = new DetectionCollector(sut);
 		assertThat(getFormatted(detector.analyze(log4jJars.version("2.16.0").getAbsolutePath())))
 				.singleElement(as(STRING))
@@ -29,7 +27,7 @@ public class IsJndiEnabledPropertyAccessTest {
 	}
 
 	@Test
-	void canDetectAccess() throws Exception {
+	void canDetectAccess(Log4jJars log4jJars) throws Exception {
 		assertThat(withDetections(analyse(log4jJars, sut)))
 				.containsOnlyKeys(
 						log4jJars
