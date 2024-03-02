@@ -22,11 +22,15 @@ public final class Log4jJars implements Iterable<File> {
 	private final List<File> log4jJars;
 
 	public Log4jJars() {
-		this(stream(baseDirectory().list()).map(f -> new File(baseDirectory(), f)).collect(toUnmodifiableList()));
+		this(stream(baseDirectory().list()).map(f -> new File(baseDirectory(), f)));
+	}
+
+	private Log4jJars(Stream<File> log4jJars) {
+		this(log4jJars.collect(toList()));
 	}
 
 	private Log4jJars(List<File> log4jJars) {
-		this.log4jJars = log4jJars;
+		this.log4jJars = List.copyOf(log4jJars);
 	}
 
 	private static File baseDirectory() {
@@ -57,7 +61,7 @@ public final class Log4jJars implements Iterable<File> {
 	}
 
 	private List<File> sortedList(Stream<File> stream) {
-		return stream.sorted(comparing(Log4jJars::comparableVersion)).collect(toList());
+		return stream.sorted(comparing(Log4jJars::comparableVersion)).collect(toUnmodifiableList());
 	}
 
 	private static Semver comparableVersion(File file) {
@@ -76,7 +80,7 @@ public final class Log4jJars implements Iterable<File> {
 	}
 
 	public Log4jJars not(Log4jJars remove) {
-		return new Log4jJars(log4jJars.stream().filter(contains(remove.log4jJars).negate()).collect(toList()));
+		return new Log4jJars(log4jJars.stream().filter(contains(remove.log4jJars).negate()));
 	}
 
 	private static <T> Predicate<T> contains(List<T> elements) {
@@ -84,13 +88,12 @@ public final class Log4jJars implements Iterable<File> {
 	}
 
 	public Log4jJars and(Log4jJars others) {
-		return new Log4jJars(Stream.of(log4jJars, others.log4jJars).flatMap(Collection::stream).collect(toList()));
+		return new Log4jJars(Stream.of(log4jJars, others.log4jJars).flatMap(Collection::stream));
 	}
 
 	public Log4jJars versionsHigherOrEqualTo(String version) {
 		Semver thisOrHigher = new Semver(version, LOOSE);
-		return new Log4jJars(log4jJars.stream().filter(f -> comparableVersion(f).isGreaterThanOrEqualTo(thisOrHigher))
-				.collect(toList()));
+		return new Log4jJars(log4jJars.stream().filter(f -> comparableVersion(f).isGreaterThanOrEqualTo(thisOrHigher)));
 	}
 
 }
