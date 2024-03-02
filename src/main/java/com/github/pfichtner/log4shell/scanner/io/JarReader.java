@@ -113,7 +113,7 @@ public class JarReader {
 		}, jar));
 	}
 
-	public JarReader(Path file) throws IOException {
+	public JarReader(Path file) {
 		this(file.toString(), managedResource(() -> {
 			try {
 				return newFileSystem(file, null);
