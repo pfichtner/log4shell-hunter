@@ -2,10 +2,12 @@ package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodInsnNodes;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.objectweb.asm.tree.ClassNode;
@@ -73,12 +75,14 @@ public class Log4JDetector extends AbstractDetector {
 				} else if (detectionsOfContains(namingContextLookupCallsFromJndiLookup, detectionInClass)) {
 					reAdd(detection, "2.0-rc2, 2.0.1, 2.0.2, 2.0");
 				} else {
-					List<String> allRefs = methodCallOwners(detectionInClass);
+					Collection<String> allRefs = methodCallOwners(detectionInClass);
 					if (detectionClassnames(dirContextLookupsCallsFromJndiManager).anyMatch(allRefs::contains)) {
-						reAdd(detection, "2.15 <= x <2.17.1");
+						reAdd(detection, "2.15 <= x <= 2.16");
 					} else if (detectionClassnames(namingContextLookupCallsFromJndiManager)
 							.anyMatch(allRefs::contains)) {
 						reAdd(detection, "2.1+");
+					} else if (hasJndiLookupConstructorWithISException()) {
+						reAdd(detection, "2.17.0");
 					}
 				}
 			}
@@ -98,8 +102,12 @@ public class Log4JDetector extends AbstractDetector {
 		return !isJndiEnabledPropertyAccessWithJdbcPrefix.getDetections().isEmpty();
 	}
 
-	private static List<String> methodCallOwners(ClassNode classNode) {
-		return methodInsnNodes(classNode, m -> true).map(n -> n.owner).collect(toList());
+	private boolean hasJndiLookupConstructorWithISException() {
+		return !jndiLookupConstructorWithISException.getDetections().isEmpty();
+	}
+
+	private static Set<String> methodCallOwners(ClassNode classNode) {
+		return methodInsnNodes(classNode, m -> true).map(n -> n.owner).collect(toSet());
 	}
 
 	private static boolean detectionsOfContains(AbstractDetector detector, ClassNode classNode) {

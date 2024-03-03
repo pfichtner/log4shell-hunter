@@ -43,9 +43,9 @@ log4j-core-2.13.2.jar: Possible 2.1+ match found in class org.apache.logging.log
 log4j-core-2.13.3.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/target/test-classes/log4jars/log4j-core-2.13.3.jar
 log4j-core-2.14.0.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/target/test-classes/log4jars/log4j-core-2.14.0.jar
 log4j-core-2.14.1.jar: Possible 2.1+ match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/target/test-classes/log4jars/log4j-core-2.14.1.jar
-log4j-core-2.15.0.jar: Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/target/test-classes/log4jars/log4j-core-2.15.0.jar
-log4j-core-2.16.0.jar: Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/target/test-classes/log4jars/log4j-core-2.16.0.jar
-log4j-core-2.17.0.jar: -
+log4j-core-2.15.0.jar: Possible 2.15 <= x <= 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/target/test-classes/log4jars/log4j-core-2.15.0.jar
+log4j-core-2.16.0.jar: Possible 2.15 <= x <= 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/target/test-classes/log4jars/log4j-core-2.16.0.jar
+log4j-core-2.17.0.jar: Possible 2.17.0 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource [BASEDIR]/target/test-classes/log4jars/log4j-core-2.17.0.jar
 log4j-core-2.17.1.jar: -
 log4j-core-2.17.2.jar: -
 log4j-core-2.18.0.jar: -

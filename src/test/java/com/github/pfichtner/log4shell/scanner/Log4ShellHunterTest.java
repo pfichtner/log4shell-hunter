@@ -116,7 +116,7 @@ class Log4ShellHunterTest {
 
 		assertThat(out.split("\n")).containsExactly( //
 				zip.toString(), //
-				"> Possible 2.15 <= x <2.17.1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource "
+				"> Possible 2.15 <= x <= 2.16 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource "
 						+ nested(zip, "/log4j-core-2.16.0.jar"), //
 				"> Possible 2.0-beta9, 2.0-rc1 match found in class org.apache.logging.log4j.core.lookup.JndiLookup in resource "
 						+ nested(zip, "/log4j-core-2.0-beta9.jar"));
