@@ -116,7 +116,7 @@ public class JarReader {
 	}
 
 	public void accept(JarReaderVisitor visitor) throws IOException {
-		visitor.visit(this.resource);
+		visitor.visit(resource);
 		try {
 			walkFileTree(sharedFilesytem.fileSystem.getPath("/"), adapter(visitor));
 		} finally {
