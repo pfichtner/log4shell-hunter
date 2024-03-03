@@ -9,7 +9,6 @@ import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,11 +92,11 @@ public class DetectionCollector {
 
 	private List<Detection> analyze(JarReader jarReader) throws IOException {
 		List<Detection> detections = new ArrayList<>();
-		jarReader.accept(visitor(jarReader.getFileSystem(), detections));
+		jarReader.accept(visitor(detections));
 		return detections;
 	}
 
-	private JarReaderVisitor visitor(FileSystem fileSystem, List<Detection> detections) {
+	private JarReaderVisitor visitor(List<Detection> detections) {
 		return new JarReaderVisitor() {
 
 			@Override

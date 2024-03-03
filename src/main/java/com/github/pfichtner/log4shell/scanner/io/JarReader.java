@@ -6,6 +6,7 @@ import static java.nio.file.Files.copy;
 import static java.nio.file.Files.walkFileTree;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -22,28 +23,26 @@ import java.util.function.Supplier;
 
 public class JarReader {
 
-	private static class SharedFilesytem {
+	private static class SharedCloseable<T extends Closeable> {
 
-		private final URI uri;
-		private final FileSystem fileSystem;
+		private final T closeable;
 		private final AtomicInteger referenceCount = new AtomicInteger(1);
 
-		public SharedFilesytem(URI uri, Supplier<FileSystem> supplier) {
-			this.uri = uri;
-			this.fileSystem = supplier.get();
+		public SharedCloseable(T closeable) {
+			this.closeable = closeable;
 		}
 
-		public SharedFilesytem increment() {
+		public SharedCloseable<T> increment() {
 			referenceCount.incrementAndGet();
 			return this;
 		}
 
-		public SharedFilesytem decrement() {
+		public SharedCloseable<T> decrement() {
 			if (referenceCount.decrementAndGet() > 0) {
 				return this;
 			}
 			try {
-				fileSystem.close();
+				closeable.close();
 				return null;
 			} catch (IOException e) {
 				throw new RuntimeException(e);
@@ -52,10 +51,11 @@ public class JarReader {
 
 	}
 
-	private final String resource;
-	private final SharedFilesytem sharedFilesytem;
+	private static final Map<URI, SharedCloseable<FileSystem>> sharedCloseables = new ConcurrentHashMap<>();
 
-	private static final Map<URI, SharedFilesytem> sharedFilesystems = new ConcurrentHashMap<>();
+	private final URI uri;
+	private final String resource;
+	private final Supplier<FileSystem> filesystemSupplier;
 
 	public static interface JarReaderVisitor {
 
@@ -82,49 +82,39 @@ public class JarReader {
 	}
 
 	public JarReader(URI jar) {
-		this(jar.toString(), managedResource(() -> {
+		this(jar.toString(), jar, () -> {
 			try {
 				return newFileSystem(URI.create("jar:file:" + jar.getPath()), zipProperties());
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-		}, jar));
+		});
 	}
 
 	public JarReader(Path file) {
-		this(file.toString(), managedResource(() -> {
+		this(file.toString(), file.toUri(), () -> {
 			try {
 				return newFileSystem(file, null);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-		}, file.toUri()));
+		});
 	}
 
-	private static SharedFilesytem managedResource(Supplier<FileSystem> fileSystemSupplier, URI uri) {
-		return sharedFilesystems.compute(uri,
-				(__, s) -> s == null ? new SharedFilesytem(uri, fileSystemSupplier) : s.increment());
-	}
-
-	private JarReader(String resource, SharedFilesytem sharedFilesytem) {
+	private JarReader(String resource, URI uri, Supplier<FileSystem> filesystemSupplier) {
 		this.resource = resource;
-		this.sharedFilesytem = sharedFilesytem;
-	}
-
-	public FileSystem getFileSystem() {
-		return sharedFilesytem.fileSystem;
+		this.uri = uri;
+		this.filesystemSupplier = filesystemSupplier;
 	}
 
 	public void accept(JarReaderVisitor visitor) throws IOException {
 		visitor.visit(resource);
+		SharedCloseable<FileSystem> sharedCloseable = sharedCloseables.compute(uri,
+				(__, c) -> c == null ? new SharedCloseable<>(filesystemSupplier.get()) : c.increment());
 		try {
-			walkFileTree(sharedFilesytem.fileSystem.getPath("/"), adapter(visitor));
+			walkFileTree(sharedCloseable.closeable.getPath("/"), adapter(visitor));
 		} finally {
-			// We cannot use computeIfPresent here because we need to ensure that both the
-			// decrement operation and the subsequent resource closing operation are
-			// performed atomically. Using computeIfPresent would not guarantee atomicity
-			// across these two operations.
-			sharedFilesystems.compute(sharedFilesytem.uri, (__, s) -> s == null ? null : s.decrement());
+			sharedCloseables.computeIfPresent(uri, (__, c) -> c.decrement());
 			visitor.end();
 		}
 	}
