@@ -6,7 +6,6 @@ import static java.nio.file.Files.copy;
 import static java.nio.file.Files.walkFileTree;
 
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -18,66 +17,45 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 public class JarReader {
 
-	static class ManagedResource {
+	static class SharedFilesytem {
 
-		private static class CloseableProxy implements Closeable {
-
-			private final Closeable closeable;
-			private final AtomicBoolean closed = new AtomicBoolean();
-
-			public CloseableProxy(Closeable closeable) {
-				this.closeable = closeable;
-			}
-
-			@Override
-			public void close() throws IOException {
-				if (closed.compareAndSet(false, true)) {
-					closeable.close();
-				}
-			}
-
-			private boolean isClosed() {
-				return closed.get();
-			}
-
-		}
-
+		private final URI uri;
 		private final FileSystem fileSystem;
 		private final AtomicInteger referenceCount = new AtomicInteger(1);
-		private final CloseableProxy closeable;
 
-		public ManagedResource(Supplier<FileSystem> supplier) {
+		public SharedFilesytem(URI uri, Supplier<FileSystem> supplier) {
+			this.uri = uri;
 			this.fileSystem = supplier.get();
-			this.closeable = new CloseableProxy(fileSystem);
 		}
 
-		private ManagedResource retain() {
-			referenceCount.getAndIncrement();
+		private SharedFilesytem increment() {
+			referenceCount.incrementAndGet();
 			return this;
 		}
 
-		private void release() throws IOException {
-			if (referenceCount.decrementAndGet() == 0) {
-				closeable.close();
+		private SharedFilesytem decrement() {
+			if (referenceCount.decrementAndGet() > 0) {
+				return this;
 			}
-		}
-
-		private boolean isClosed() {
-			return closeable.isClosed();
+			try {
+				fileSystem.close();
+				return null;
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 	}
 
 	private final String resource;
-	private final ManagedResource managedResource;
+	private final SharedFilesytem sharedFilesytem;
 
-	private static final Map<URI, ManagedResource> managedResources = new ConcurrentHashMap<>();
+	private static final Map<URI, SharedFilesytem> sharedFilesystems = new ConcurrentHashMap<>();
 
 	public static interface JarReaderVisitor {
 
@@ -123,32 +101,30 @@ public class JarReader {
 		}, file.toUri()));
 	}
 
-	private static ManagedResource managedResource(Supplier<FileSystem> fileSystemSupplier, URI uri) {
-		return managedResources.compute(uri, (__, existing) -> {
-			synchronized (managedResources) {
-				return existing == null || existing.isClosed() ? new ManagedResource(fileSystemSupplier)
-						: existing.retain();
-			}
-		});
+	private static SharedFilesytem managedResource(Supplier<FileSystem> fileSystemSupplier, URI uri) {
+		return sharedFilesystems.compute(uri,
+				(__, s) -> s == null ? new SharedFilesytem(uri, fileSystemSupplier) : s.increment());
 	}
 
-	private JarReader(String resource, ManagedResource managedResource) {
+	private JarReader(String resource, SharedFilesytem sharedFilesytem) {
 		this.resource = resource;
-		this.managedResource = managedResource;
+		this.sharedFilesytem = sharedFilesytem;
 	}
 
 	public FileSystem getFileSystem() {
-		return managedResource.fileSystem;
+		return sharedFilesytem.fileSystem;
 	}
 
 	public void accept(JarReaderVisitor visitor) throws IOException {
 		visitor.visit(this.resource);
 		try {
-			walkFileTree(managedResource.fileSystem.getPath("/"), adapter(visitor));
+			walkFileTree(sharedFilesytem.fileSystem.getPath("/"), adapter(visitor));
 		} finally {
-			synchronized (managedResources) {
-				managedResource.release();
-			}
+			// We cannot use computeIfPresent here because we need to ensure that both the
+			// decrement operation and the subsequent resource closing operation are
+			// performed atomically. Using computeIfPresent would not guarantee atomicity
+			// across these two operations.
+			sharedFilesystems.compute(sharedFilesytem.uri, (__, s) -> s == null ? null : s.decrement());
 			visitor.end();
 		}
 	}
