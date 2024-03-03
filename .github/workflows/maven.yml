@@ -42,3 +42,14 @@ jobs:
       run: mvn -B org.jacoco:jacoco-maven-plugin:prepare-agent package --file pom.xml
     - name: Codecov
       uses: codecov/codecov-action@54bcd8715eee62d40e33596ef5e8f0f48dbbccab # v4.1.0
+
+    - name: Create Release
+      id: create_release
+      uses: ncipollo/release-action@6c75be85e571768fa31b40abf38de58ba0397db5 # v1.13.0
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        artifacts: "target/*.jar"
+        makeLatest: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
