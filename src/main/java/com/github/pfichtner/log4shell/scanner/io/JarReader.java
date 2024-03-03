@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 public class JarReader {
 
-	static class SharedFilesytem {
+	private static class SharedFilesytem {
 
 		private final URI uri;
 		private final FileSystem fileSystem;
@@ -33,12 +33,12 @@ public class JarReader {
 			this.fileSystem = supplier.get();
 		}
 
-		private SharedFilesytem increment() {
+		public SharedFilesytem increment() {
 			referenceCount.incrementAndGet();
 			return this;
 		}
 
-		private SharedFilesytem decrement() {
+		public SharedFilesytem decrement() {
 			if (referenceCount.decrementAndGet() > 0) {
 				return this;
 			}
