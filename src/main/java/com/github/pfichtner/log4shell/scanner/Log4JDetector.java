@@ -78,11 +78,15 @@ public class Log4JDetector extends AbstractDetector {
 					Collection<String> allRefs = methodCallOwners(detectionInClass);
 					if (detectionClassnames(dirContextLookupsCallsFromJndiManager).anyMatch(allRefs::contains)) {
 						reAdd(detection, "2.15 <= x <= 2.16");
-					} else if (detectionClassnames(namingContextLookupCallsFromJndiManager)
-							.anyMatch(allRefs::contains)) {
-						reAdd(detection, "2.1+");
-					} else if (hasJndiLookupConstructorWithISException()) {
-						reAdd(detection, "2.17.0");
+					} else {
+						boolean hasJndiLookupConstructorWithISException = hasJndiLookupConstructorWithISException();
+						if (detectionClassnames(namingContextLookupCallsFromJndiManager).anyMatch(allRefs::contains)) {
+							if (!hasJndiLookupConstructorWithISException) {
+								reAdd(detection, "2.1+");
+							}
+						} else if (hasJndiLookupConstructorWithISException) {
+							reAdd(detection, "2.17.0");
+						}
 					}
 				}
 			}
