@@ -41,15 +41,11 @@ public class Log4ShellHunter {
 				parser.printUsage(System.out);
 				parser.printExample(ALL);
 				System.exit(0);
-			} else if (options.files.isEmpty()) {
-				System.err.println("No filename given");
-				System.exit(1);
-			} else {
-				useTypeComparator(options.typeComparator);
-				Log4ShellHunter log4jHunter = new Log4ShellHunter();
-				for (String file : options.files) {
-					log4jHunter.check(file);
-				}
+			}
+			useTypeComparator(options.typeComparator);
+			Log4ShellHunter log4jHunter = new Log4ShellHunter();
+			for (String file : options.files) {
+				log4jHunter.check(file);
 			}
 		} catch (CmdLineException e) {
 			parser.printUsage(System.err);
