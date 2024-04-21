@@ -43,7 +43,7 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
-      run: mvn -B org.jacoco:jacoco-maven-plugin:prepare-agent package --file pom.xml
+      run: mvn -B package --file pom.xml
     - name: Codecov
       uses: codecov/codecov-action@84508663e988701840491b86de86b666e8a86bed # v4.3.0
 
