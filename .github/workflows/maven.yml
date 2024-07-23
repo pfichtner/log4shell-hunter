@@ -43,7 +43,7 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
-      run: MAVEN_OPTS="-Djava.security.manager=allow" mvn -B package --file pom.xml
+      run: mvn -B package --file pom.xml
     - name: Codecov
       uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
 
