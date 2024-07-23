@@ -42,6 +42,8 @@ jobs:
         java-version: ${{ matrix.java-version }}
         distribution: 'adopt'
         cache: maven
+    - name: Set MAVEN_OPTS
+      run: echo "MAVEN_OPTS=-Djava.security.manager=allow" >> $GITHUB_ENV
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: Codecov
