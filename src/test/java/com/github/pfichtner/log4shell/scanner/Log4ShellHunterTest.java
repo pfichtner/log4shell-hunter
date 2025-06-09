@@ -9,6 +9,7 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.approvaltests.Approvals.verify;
+import static org.approvaltests.Approvals.verifyAll;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatRuntimeException;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +39,16 @@ import com.github.pfichtner.log4shell.scanner.util.Util.AltersComparatorMode;
 
 @DefaultLocale(language = "en")
 class Log4ShellHunterTest {
+
+	private static class Args {
+
+		private String[] args;
+
+		public Args(String... args) {
+			this.args = args;
+		}
+
+	}
 
 	static final String STDERR = "stderr";
 	static final String STDOUT = "stdout";
@@ -128,38 +140,49 @@ class Log4ShellHunterTest {
 
 	@Test
 	@AltersComparatorMode
-	void mainNoArgGiven() throws Exception {
-		verifyMain();
+	void verifyAllArgs() {
+		var args = List.of( //
+				args(), //
+				args("-h"), //
+				args("-m", "XXX-INVALID-MODE-XXX") //
+		);
+		verifyAll(args, c -> execMain(c), new Options().forFile().withExtension(".md"));
 	}
 
-	@Test
-	@AltersComparatorMode
-	void printsHelp() throws Exception {
-		verifyMain("-h");
+	String execMain(Args args) {
+		try {
+			Map<String, String> values = new HashMap<>();
+			captureAndRestoreAsmTypeComparator( //
+					() -> //
+					values.put(STDERR, tapSystemErr(() -> //
+					values.put(STDOUT, tapSystemOut(() -> //
+					values.put(RC, String.valueOf(catchSystemExit( //
+							() -> Log4ShellHunter.main(args.args)))) //
+					)))));
+
+			return Stream.of( //
+					"## Args: " + Arrays.stream(args.args).collect(joining(" ")), //
+					"**Return Code**", //
+					"<font color=\"" + ("0".equals(values.get(RC)) ? "green" : "red") + "\">", //
+					"```", //
+					values.get(RC), //
+					"```", //
+					"</font>", //
+					"**stdout**", //
+					"```", //
+					values.get(STDOUT), //
+					"```", //
+					"**stderr**", //
+					"```", //
+					values.get(STDERR), //
+					"```").collect(joining("\n"));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	@Test
-	@AltersComparatorMode
-	void mainInvalidMode() throws Exception {
-		verifyMain("-m", "XXX-INVALID-MODE-XXX");
-	}
-
-	void verifyMain(String... args) throws Exception {
-		verify(execMain(args));
-	}
-
-	String execMain(String... args) throws Exception {
-		Map<String, String> values = new HashMap<>();
-		captureAndRestoreAsmTypeComparator( //
-				() -> //
-				values.put(STDERR, tapSystemErr(() -> //
-				values.put(STDOUT, tapSystemOut(() -> //
-				values.put(RC, String.valueOf(catchSystemExit( //
-						() -> Log4ShellHunter.main(args)))) //
-				)))));
-		return asList(STDOUT, STDERR, RC).stream()
-				.map(h -> Stream.of(h, "-".repeat(h.length()), values.getOrDefault(h, "")).collect(joining("\n")))
-				.collect(joining("\n"));
+	static Args args(String... args) {
+		return new Args(args);
 	}
 
 	@Test
