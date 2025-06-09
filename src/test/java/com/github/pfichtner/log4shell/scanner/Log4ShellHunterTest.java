@@ -162,17 +162,16 @@ class Log4ShellHunterTest {
 
 			return Stream.of( //
 					"## Args: " + Arrays.stream(args.args).collect(joining(" ")), //
-					"**Return Code**", //
+					"### return code", //
 					"<font color=\"" + ("0".equals(values.get(RC)) ? "green" : "red") + "\">", //
-					"```", //
 					values.get(RC), //
-					"```", //
 					"</font>", //
-					"**stdout**", //
+					"", //
+					"### stdout", //
 					"```", //
 					values.get(STDOUT), //
 					"```", //
-					"**stderr**", //
+					"### stderr", //
 					"```", //
 					values.get(STDERR), //
 					"```").collect(joining("\n"));

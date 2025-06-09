@@ -1,15 +1,14 @@
 ## Args: 
-**Return Code**
+### return code
 <font color="red">
-```
 1
-```
 </font>
-**stdout**
+
+### stdout
 ```
 
 ```
-**stderr**
+### stderr
 ```
  VAL                                                              : archives to analyze
  -m [defaultComparator | repackageComparator |                    : mode to compare class/method names (default: repackageComparator)
@@ -17,35 +16,33 @@
 
 ```
 ## Args: -h
-**Return Code**
+### return code
 <font color="green">
-```
 0
-```
 </font>
-**stdout**
+
+### stdout
 ```
  VAL                                                              : archives to analyze
  -m [defaultComparator | repackageComparator |                    : mode to compare class/method names (default: repackageComparator)
  obfuscatorComparator]                                               
 
 ```
-**stderr**
+### stderr
 ```
 
 ```
 ## Args: -m XXX-INVALID-MODE-XXX
-**Return Code**
+### return code
 <font color="red">
-```
 1
-```
 </font>
-**stdout**
+
+### stdout
 ```
 
 ```
-**stderr**
+### stderr
 ```
  VAL                                                              : archives to analyze
  -m [defaultComparator | repackageComparator |                    : mode to compare class/method names (default: repackageComparator)
