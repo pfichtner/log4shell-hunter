@@ -5,7 +5,6 @@ import static com.github.pfichtner.log4shell.scanner.util.Streams.itToStream;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Stream.iterate;
 import static org.objectweb.asm.Opcodes.ACC_ANNOTATION;
@@ -102,7 +101,7 @@ public final class AsmUtil {
 
 	public static Stream<MethodInsnNode> methodInsnNodes(ClassNode classNode, Predicate<MethodNode> methodFilter) {
 		return methodInsnNode(
-				classNode.methods.stream().filter(methodFilter).map(AsmUtil::instructionsStream).flatMap(identity()));
+				classNode.methods.stream().filter(methodFilter).flatMap(AsmUtil::instructionsStream));
 	}
 
 	public static Stream<MethodInsnNode> methodInsnNode(Stream<AbstractInsnNode> instructions) {
