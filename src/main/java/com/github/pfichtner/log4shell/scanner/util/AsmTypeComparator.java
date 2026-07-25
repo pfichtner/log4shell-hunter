@@ -98,7 +98,7 @@ public enum AsmTypeComparator {
 
 	};
 
-	private static final ThreadLocal<AsmTypeComparator> tl = new ThreadLocal<AsmTypeComparator>() {
+	private static final InheritableThreadLocal<AsmTypeComparator> tl = new InheritableThreadLocal<AsmTypeComparator>() {
 		@Override
 		protected AsmTypeComparator initialValue() {
 			return defaultComparator;
