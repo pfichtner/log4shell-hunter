@@ -2,6 +2,7 @@ package com.github.pfichtner.log4shell.scanner;
 
 import static com.github.pfichtner.log4shell.scanner.util.AsmUtil.methodInsnNodes;
 import static java.util.Arrays.asList;
+import static java.util.function.Predicate.isEqual;
 import static java.util.stream.Collectors.toSet;
 
 import java.nio.file.Path;
@@ -21,8 +22,22 @@ import com.github.pfichtner.log4shell.scanner.detectors.JndiLookupConstructorWit
 import com.github.pfichtner.log4shell.scanner.detectors.Log4jPluginAnnotation;
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiLookup;
 import com.github.pfichtner.log4shell.scanner.detectors.NamingContextLookupCallsFromJndiManager;
+import com.github.pfichtner.log4shell.scanner.io.Detector;
 
 public class Log4JDetector extends AbstractDetector {
+
+	private static final class DetectionWithoutClassNode extends Detection {
+
+		private DetectionWithoutClassNode(Detector detector, Object resource, Path filename, String description) {
+			super(detector, resource, filename, null, description);
+		}
+
+		@Override
+		public String format() {
+			return String.format("%s found in resource %s", description, resource);
+		}
+
+	}
 
 	/**
 	 * <pre>
@@ -67,7 +82,7 @@ public class Log4JDetector extends AbstractDetector {
 	@Override
 	public void visitEnd() {
 		multiplexer.visitEnd();
-		if (!isLog4j2171orGreater()) {
+		if (getDetections().isEmpty() && !isLog4j2171orGreater()) {
 			for (Detection detection : plugins.getDetections()) {
 				ClassNode detectionInClass = detection.getIn();
 				if (detectionsOfContains(initialContextLookupsCalls, detectionInClass)) {
@@ -99,7 +114,12 @@ public class Log4JDetector extends AbstractDetector {
 	}
 
 	private void reAdd(Detection detection, String version) {
-		addDetection(detection.getFilename(), detection.getIn(), "Possible " + version + " match");
+		DetectionWithoutClassNode detectionWithoutClassNode = new DetectionWithoutClassNode(this, getResource(),
+				detection.getFilename(), "Possible " + version + " match");
+		// TODO solve via Set
+		if (getDetections().stream().map(Detection::format).noneMatch(isEqual(detectionWithoutClassNode.format()))) {
+			addDetection(detectionWithoutClassNode);
+		}
 	}
 
 	private boolean isLog4j2171orGreater() {

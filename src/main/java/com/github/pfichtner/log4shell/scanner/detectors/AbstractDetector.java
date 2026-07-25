@@ -17,11 +17,11 @@ import com.github.pfichtner.log4shell.scanner.io.Detector;
 public abstract class AbstractDetector implements Detector {
 
 	private final Stack<String> resources = new Stack<>();
-	private List<Detection> detections;
+	private final List<Detection> detections = new ArrayList<>();
 
 	@Override
 	public void visit(String resource) {
-		detections = new ArrayList<>();
+		detections.clear();
 		resources.push(resource);
 	}
 

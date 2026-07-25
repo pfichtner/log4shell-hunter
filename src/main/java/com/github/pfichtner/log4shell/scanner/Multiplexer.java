@@ -47,9 +47,11 @@ public class Multiplexer extends AbstractDetector {
 	public void visitEnd() {
 		for (AbstractDetector detector : detectors) {
 			detector.visitEnd();
-			detector.getDetections().forEach(this::addDetection);
 		}
 		super.visitEnd();
+		for (AbstractDetector detector : detectors) {
+			detector.getDetections().forEach(this::addDetection);
+		}
 	}
 
 }

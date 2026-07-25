@@ -24,13 +24,14 @@ public class DetectionCollector {
 
 	private final AbstractDetector detector;
 
+	// TODO extract interface
 	public static class Detection {
 
-		private final Detector detector;
-		private final Object resource; // e.g. the JAR
-		private final Path filename;
-		private final ClassNode classNode;
-		private final String description;
+		protected final Detector detector;
+		protected final Object resource; // e.g. the JAR
+		protected final Path filename;
+		protected final ClassNode classNode;
+		protected final String description;
 
 		public Detection(Detector detector, Object resource, Path filename, ClassNode in, String description) {
 			this.detector = detector;
@@ -99,14 +100,14 @@ public class DetectionCollector {
 	private JarReaderVisitor visitor(List<Detection> detections) {
 		return new JarReaderVisitor() {
 
-			@Override
-			public void visit(String resource) {
-				detector.visit(resource);
-			}
+		@Override
+		public void visit(String resource) {
+			detector.visit(resource);
+		}
 
-			@Override
-			public void visitFile(Path file, byte[] bytes) {
-				if (isClass(file)) {
+		@Override
+		public void visitFile(Path file, byte[] bytes) {
+			if (isClass(file)) {
 					try {
 						ClassNode classNode = readClass(bytes, 0);
 						detector.visitClass(file, classNode);
