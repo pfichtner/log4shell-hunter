@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import org.approvaltests.core.Options;
 import org.approvaltests.core.Options.FileOptions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junitpioneer.jupiter.DefaultLocale;
 
 import com.github.pfichtner.log4shell.scanner.DetectionCollector.Detection;
@@ -140,6 +141,7 @@ class Log4ShellHunterTest {
 
 	@Test
 	@AltersComparatorMode
+	@DisabledForJreRange(minVersion = 24, disabledReason = "SecurityManager permanently disabled in Java 24 (JEP 486)")
 	void verifyAllArgs() {
 		var args = List.of( //
 				args(), //
